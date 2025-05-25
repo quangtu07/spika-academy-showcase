@@ -2,9 +2,9 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HeroCarousel from '@/components/HeroCarousel';
+import AboutSection from '@/components/AboutSection';
 import CoursesSection from '@/components/CoursesSection';
 import CommitmentsSection from '@/components/CommitmentsSection';
-import AboutSection from '@/components/AboutSection';
 import ActivitiesSection from '@/components/ActivitiesSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import RegistrationForm from '@/components/RegistrationForm';
@@ -17,9 +17,9 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
       <HeroCarousel />
+      <AboutSection />
       <CoursesSection />
       <CommitmentsSection />
-      <AboutSection />
       <ActivitiesSection />
       <TestimonialsSection />
       <RegistrationForm />

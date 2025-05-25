@@ -10,7 +10,6 @@ const Navbar = () => {
     { name: 'Giới thiệu', href: '#about' },
     { name: 'Khóa học', href: '#courses' },
     { name: 'Hoạt động', href: '#activities' },
-    { name: 'Blog chia sẻ', href: '#blog' },
     { name: 'Liên hệ', href: '#contact' },
   ];
 
