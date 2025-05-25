@@ -38,9 +38,9 @@ const RegistrationForm = () => {
   };
 
   return (
-    <section className="py-20 bg-primary-600 font-roboto">
+    <section className="py-20 bg-gradient-to-br from-peach-medium via-accent-medium to-peach-dark font-roboto">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Card className="bg-white shadow-2xl">
+        <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-peach-medium/30">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-gray-900">
               Đăng ký tư vấn miễn phí
@@ -63,7 +63,7 @@ const RegistrationForm = () => {
                     onChange={(e) => handleInputChange('fullName', e.target.value)}
                     placeholder="Nhập họ và tên của bạn"
                     required
-                    className="mt-1"
+                    className="mt-1 border-peach-medium/30 focus:border-peach-dark"
                   />
                 </div>
                 <div>
@@ -77,7 +77,7 @@ const RegistrationForm = () => {
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="Nhập số điện thoại"
                     required
-                    className="mt-1"
+                    className="mt-1 border-peach-medium/30 focus:border-peach-dark"
                   />
                 </div>
               </div>
@@ -86,7 +86,7 @@ const RegistrationForm = () => {
                   Khóa học quan tâm *
                 </Label>
                 <Select value={formData.course} onValueChange={(value) => handleInputChange('course', value)}>
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 border-peach-medium/30 focus:border-peach-dark">
                     <SelectValue placeholder="Chọn khóa học bạn quan tâm" />
                   </SelectTrigger>
                   <SelectContent>
@@ -100,7 +100,7 @@ const RegistrationForm = () => {
               </div>
               <Button 
                 type="submit" 
-                className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 text-lg font-medium"
+                className="w-full bg-gradient-to-r from-peach-medium to-peach-dark hover:from-peach-dark hover:to-accent-medium text-gray-800 py-3 text-lg font-medium shadow-lg"
               >
                 Gửi thông tin
               </Button>

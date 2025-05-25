@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 
 const AboutSection = () => {
   return (
-    <section className="py-20 bg-gray-50 font-roboto" id="about">
+    <section className="py-20 bg-gradient-to-br from-accent-light to-peach-light font-roboto" id="about">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Về trung tâm <span className="text-primary-600">Spika</span>
+              Về trung tâm <span className="bg-gradient-to-r from-peach-dark to-accent-medium bg-clip-text text-transparent">Spika</span>
             </h2>
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
               Spika là trung tâm đào tạo MC hàng đầu với hơn 10 năm kinh nghiệm trong lĩnh vực 
@@ -22,24 +22,24 @@ const AboutSection = () => {
               và kỹ năng cần thiết để thành công trong nghề MC.
             </p>
             <div className="grid grid-cols-2 gap-6 mb-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 mb-2">10+</div>
+              <div className="text-center bg-white/50 rounded-lg p-4 shadow-sm">
+                <div className="text-3xl font-bold bg-gradient-to-r from-peach-dark to-accent-medium bg-clip-text text-transparent mb-2">10+</div>
                 <div className="text-gray-600">Năm kinh nghiệm</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 mb-2">1000+</div>
+              <div className="text-center bg-white/50 rounded-lg p-4 shadow-sm">
+                <div className="text-3xl font-bold bg-gradient-to-r from-peach-dark to-accent-medium bg-clip-text text-transparent mb-2">1000+</div>
                 <div className="text-gray-600">Học viên đã tốt nghiệp</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 mb-2">50+</div>
+              <div className="text-center bg-white/50 rounded-lg p-4 shadow-sm">
+                <div className="text-3xl font-bold bg-gradient-to-r from-peach-dark to-accent-medium bg-clip-text text-transparent mb-2">50+</div>
                 <div className="text-gray-600">Giảng viên chuyên nghiệp</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600 mb-2">95%</div>
+              <div className="text-center bg-white/50 rounded-lg p-4 shadow-sm">
+                <div className="text-3xl font-bold bg-gradient-to-r from-peach-dark to-accent-medium bg-clip-text text-transparent mb-2">95%</div>
                 <div className="text-gray-600">Học viên hài lòng</div>
               </div>
             </div>
-            <Button className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3">
+            <Button className="bg-gradient-to-r from-peach-medium to-peach-dark hover:from-peach-dark hover:to-accent-medium text-gray-800 px-8 py-3 shadow-lg">
               Tìm hiểu thêm
             </Button>
           </div>
@@ -49,7 +49,7 @@ const AboutSection = () => {
               alt="Lớp học tại Spika"
               className="rounded-lg shadow-xl"
             />
-            <div className="absolute -bottom-6 -left-6 bg-white rounded-lg shadow-lg p-6 max-w-xs">
+            <div className="absolute -bottom-6 -left-6 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-6 max-w-xs border border-peach-medium/20">
               <h4 className="font-bold text-gray-900 mb-2">Môi trường học tập chuyên nghiệp</h4>
               <p className="text-sm text-gray-600">
                 Trang thiết bị hiện đại, âm thanh ánh sáng chuẩn studio
