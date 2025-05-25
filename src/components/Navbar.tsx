@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import UserAvatar from './UserAvatar';
 
@@ -10,13 +10,14 @@ const Navbar = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [
-    { name: 'Trang chủ', href: '#home' },
-    { name: 'Giới thiệu', href: '#about' },
-    { name: 'Khóa học', href: '#courses' },
-    { name: 'Hoạt động', href: '#activities' },
-    { name: 'Liên hệ', href: '#contact' },
+    { name: 'Trang chủ', href: '#home', action: () => handleNavigateHome() },
+    { name: 'Giới thiệu', href: '#about', action: () => handleScrollToSection('about') },
+    { name: 'Khóa học', href: '#courses', action: () => handleCoursesClick() },
+    { name: 'Hoạt động', href: '#activities', action: () => handleScrollToSection('activities') },
+    { name: 'Liên hệ', href: '#contact', action: () => handleScrollToSection('contact') },
   ];
 
   // Check for existing user on component mount
@@ -31,6 +32,35 @@ const Navbar = () => {
       }
     }
   }, []);
+
+  const handleNavigateHome = () => {
+    if (location.pathname !== '/') {
+      navigate('/');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollToSection = (sectionId: string) => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const section = document.querySelector(`#${sectionId}`);
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      const section = document.querySelector(`#${sectionId}`);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
+  const handleCoursesClick = () => {
+    navigate('/courses');
+  };
 
   const handleLoginSuccess = (user: any) => {
     setCurrentUser(user);
@@ -59,7 +89,7 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 cursor-pointer" onClick={handleNavigateHome}>
               <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">S</span>
               </div>
@@ -69,13 +99,13 @@ const Navbar = () => {
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
               {menuItems.map((item) => (
-                <a
+                <button
                   key={item.name}
-                  href={item.href}
+                  onClick={item.action}
                   className="text-gray-700 hover:text-primary-600 font-medium transition-colors duration-200"
                 >
                   {item.name}
-                </a>
+                </button>
               ))}
               
               {currentUser ? (
@@ -119,14 +149,16 @@ const Navbar = () => {
             <div className="md:hidden">
               <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
                 {menuItems.map((item) => (
-                  <a
+                  <button
                     key={item.name}
-                    href={item.href}
-                    className="block px-3 py-2 text-gray-700 hover:text-primary-600 font-medium"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => {
+                      item.action();
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 text-gray-700 hover:text-primary-600 font-medium"
                   >
                     {item.name}
-                  </a>
+                  </button>
                 ))}
                 <div className="px-3 py-2">
                   {currentUser ? (

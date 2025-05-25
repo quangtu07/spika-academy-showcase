@@ -7,6 +7,9 @@ import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import RegistrationModal from '@/components/RegistrationModal';
 
 interface Course {
   id: string;
@@ -21,6 +24,7 @@ interface Course {
 const CoursesPage = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -64,16 +68,6 @@ const CoursesPage = () => {
     navigate('/');
   };
 
-  const handleContactConsultation = () => {
-    navigate('/', { replace: true });
-    setTimeout(() => {
-      const registrationSection = document.querySelector('#registration');
-      if (registrationSection) {
-        registrationSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -82,9 +76,49 @@ const CoursesPage = () => {
     );
   }
 
+  const renderCourseCard = (course: Course, badgeColor: string) => (
+    <Card key={course.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+      <div className="relative overflow-hidden">
+        <img
+          src={course.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
+          alt={course.name}
+          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+        />
+        <div className={`absolute top-4 right-4 ${badgeColor} text-white px-3 py-1 rounded-full text-sm font-medium`}>
+          {levelMap[course.level]}
+        </div>
+      </div>
+      <CardHeader>
+        <CardTitle className="text-xl font-bold text-gray-900">{course.name}</CardTitle>
+        <CardDescription className="text-gray-600">
+          {course.description}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-sm text-gray-500">
+            Thời gian: {course.duration} tháng
+          </span>
+          {course.price && (
+            <span className="text-lg font-bold text-primary-600">
+              {course.price.toLocaleString('vi-VN')}đ
+            </span>
+          )}
+        </div>
+        <Button 
+          className="w-full bg-primary-600 hover:bg-primary-700 text-white"
+          onClick={() => setIsRegistrationModalOpen(true)}
+        >
+          Liên hệ tư vấn
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 font-roboto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Navbar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         <div className="mb-8">
           <Button
             onClick={handleBackToHome}
@@ -109,134 +143,28 @@ const CoursesPage = () => {
 
           <TabsContent value="basic">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getCoursesByLevel('basic').map((course) => (
-                <Card key={course.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={course.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
-                      alt={course.name}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {levelMap[course.level]}
-                    </div>
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="text-xl font-bold text-gray-900">{course.name}</CardTitle>
-                    <CardDescription className="text-gray-600">
-                      {course.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-sm text-gray-500">
-                        Thời gian: {course.duration} tháng
-                      </span>
-                      {course.price && (
-                        <span className="text-lg font-bold text-primary-600">
-                          {course.price.toLocaleString('vi-VN')}đ
-                        </span>
-                      )}
-                    </div>
-                    <Button 
-                      className="w-full bg-primary-600 hover:bg-primary-700 text-white"
-                      onClick={handleContactConsultation}
-                    >
-                      Liên hệ tư vấn
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              {getCoursesByLevel('basic').map((course) => renderCourseCard(course, 'bg-green-500'))}
             </div>
           </TabsContent>
 
           <TabsContent value="intermediate">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getCoursesByLevel('intermediate').map((course) => (
-                <Card key={course.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={course.image_url || "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
-                      alt={course.name}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {levelMap[course.level]}
-                    </div>
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="text-xl font-bold text-gray-900">{course.name}</CardTitle>
-                    <CardDescription className="text-gray-600">
-                      {course.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-sm text-gray-500">
-                        Thời gian: {course.duration} tháng
-                      </span>
-                      {course.price && (
-                        <span className="text-lg font-bold text-primary-600">
-                          {course.price.toLocaleString('vi-VN')}đ
-                        </span>
-                      )}
-                    </div>
-                    <Button 
-                      className="w-full bg-primary-600 hover:bg-primary-700 text-white"
-                      onClick={handleContactConsultation}
-                    >
-                      Liên hệ tư vấn
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              {getCoursesByLevel('intermediate').map((course) => renderCourseCard(course, 'bg-yellow-500'))}
             </div>
           </TabsContent>
 
           <TabsContent value="advance">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getCoursesByLevel('advance').map((course) => (
-                <Card key={course.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={course.image_url || "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
-                      alt={course.name}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {levelMap[course.level]}
-                    </div>
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="text-xl font-bold text-gray-900">{course.name}</CardTitle>
-                    <CardDescription className="text-gray-600">
-                      {course.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-sm text-gray-500">
-                        Thời gian: {course.duration} tháng
-                      </span>
-                      {course.price && (
-                        <span className="text-lg font-bold text-primary-600">
-                          {course.price.toLocaleString('vi-VN')}đ
-                        </span>
-                      )}
-                    </div>
-                    <Button 
-                      className="w-full bg-primary-600 hover:bg-primary-700 text-white"
-                      onClick={handleContactConsultation}
-                    >
-                      Liên hệ tư vấn
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              {getCoursesByLevel('advance').map((course) => renderCourseCard(course, 'bg-red-500'))}
             </div>
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
+      <RegistrationModal 
+        isOpen={isRegistrationModalOpen}
+        onClose={() => setIsRegistrationModalOpen(false)}
+      />
     </div>
   );
 };

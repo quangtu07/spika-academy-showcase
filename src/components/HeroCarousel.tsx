@@ -2,7 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
-const HeroCarousel = () => {
+interface HeroCarouselProps {
+  onOpenRegistrationModal: () => void;
+}
+
+const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
@@ -10,19 +14,27 @@ const HeroCarousel = () => {
       image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
       title: "Trở thành MC chuyên nghiệp",
       subtitle: "Khóa học đào tạo MC toàn diện từ cơ bản đến nâng cao",
-      cta: "Khám phá ngay"
+      cta: "Đăng ký ngay",
+      action: () => onOpenRegistrationModal()
     },
     {
       image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
       title: "Giảng viên kinh nghiệm",
       subtitle: "Đội ngũ giảng viên giàu kinh nghiệm và tâm huyết",
-      cta: "Tìm hiểu thêm"
+      cta: "Tìm hiểu thêm",
+      action: () => {
+        const instructorsSection = document.querySelector('#instructors');
+        if (instructorsSection) {
+          instructorsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
     },
     {
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
       title: "Học linh hoạt - Hiệu quả cao",
       subtitle: "Phương pháp học tập hiện đại, phù hợp với mọi đối tượng",
-      cta: "Đăng ký ngay"
+      cta: "Đăng ký ngay",
+      action: () => onOpenRegistrationModal()
     }
   ];
 
@@ -54,7 +66,10 @@ const HeroCarousel = () => {
                 <p className="text-xl md:text-2xl mb-8 animate-fade-in animation-delay-200">
                   {slide.subtitle}
                 </p>
-                <Button className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg animate-fade-in animation-delay-400">
+                <Button 
+                  onClick={slide.action}
+                  className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg animate-fade-in animation-delay-400"
+                >
                   {slide.cta}
                 </Button>
               </div>

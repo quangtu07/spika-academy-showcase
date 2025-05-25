@@ -16,7 +16,11 @@ interface Course {
   price: number;
 }
 
-const CoursesSection = () => {
+interface CoursesSectionProps {
+  onOpenRegistrationModal: () => void;
+}
+
+const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -51,13 +55,6 @@ const CoursesSection = () => {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const scrollToRegistration = () => {
-    const registrationSection = document.querySelector('#registration');
-    if (registrationSection) {
-      registrationSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -119,7 +116,7 @@ const CoursesSection = () => {
                 </div>
                 <Button 
                   className="w-full bg-primary-600 hover:bg-primary-700 text-white"
-                  onClick={scrollToRegistration}
+                  onClick={onOpenRegistrationModal}
                 >
                   Liên hệ tư vấn
                 </Button>
