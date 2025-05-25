@@ -19,10 +19,10 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-peach-light via-peach-medium to-peach-dark rounded-lg flex items-center justify-center shadow-md">
-              <span className="text-gray-800 font-bold text-xl">S</span>
+            <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">S</span>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-peach-dark via-accent-medium to-peach-light bg-clip-text text-transparent">Spika</span>
+            <span className="text-2xl font-bold text-gray-900">Spika</span>
           </div>
 
           {/* Desktop Menu */}
@@ -31,12 +31,12 @@ const Navbar = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 hover:text-peach-dark font-medium transition-colors duration-200"
+                className="text-gray-700 hover:text-primary-600 font-medium transition-colors duration-200"
               >
                 {item.name}
               </a>
             ))}
-            <Button className="bg-gradient-to-r from-peach-medium to-peach-dark hover:from-peach-dark hover:to-accent-medium text-gray-800 px-6 py-2 shadow-md">
+            <Button className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2">
               Đăng nhập
             </Button>
           </div>
@@ -45,7 +45,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-peach-dark focus:outline-none"
+              className="text-gray-700 hover:text-primary-600 focus:outline-none"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -62,14 +62,14 @@ const Navbar = () => {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="block px-3 py-2 text-gray-700 hover:text-peach-dark font-medium"
+                  className="block px-3 py-2 text-gray-700 hover:text-primary-600 font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </a>
               ))}
               <div className="px-3 py-2">
-                <Button className="w-full bg-gradient-to-r from-peach-medium to-peach-dark hover:from-peach-dark hover:to-accent-medium text-gray-800">
+                <Button className="w-full bg-primary-600 hover:bg-primary-700 text-white">
                   Đăng nhập
                 </Button>
               </div>

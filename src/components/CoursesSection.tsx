@@ -32,7 +32,7 @@ const CoursesSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-white font-roboto" id="courses">
+    <section className="py-20 bg-gray-50 font-roboto" id="courses">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Khóa học nổi bật</h2>
@@ -43,14 +43,14 @@ const CoursesSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {courses.map((course) => (
-            <Card key={course.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group border-peach-medium/20">
+            <Card key={course.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
               <div className="relative overflow-hidden">
                 <img
                   src={course.image}
                   alt={course.title}
                   className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                 />
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-peach-medium to-peach-dark text-gray-800 px-3 py-1 rounded-full text-sm font-medium shadow-md">
+                <div className="absolute top-4 right-4 bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                   {course.level}
                 </div>
               </div>
@@ -64,7 +64,7 @@ const CoursesSection = () => {
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-sm text-gray-500">Thời gian: {course.duration}</span>
                 </div>
-                <Button className="w-full bg-gradient-to-r from-peach-medium to-peach-dark hover:from-peach-dark hover:to-accent-medium text-gray-800 shadow-md">
+                <Button className="w-full bg-primary-600 hover:bg-primary-700 text-white">
                   Xem thêm
                 </Button>
               </CardContent>

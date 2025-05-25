@@ -46,7 +46,7 @@ const HeroCarousel = () => {
             className="h-full bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${slide.image})` }}
           >
-            <div className="h-full bg-gradient-to-r from-black/60 via-peach-light/20 to-accent-medium/30 flex items-center justify-center">
+            <div className="h-full bg-black bg-opacity-50 flex items-center justify-center">
               <div className="text-center text-white max-w-4xl px-4">
                 <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
                   {slide.title}
@@ -54,7 +54,7 @@ const HeroCarousel = () => {
                 <p className="text-xl md:text-2xl mb-8 animate-fade-in animation-delay-200">
                   {slide.subtitle}
                 </p>
-                <Button className="bg-gradient-to-r from-peach-medium to-peach-dark hover:from-peach-dark hover:to-accent-medium text-gray-800 px-8 py-3 text-lg animate-fade-in animation-delay-400 shadow-lg">
+                <Button className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg animate-fade-in animation-delay-400">
                   {slide.cta}
                 </Button>
               </div>
@@ -70,7 +70,7 @@ const HeroCarousel = () => {
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={`w-3 h-3 rounded-full transition-colors ${
-              index === currentSlide ? 'bg-peach-medium' : 'bg-white bg-opacity-50'
+              index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-50'
             }`}
           />
         ))}
@@ -79,7 +79,7 @@ const HeroCarousel = () => {
       {/* Navigation arrows */}
       <button
         onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-peach-medium transition-colors"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-primary-300 transition-colors"
       >
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -87,7 +87,7 @@ const HeroCarousel = () => {
       </button>
       <button
         onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-peach-medium transition-colors"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-primary-300 transition-colors"
       >
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

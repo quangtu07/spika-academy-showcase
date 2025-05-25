@@ -5,7 +5,7 @@ const CommitmentsSection = () => {
   const commitments = [
     {
       icon: (
-        <svg className="w-12 h-12 text-peach-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-12 h-12 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
@@ -14,7 +14,7 @@ const CommitmentsSection = () => {
     },
     {
       icon: (
-        <svg className="w-12 h-12 text-peach-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-12 h-12 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
@@ -24,7 +24,7 @@ const CommitmentsSection = () => {
     },
     {
       icon: (
-        <svg className="w-12 h-12 text-peach-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-12 h-12 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
@@ -34,7 +34,7 @@ const CommitmentsSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-peach-light to-accent-light font-roboto">
+    <section className="py-20 bg-white font-roboto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Cam kết của Spika</h2>
@@ -46,7 +46,7 @@ const CommitmentsSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {commitments.map((commitment, index) => (
             <div key={index} className="text-center group hover:scale-105 transition-transform duration-300">
-              <div className="bg-gradient-to-br from-peach-medium to-accent-medium w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:from-peach-dark group-hover:to-accent-dark transition-all duration-300 shadow-lg">
+              <div className="bg-primary-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-100 transition-colors">
                 {commitment.icon}
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">{commitment.title}</h3>
