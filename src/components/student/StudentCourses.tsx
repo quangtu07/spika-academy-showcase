@@ -173,7 +173,9 @@ const StudentCourses = () => {
         description: enrollment.courses.description,
         level: enrollment.courses.level,
         duration: enrollment.courses.duration,
-        instructor: enrollment.courses.instructor,
+        instructor: {
+          fullname: enrollment.courses.profiles?.fullname || 'Chưa có thông tin'
+        },
         enrollment: {
           status: enrollment.status,
           enrolled_at: enrollment.enrolled_at
