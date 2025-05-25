@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useUserRole } from '@/hooks/useUserRole';
 import LoginModal from './LoginModal';
 import UserAvatar from './UserAvatar';
 
@@ -11,6 +12,7 @@ const Navbar = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { userRole } = useUserRole();
 
   const menuItems = [
     { name: 'Trang chủ', href: '#home', action: () => handleNavigateHome() },
@@ -110,7 +112,7 @@ const Navbar = () => {
               
               {currentUser ? (
                 <div className="flex items-center space-x-4">
-                  {currentUser.role === 'admin' && (
+                  {userRole === 'admin' && (
                     <Button 
                       onClick={handleAdminAccess}
                       variant="outline"
@@ -167,7 +169,7 @@ const Navbar = () => {
                         <UserAvatar user={currentUser} onLogout={handleLogout} />
                         <span className="text-sm text-gray-700">{currentUser.fullname}</span>
                       </div>
-                      {currentUser.role === 'admin' && (
+                      {userRole === 'admin' && (
                         <Button 
                           onClick={() => {
                             handleAdminAccess();

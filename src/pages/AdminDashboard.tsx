@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Home, Users, BookOpen, BarChart3 } from 'lucide-react';
+import { Home, Users, BookOpen, BarChart3, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useUserRole } from '@/hooks/useUserRole';
+import { useToast } from '@/hooks/use-toast';
 import UserManagement from '@/components/admin/UserManagement';
 import CourseManagement from '@/components/admin/CourseManagement';
 import AdminOverview from '@/components/admin/AdminOverview';
@@ -12,10 +14,57 @@ import AdminOverview from '@/components/admin/AdminOverview';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const { userRole, isLoading } = useUserRole();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (!isLoading && userRole !== 'admin') {
+      toast({
+        title: "Truy cập bị từ chối",
+        description: "Bạn không có quyền truy cập trang quản lý",
+        variant: "destructive",
+      });
+      navigate('/');
+    }
+  }, [userRole, isLoading, navigate, toast]);
 
   const handleGoHome = () => {
     navigate('/');
   };
+
+  // Show loading state while checking role
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang kiểm tra quyền truy cập...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied if not admin
+  if (userRole !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+            <CardTitle className="text-red-600">Truy cập bị từ chối</CardTitle>
+            <CardDescription>
+              Bạn không có quyền truy cập trang quản lý. Chỉ admin mới có thể truy cập.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Button onClick={handleGoHome} className="w-full">
+              Về trang chủ
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
