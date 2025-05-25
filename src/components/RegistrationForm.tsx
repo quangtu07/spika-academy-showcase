@@ -38,7 +38,7 @@ const RegistrationForm = () => {
   };
 
   return (
-    <section className="py-20 bg-primary-600 font-roboto">
+    <section className="py-20 bg-primary-600 font-roboto" id="registration">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Card className="bg-white shadow-2xl">
           <CardHeader className="text-center">
