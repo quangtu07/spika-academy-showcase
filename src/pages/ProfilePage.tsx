@@ -12,8 +12,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 const ProfilePage = () => {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [formData, setFormData] = useState({
     username: '',
     fullname: '',
@@ -21,7 +21,7 @@ const ProfilePage = () => {
     phone_number: '',
     avatar_url: ''
   });
-  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const { toast } = useToast();
@@ -47,7 +47,7 @@ const ProfilePage = () => {
     }
   };
 
-  const fetchProfile = async (userId) => {
+  const fetchProfile = async (userId: string) => {
     try {
       const { data: profileData, error } = await supabase
         .from('profiles')
@@ -81,7 +81,7 @@ const ProfilePage = () => {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -89,8 +89,8 @@ const ProfilePage = () => {
     }));
   };
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       setAvatarFile(file);
       // Create preview URL
@@ -102,7 +102,7 @@ const ProfilePage = () => {
     }
   };
 
-  const uploadAvatar = async (file, userId) => {
+  const uploadAvatar = async (file: File, userId: string): Promise<string> => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${userId}-${Math.random()}.${fileExt}`;
     const filePath = `${fileName}`;
@@ -122,7 +122,7 @@ const ProfilePage = () => {
     return data.publicUrl;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -138,9 +138,11 @@ const ProfilePage = () => {
         // Delete old avatar if exists
         if (profile?.avatar_url && profile.avatar_url.includes('supabase')) {
           const oldPath = profile.avatar_url.split('/').pop();
-          await supabase.storage
-            .from('avatars')
-            .remove([oldPath]);
+          if (oldPath) {
+            await supabase.storage
+              .from('avatars')
+              .remove([oldPath]);
+          }
         }
 
         avatarUrl = await uploadAvatar(avatarFile, user.id);
@@ -155,20 +157,36 @@ const ProfilePage = () => {
         updated_at: new Date().toISOString()
       };
 
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          email: user.email,
-          ...updateData
-        });
+      // Check if profile exists
+      if (profile) {
+        // Update existing profile
+        const { error } = await supabase
+          .from('profiles')
+          .update(updateData)
+          .eq('id', user.id);
 
-      if (error) {
-        throw error;
+        if (error) {
+          throw error;
+        }
+      } else {
+        // Insert new profile
+        const { error } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            email: user.email || '',
+            password: 'temp_password', // This should be handled differently in production
+            ...updateData
+          });
+
+        if (error) {
+          throw error;
+        }
       }
 
       // Update local state
-      setProfile({ ...profile, ...updateData });
+      const updatedProfile = { ...profile, ...updateData };
+      setProfile(updatedProfile);
       setFormData(prev => ({ ...prev, avatar_url: avatarUrl }));
       setAvatarFile(null);
 
@@ -195,7 +213,7 @@ const ProfilePage = () => {
     }
   };
 
-  const getInitials = (fullname) => {
+  const getInitials = (fullname: string) => {
     if (!fullname) return 'U';
     return fullname
       .split(' ')
