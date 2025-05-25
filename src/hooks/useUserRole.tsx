@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export const useUserRole = () => {
@@ -14,30 +13,22 @@ export const useUserRole = () => {
 
   const checkUserRole = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      // Check if user is logged in by getting from localStorage
+      const storedUser = localStorage.getItem('currentUser');
       
-      if (!session) {
+      if (!storedUser) {
         setUserRole(null);
         setIsLoading(false);
         return;
       }
 
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching user role:', error);
-        toast({
-          title: "Lỗi",
-          description: "Không thể kiểm tra quyền người dùng",
-          variant: "destructive",
-        });
-        setUserRole(null);
+      const user = JSON.parse(storedUser);
+      
+      // Get role directly from the stored user data
+      if (user && user.role) {
+        setUserRole(user.role);
       } else {
-        setUserRole(profile?.role || null);
+        setUserRole(null);
       }
     } catch (error) {
       console.error('Error checking user role:', error);
