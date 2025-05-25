@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -73,30 +72,98 @@ const StudentCourses = () => {
     try {
       console.log('Fetching courses for user:', userId);
       
+      // First, let's check if enrollments exist for this user
+      const { data: enrollmentCheck, error: enrollmentError } = await supabase
+        .from('enrollments')
+        .select('*')
+        .eq('student_id', userId);
+      
+      console.log('Direct enrollment check:', enrollmentCheck);
+      console.log('Direct enrollment error:', enrollmentError);
+
+      if (enrollmentError) {
+        console.error('Enrollment check error:', enrollmentError);
+      }
+
+      // Now try the full query with better error handling
       const { data, error } = await supabase
         .from('enrollments')
         .select(`
           status,
           enrolled_at,
           course_id,
-          courses (
+          courses!inner (
             id,
             name,
             description,
             level,
             duration,
-            instructor:profiles!courses_instructor_id_fkey (
+            instructor_id,
+            profiles!courses_instructor_id_fkey (
               fullname
             )
           )
         `)
         .eq('student_id', userId);
 
-      console.log('Enrollments data:', data);
-      console.log('Enrollments error:', error);
+      console.log('Full query data:', data);
+      console.log('Full query error:', error);
 
       if (error) {
-        console.error('Supabase error:', error);
+        console.error('Supabase error details:', error);
+        
+        // Try alternative query without nested join
+        console.log('Trying alternative query...');
+        const { data: altData, error: altError } = await supabase
+          .from('enrollments')
+          .select(`
+            *,
+            courses (*)
+          `)
+          .eq('student_id', userId);
+        
+        console.log('Alternative query data:', altData);
+        console.log('Alternative query error:', altError);
+        
+        if (altError) {
+          throw altError;
+        }
+        
+        // If alternative query works, format the data
+        if (altData && altData.length > 0) {
+          const formattedCourses = [];
+          
+          for (const enrollment of altData) {
+            if (enrollment.courses) {
+              // Get instructor info separately
+              const { data: instructorData } = await supabase
+                .from('profiles')
+                .select('fullname')
+                .eq('id', enrollment.courses.instructor_id)
+                .single();
+              
+              formattedCourses.push({
+                id: enrollment.courses.id,
+                name: enrollment.courses.name,
+                description: enrollment.courses.description || '',
+                level: enrollment.courses.level || 'basic',
+                duration: enrollment.courses.duration || 0,
+                instructor: {
+                  fullname: instructorData?.fullname || 'Chưa có thông tin'
+                },
+                enrollment: {
+                  status: enrollment.status || 'active',
+                  enrolled_at: enrollment.enrolled_at
+                }
+              });
+            }
+          }
+          
+          console.log('Alternative formatted courses:', formattedCourses);
+          setCourses(formattedCourses);
+          return;
+        }
+        
         throw error;
       }
 
