@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import UserAvatar from './UserAvatar';
 
@@ -8,6 +9,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
 
   const menuItems = [
     { name: 'Trang chủ', href: '#home' },
@@ -32,10 +34,23 @@ const Navbar = () => {
 
   const handleLoginSuccess = (user: any) => {
     setCurrentUser(user);
+    
+    // If user is admin, redirect to admin dashboard
+    if (user.role === 'admin') {
+      navigate('/admin');
+    }
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
+    // If currently on admin page, redirect to home
+    if (window.location.pathname === '/admin') {
+      navigate('/');
+    }
+  };
+
+  const handleAdminAccess = () => {
+    navigate('/admin');
   };
 
   return (
@@ -64,7 +79,18 @@ const Navbar = () => {
               ))}
               
               {currentUser ? (
-                <UserAvatar user={currentUser} onLogout={handleLogout} />
+                <div className="flex items-center space-x-4">
+                  {currentUser.role === 'admin' && (
+                    <Button 
+                      onClick={handleAdminAccess}
+                      variant="outline"
+                      className="text-primary-600 border-primary-600 hover:bg-primary-50"
+                    >
+                      Quản lý
+                    </Button>
+                  )}
+                  <UserAvatar user={currentUser} onLogout={handleLogout} />
+                </div>
               ) : (
                 <Button 
                   onClick={() => setIsLoginModalOpen(true)}
@@ -104,9 +130,23 @@ const Navbar = () => {
                 ))}
                 <div className="px-3 py-2">
                   {currentUser ? (
-                    <div className="flex items-center space-x-3">
-                      <UserAvatar user={currentUser} onLogout={handleLogout} />
-                      <span className="text-sm text-gray-700">{currentUser.fullname}</span>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-3">
+                        <UserAvatar user={currentUser} onLogout={handleLogout} />
+                        <span className="text-sm text-gray-700">{currentUser.fullname}</span>
+                      </div>
+                      {currentUser.role === 'admin' && (
+                        <Button 
+                          onClick={() => {
+                            handleAdminAccess();
+                            setIsMenuOpen(false);
+                          }}
+                          variant="outline"
+                          className="w-full text-primary-600 border-primary-600 hover:bg-primary-50"
+                        >
+                          Quản lý
+                        </Button>
+                      )}
                     </div>
                   ) : (
                     <Button 
