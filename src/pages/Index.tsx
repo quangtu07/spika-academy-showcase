@@ -4,7 +4,6 @@ import Navbar from '@/components/Navbar';
 import HeroCarousel from '@/components/HeroCarousel';
 import AboutSection from '@/components/AboutSection';
 import CoursesSection from '@/components/CoursesSection';
-import InstructorsSection from '@/components/InstructorsSection';
 import CommitmentsSection from '@/components/CommitmentsSection';
 import ActivitiesSection from '@/components/ActivitiesSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
@@ -22,7 +21,6 @@ const Index = () => {
       <HeroCarousel onOpenRegistrationModal={() => setIsRegistrationModalOpen(true)} />
       <AboutSection />
       <CoursesSection onOpenRegistrationModal={() => setIsRegistrationModalOpen(true)} />
-      <InstructorsSection />
       <CommitmentsSection />
       <ActivitiesSection />
       <TestimonialsSection />
