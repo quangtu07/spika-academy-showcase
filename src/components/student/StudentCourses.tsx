@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,16 +7,27 @@ import { BookOpen, Clock, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-interface Enrollment {
+interface EnrollmentWithDetails {
   id: string;
   student_id: string;
   course_id: string;
   enrolled_at: string;
   status: string;
+  courses: {
+    id: string;
+    name: string;
+    description: string;
+    level: string;
+    duration: number;
+    image_url: string;
+    profiles: {
+      fullname: string;
+    };
+  };
 }
 
 const StudentCourses = () => {
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [enrollments, setEnrollments] = useState<EnrollmentWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
@@ -65,27 +77,28 @@ const StudentCourses = () => {
     try {
       console.log('=== DEBUG INFO ===');
       console.log('Tìm enrollments cho user:', userId);
-      console.log('User ID type:', typeof userId);
-      console.log('User ID length:', userId.length);
       
-      // Test connection đơn giản trước
-      console.log('Testing Supabase connection...');
-      const { data: testData, error: testError } = await supabase
-        .from('enrollments')
-        .select('count(*)', { count: 'exact', head: true });
-      
-      console.log('Total enrollments in table:', testData);
-      console.log('Connection test error:', testError);
-      
-      // Sau đó query với user ID
+      // Query enrollments với join courses và instructor details
       const { data: enrollmentsData, error: enrollmentError } = await supabase
         .from('enrollments')
-        .select('*')
+        .select(`
+          *,
+          courses (
+            id,
+            name,
+            description,
+            level,
+            duration,
+            image_url,
+            profiles:instructor_id (
+              fullname
+            )
+          )
+        `)
         .eq('student_id', userId);
       
       console.log('Query result - Data:', enrollmentsData);
       console.log('Query result - Error:', enrollmentError);
-      console.log('Query result - Data length:', enrollmentsData?.length);
 
       if (enrollmentError) {
         console.error('Supabase error details:', enrollmentError);
@@ -112,6 +125,12 @@ const StudentCourses = () => {
     }
   };
 
+  const levelMap = {
+    basic: 'Cơ bản',
+    intermediate: 'Trung cấp',  
+    advance: 'Nâng cao'
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -126,11 +145,6 @@ const StudentCourses = () => {
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Đăng ký khóa học</h2>
         <p className="text-gray-600">Danh sách các khóa học bạn đã đăng ký</p>
-        {currentUser && (
-          <p className="text-sm text-gray-500 mt-1">
-            User ID: {currentUser.id}
-          </p>
-        )}
       </div>
 
       {enrollments.length === 0 ? (
@@ -148,28 +162,53 @@ const StudentCourses = () => {
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
           {enrollments.map((enrollment) => (
-            <Card key={enrollment.id} className="hover:shadow-lg transition-shadow">
+            <Card key={enrollment.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+              <div className="relative">
+                <img
+                  src={enrollment.courses.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
+                  alt={enrollment.courses.name}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="absolute top-4 right-4 bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {levelMap[enrollment.courses.level as keyof typeof levelMap] || enrollment.courses.level}
+                </div>
+              </div>
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <CardTitle className="line-clamp-2">Course ID: {enrollment.course_id}</CardTitle>
-                    <div className="flex items-center space-x-2">
+                  <div className="space-y-2">
+                    <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2">
+                      {enrollment.courses.name}
+                    </CardTitle>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <User className="h-4 w-4" />
+                      <span>GV: {enrollment.courses.profiles?.fullname || 'Chưa có thông tin'}</span>
+                    </div>
+                    <div className="flex items-center space-x-4">
                       <Badge variant="outline" className={
                         enrollment.status === 'active' 
-                          ? 'border-green-500 text-green-700' 
+                          ? 'border-green-500 text-green-700 bg-green-50' 
                           : enrollment.status === 'completed'
-                          ? 'border-blue-500 text-blue-700'
-                          : 'border-gray-500 text-gray-700'
+                          ? 'border-blue-500 text-blue-700 bg-blue-50'
+                          : 'border-gray-500 text-gray-700 bg-gray-50'
                       }>
                         {enrollment.status === 'active' ? 'Đang học' : 
                          enrollment.status === 'completed' ? 'Hoàn thành' : 'Đã dừng'}
                       </Badge>
+                      {enrollment.courses.duration && (
+                        <div className="flex items-center space-x-1 text-sm text-gray-500">
+                          <Clock className="h-4 w-4" />
+                          <span>{enrollment.courses.duration} tháng</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    {enrollment.courses.description}
+                  </p>
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-gray-500">
                       Đăng ký: {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}
