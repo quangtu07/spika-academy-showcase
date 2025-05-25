@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -72,117 +73,87 @@ const StudentCourses = () => {
     try {
       console.log('Fetching courses for user:', userId);
       
-      // First, let's check if enrollments exist for this user
-      const { data: enrollmentCheck, error: enrollmentError } = await supabase
+      // First get enrollments for this student
+      const { data: enrollments, error: enrollmentError } = await supabase
         .from('enrollments')
         .select('*')
         .eq('student_id', userId);
       
-      console.log('Direct enrollment check:', enrollmentCheck);
-      console.log('Direct enrollment error:', enrollmentError);
+      console.log('Enrollments found:', enrollments);
+      console.log('Enrollment error:', enrollmentError);
 
       if (enrollmentError) {
-        console.error('Enrollment check error:', enrollmentError);
+        throw enrollmentError;
       }
 
-      // Now try the full query with better error handling
-      const { data, error } = await supabase
-        .from('enrollments')
-        .select(`
-          status,
-          enrolled_at,
-          course_id,
-          courses!inner (
-            id,
-            name,
-            description,
-            level,
-            duration,
-            instructor_id,
-            profiles!courses_instructor_id_fkey (
-              fullname
-            )
-          )
-        `)
-        .eq('student_id', userId);
+      if (!enrollments || enrollments.length === 0) {
+        console.log('No enrollments found for user');
+        setCourses([]);
+        return;
+      }
 
-      console.log('Full query data:', data);
-      console.log('Full query error:', error);
+      // Get course IDs from enrollments
+      const courseIds = enrollments.map(enrollment => enrollment.course_id);
+      console.log('Course IDs to fetch:', courseIds);
 
-      if (error) {
-        console.error('Supabase error details:', error);
-        
-        // Try alternative query without nested join
-        console.log('Trying alternative query...');
-        const { data: altData, error: altError } = await supabase
-          .from('enrollments')
-          .select(`
-            *,
-            courses (*)
-          `)
-          .eq('student_id', userId);
-        
-        console.log('Alternative query data:', altData);
-        console.log('Alternative query error:', altError);
-        
-        if (altError) {
-          throw altError;
-        }
-        
-        // If alternative query works, format the data
-        if (altData && altData.length > 0) {
-          const formattedCourses = [];
-          
-          for (const enrollment of altData) {
-            if (enrollment.courses) {
-              // Get instructor info separately
-              const { data: instructorData } = await supabase
-                .from('profiles')
-                .select('fullname')
-                .eq('id', enrollment.courses.instructor_id)
-                .single();
-              
-              formattedCourses.push({
-                id: enrollment.courses.id,
-                name: enrollment.courses.name,
-                description: enrollment.courses.description || '',
-                level: enrollment.courses.level || 'basic',
-                duration: enrollment.courses.duration || 0,
-                instructor: {
-                  fullname: instructorData?.fullname || 'Chưa có thông tin'
-                },
-                enrollment: {
-                  status: enrollment.status || 'active',
-                  enrolled_at: enrollment.enrolled_at
-                }
-              });
-            }
+      // Get courses data
+      const { data: coursesData, error: coursesError } = await supabase
+        .from('courses')
+        .select('*')
+        .in('id', courseIds);
+
+      console.log('Courses data:', coursesData);
+      console.log('Courses error:', coursesError);
+
+      if (coursesError) {
+        throw coursesError;
+      }
+
+      if (!coursesData || coursesData.length === 0) {
+        console.log('No courses found');
+        setCourses([]);
+        return;
+      }
+
+      // Get instructor IDs from courses
+      const instructorIds = [...new Set(coursesData.map(course => course.instructor_id))];
+      console.log('Instructor IDs to fetch:', instructorIds);
+
+      // Get instructors data
+      const { data: instructorsData, error: instructorsError } = await supabase
+        .from('profiles')
+        .select('id, fullname')
+        .in('id', instructorIds);
+
+      console.log('Instructors data:', instructorsData);
+      console.log('Instructors error:', instructorsError);
+
+      if (instructorsError) {
+        throw instructorsError;
+      }
+
+      // Combine all data
+      const formattedCourses = coursesData.map(course => {
+        const enrollment = enrollments.find(e => e.course_id === course.id);
+        const instructor = instructorsData?.find(i => i.id === course.instructor_id);
+
+        return {
+          id: course.id,
+          name: course.name,
+          description: course.description || '',
+          level: course.level || 'basic',
+          duration: course.duration || 0,
+          instructor: {
+            fullname: instructor?.fullname || 'Chưa có thông tin'
+          },
+          enrollment: {
+            status: enrollment?.status || 'active',
+            enrolled_at: enrollment?.enrolled_at || ''
           }
-          
-          console.log('Alternative formatted courses:', formattedCourses);
-          setCourses(formattedCourses);
-          return;
-        }
-        
-        throw error;
-      }
+        };
+      });
 
-      const formattedCourses = data?.map(enrollment => ({
-        id: enrollment.courses.id,
-        name: enrollment.courses.name,
-        description: enrollment.courses.description,
-        level: enrollment.courses.level,
-        duration: enrollment.courses.duration,
-        instructor: {
-          fullname: enrollment.courses.profiles?.fullname || 'Chưa có thông tin'
-        },
-        enrollment: {
-          status: enrollment.status,
-          enrolled_at: enrollment.enrolled_at
-        }
-      })) || [];
-
-      console.log('Formatted courses:', formattedCourses);
+      console.log('Final formatted courses:', formattedCourses);
       setCourses(formattedCourses);
     } catch (error) {
       console.error('Error fetching courses:', error);
