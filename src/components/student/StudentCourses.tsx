@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -64,18 +63,32 @@ const StudentCourses = () => {
 
   const fetchEnrollments = async (userId: string) => {
     try {
+      console.log('=== DEBUG INFO ===');
       console.log('Tìm enrollments cho user:', userId);
+      console.log('User ID type:', typeof userId);
+      console.log('User ID length:', userId.length);
       
-      // Chỉ query vào bảng enrollments dựa theo student_id
+      // Test connection đơn giản trước
+      console.log('Testing Supabase connection...');
+      const { data: testData, error: testError } = await supabase
+        .from('enrollments')
+        .select('count(*)', { count: 'exact', head: true });
+      
+      console.log('Total enrollments in table:', testData);
+      console.log('Connection test error:', testError);
+      
+      // Sau đó query với user ID
       const { data: enrollmentsData, error: enrollmentError } = await supabase
         .from('enrollments')
         .select('*')
         .eq('student_id', userId);
       
-      console.log('Kết quả enrollments:', enrollmentsData);
-      console.log('Lỗi enrollments:', enrollmentError);
+      console.log('Query result - Data:', enrollmentsData);
+      console.log('Query result - Error:', enrollmentError);
+      console.log('Query result - Data length:', enrollmentsData?.length);
 
       if (enrollmentError) {
+        console.error('Supabase error details:', enrollmentError);
         throw enrollmentError;
       }
 
@@ -85,6 +98,7 @@ const StudentCourses = () => {
         return;
       }
 
+      console.log('Successfully fetched enrollments:', enrollmentsData);
       setEnrollments(enrollmentsData);
     } catch (error) {
       console.error('Lỗi khi fetch enrollments:', error);
