@@ -37,7 +37,9 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
     }
   };
 
-  const handleProfileClick = () => {
+  const handleProfileClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     console.log('Navigating to profile page...');
     navigate('/profile');
   };
@@ -57,9 +59,9 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={user.avatar_url} alt={user.fullname} />
+            <AvatarImage src={user.avatar_url} alt={user.fullname || user.username} />
             <AvatarFallback className="bg-primary-600 text-white">
-              {getInitials(user.fullname)}
+              {getInitials(user.fullname || user.username)}
             </AvatarFallback>
           </Avatar>
         </Button>
