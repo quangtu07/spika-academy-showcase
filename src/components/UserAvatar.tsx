@@ -37,9 +37,7 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
     }
   };
 
-  const handleProfileClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleProfileClick = () => {
     console.log('Navigating to profile page...');
     navigate('/profile');
   };
@@ -67,11 +65,23 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 bg-white" align="end">
-        <DropdownMenuItem onClick={handleProfileClick} className="cursor-pointer">
+        <DropdownMenuItem 
+          className="cursor-pointer"
+          onSelect={(e) => {
+            e.preventDefault();
+            handleProfileClick();
+          }}
+        >
           <User className="mr-2 h-4 w-4" />
           <span>Hồ sơ</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">
+        <DropdownMenuItem 
+          className="cursor-pointer text-red-600 focus:text-red-600"
+          onSelect={(e) => {
+            e.preventDefault();
+            handleLogout();
+          }}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Đăng xuất</span>
         </DropdownMenuItem>
