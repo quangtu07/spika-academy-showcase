@@ -25,25 +25,54 @@ interface Course {
 const StudentCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchEnrolledCourses();
+    checkUserAndFetchCourses();
   }, []);
 
-  const fetchEnrolledCourses = async () => {
+  const checkUserAndFetchCourses = async () => {
     try {
-      const { data: currentUser } = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      // Check if user is authenticated via Supabase
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!currentUser) {
-        toast({
-          title: "Lỗi",
-          description: "Vui lòng đăng nhập để xem khóa học",
-          variant: "destructive",
-        });
-        return;
+      if (!session?.user) {
+        // Fallback to localStorage if no Supabase session
+        const storedUser = localStorage.getItem('currentUser');
+        if (!storedUser) {
+          toast({
+            title: "Lỗi",
+            description: "Vui lòng đăng nhập để xem khóa học",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        const user = JSON.parse(storedUser);
+        setCurrentUser(user);
+        await fetchEnrolledCourses(user.id);
+      } else {
+        // Use Supabase user
+        setCurrentUser(session.user);
+        await fetchEnrolledCourses(session.user.id);
       }
+    } catch (error) {
+      console.error('Error checking user:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể xác thực người dùng",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
 
+  const fetchEnrolledCourses = async (userId: string) => {
+    try {
+      console.log('Fetching courses for user:', userId);
+      
       const { data, error } = await supabase
         .from('enrollments')
         .select(`
@@ -61,9 +90,15 @@ const StudentCourses = () => {
             )
           )
         `)
-        .eq('student_id', currentUser.id);
+        .eq('student_id', userId);
 
-      if (error) throw error;
+      console.log('Enrollments data:', data);
+      console.log('Enrollments error:', error);
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       const formattedCourses = data?.map(enrollment => ({
         id: enrollment.courses.id,
@@ -78,12 +113,13 @@ const StudentCourses = () => {
         }
       })) || [];
 
+      console.log('Formatted courses:', formattedCourses);
       setCourses(formattedCourses);
     } catch (error) {
       console.error('Error fetching courses:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể tải danh sách khóa học",
+        description: "Không thể tải danh sách khóa học. Vui lòng kiểm tra kết nối và thử lại.",
         variant: "destructive",
       });
     } finally {
@@ -113,6 +149,7 @@ const StudentCourses = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <p className="ml-2 text-gray-600">Đang tải khóa học...</p>
       </div>
     );
   }
@@ -122,6 +159,11 @@ const StudentCourses = () => {
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Khóa học đã đăng ký</h2>
         <p className="text-gray-600">Danh sách các khóa học bạn đang tham gia</p>
+        {currentUser && (
+          <p className="text-sm text-gray-500 mt-1">
+            User ID: {currentUser.id}
+          </p>
+        )}
       </div>
 
       {courses.length === 0 ? (
@@ -130,6 +172,9 @@ const StudentCourses = () => {
             <BookOpen className="h-12 w-12 text-gray-400 mb-4" />
             <p className="text-gray-500 text-center">
               Bạn chưa đăng ký khóa học nào.
+            </p>
+            <p className="text-xs text-gray-400 mt-2">
+              Vui lòng liên hệ quản trị viên để đăng ký khóa học.
             </p>
           </CardContent>
         </Card>
@@ -148,6 +193,8 @@ const StudentCourses = () => {
                       <Badge variant="outline" className={
                         course.enrollment.status === 'active' 
                           ? 'border-green-500 text-green-700' 
+                          : course.enrollment.status === 'completed'
+                          ? 'border-blue-500 text-blue-700'
                           : 'border-gray-500 text-gray-700'
                       }>
                         {course.enrollment.status === 'active' ? 'Đang học' : 
