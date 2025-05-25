@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -71,70 +70,71 @@ const StudentCourses = () => {
 
   const fetchEnrolledCourses = async (userId: string) => {
     try {
-      console.log('Fetching courses for user:', userId);
+      console.log('Bước 1: Tìm enrollments cho user:', userId);
       
-      // First get enrollments for this student
+      // Bước 1: Query vào bảng enrollments dựa theo student_id
       const { data: enrollments, error: enrollmentError } = await supabase
         .from('enrollments')
         .select('*')
         .eq('student_id', userId);
       
-      console.log('Enrollments found:', enrollments);
-      console.log('Enrollment error:', enrollmentError);
+      console.log('Kết quả enrollments:', enrollments);
+      console.log('Lỗi enrollments:', enrollmentError);
 
       if (enrollmentError) {
         throw enrollmentError;
       }
 
       if (!enrollments || enrollments.length === 0) {
-        console.log('No enrollments found for user');
+        console.log('Không tìm thấy enrollment nào cho user này');
         setCourses([]);
         return;
       }
 
-      // Get course IDs from enrollments
+      // Bước 2: Lấy danh sách course_id từ enrollments
       const courseIds = enrollments.map(enrollment => enrollment.course_id);
-      console.log('Course IDs to fetch:', courseIds);
+      console.log('Bước 2: Danh sách course_id từ enrollments:', courseIds);
 
-      // Get courses data
+      // Bước 3: Query vào bảng courses dựa theo course_id
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
         .select('*')
         .in('id', courseIds);
 
-      console.log('Courses data:', coursesData);
-      console.log('Courses error:', coursesError);
+      console.log('Kết quả courses:', coursesData);
+      console.log('Lỗi courses:', coursesError);
 
       if (coursesError) {
         throw coursesError;
       }
 
       if (!coursesData || coursesData.length === 0) {
-        console.log('No courses found');
+        console.log('Không tìm thấy course nào');
         setCourses([]);
         return;
       }
 
-      // Get instructor IDs from courses
+      // Bước 4: Lấy thông tin instructors từ bảng profiles
       const instructorIds = [...new Set(coursesData.map(course => course.instructor_id))];
-      console.log('Instructor IDs to fetch:', instructorIds);
+      console.log('Bước 4: Danh sách instructor_id:', instructorIds);
 
-      // Get instructors data
       const { data: instructorsData, error: instructorsError } = await supabase
         .from('profiles')
         .select('id, fullname')
         .in('id', instructorIds);
 
-      console.log('Instructors data:', instructorsData);
-      console.log('Instructors error:', instructorsError);
+      console.log('Kết quả instructors:', instructorsData);
+      console.log('Lỗi instructors:', instructorsError);
 
       if (instructorsError) {
         throw instructorsError;
       }
 
-      // Combine all data
+      // Bước 5: Kết hợp tất cả dữ liệu
       const formattedCourses = coursesData.map(course => {
+        // Tìm enrollment tương ứng với course này
         const enrollment = enrollments.find(e => e.course_id === course.id);
+        // Tìm instructor tương ứng
         const instructor = instructorsData?.find(i => i.id === course.instructor_id);
 
         return {
@@ -153,10 +153,10 @@ const StudentCourses = () => {
         };
       });
 
-      console.log('Final formatted courses:', formattedCourses);
+      console.log('Bước 5: Dữ liệu cuối cùng được format:', formattedCourses);
       setCourses(formattedCourses);
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('Lỗi khi fetch courses:', error);
       toast({
         title: "Lỗi",
         description: "Không thể tải danh sách khóa học. Vui lòng kiểm tra kết nối và thử lại.",
