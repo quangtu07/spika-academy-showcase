@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -67,22 +66,41 @@ const Navbar = () => {
   const handleLoginSuccess = (user: any) => {
     setCurrentUser(user);
     
-    // If user is admin, redirect to admin dashboard
+    // Redirect based on role
     if (user.role === 'admin') {
       navigate('/admin');
+    } else if (user.role === 'teacher') {
+      navigate('/teacher');
+    } else if (user.role === 'student') {
+      navigate('/student');
     }
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
-    // If currently on admin page, redirect to home
-    if (window.location.pathname === '/admin') {
+    // If currently on dashboard pages, redirect to home
+    if (['/admin', '/teacher', '/student'].includes(window.location.pathname)) {
       navigate('/');
     }
   };
 
-  const handleAdminAccess = () => {
-    navigate('/admin');
+  const handleDashboardAccess = () => {
+    if (userRole === 'admin') {
+      navigate('/admin');
+    } else if (userRole === 'teacher') {
+      navigate('/teacher');
+    } else if (userRole === 'student') {
+      navigate('/student');
+    }
+  };
+
+  const getDashboardButtonText = () => {
+    switch (userRole) {
+      case 'admin': return 'Quản lý';
+      case 'teacher': return 'Giảng viên';
+      case 'student': return 'Học tập';
+      default: return 'Dashboard';
+    }
   };
 
   return (
@@ -112,13 +130,13 @@ const Navbar = () => {
               
               {currentUser ? (
                 <div className="flex items-center space-x-4">
-                  {userRole === 'admin' && (
+                  {userRole && ['admin', 'teacher', 'student'].includes(userRole) && (
                     <Button 
-                      onClick={handleAdminAccess}
+                      onClick={handleDashboardAccess}
                       variant="outline"
                       className="text-primary-600 border-primary-600 hover:bg-primary-50"
                     >
-                      Quản lý
+                      {getDashboardButtonText()}
                     </Button>
                   )}
                   <UserAvatar user={currentUser} onLogout={handleLogout} />
@@ -169,16 +187,16 @@ const Navbar = () => {
                         <UserAvatar user={currentUser} onLogout={handleLogout} />
                         <span className="text-sm text-gray-700">{currentUser.fullname}</span>
                       </div>
-                      {userRole === 'admin' && (
+                      {userRole && ['admin', 'teacher', 'student'].includes(userRole) && (
                         <Button 
                           onClick={() => {
-                            handleAdminAccess();
+                            handleDashboardAccess();
                             setIsMenuOpen(false);
                           }}
                           variant="outline"
                           className="w-full text-primary-600 border-primary-600 hover:bg-primary-50"
                         >
-                          Quản lý
+                          {getDashboardButtonText()}
                         </Button>
                       )}
                     </div>
