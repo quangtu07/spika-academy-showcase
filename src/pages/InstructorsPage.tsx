@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,7 +21,7 @@ interface Instructor {
 interface Course {
   id: string;
   name: string;
-  instructor_id: string;
+  instructor_id?: string;
   level: 'basic' | 'intermediate' | 'advance';
 }
 
@@ -99,7 +98,7 @@ const InstructorsPage = () => {
         <img
           src={instructor.avatar_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
           alt={instructor.fullname}
-          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+          className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-300"
         />
         <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
           {level === 'basic' && levelMap.basic}
