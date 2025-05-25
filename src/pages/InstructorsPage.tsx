@@ -16,10 +16,12 @@ interface Instructor {
   email: string;
   avatar_url: string | null;
   age: number | null;
+  courses?: Course[];
 }
 
 interface Course {
   id: string;
+  name: string;
   instructor_id: string;
   level: 'basic' | 'intermediate' | 'advance';
 }
@@ -46,11 +48,14 @@ const InstructorsPage = () => {
       const [instructorsRes, coursesRes] = await Promise.all([
         supabase
           .from('profiles')
-          .select('*')
+          .select(`
+            *,
+            courses!courses_instructor_id_fkey(id, name, level)
+          `)
           .eq('role', 'teacher'),
         supabase
           .from('courses')
-          .select('id, instructor_id, level')
+          .select('id, name, instructor_id, level')
       ]);
 
       if (instructorsRes.error) throw instructorsRes.error;
@@ -80,9 +85,57 @@ const InstructorsPage = () => {
     );
   };
 
+  const getInstructorCoursesForLevel = (instructor: Instructor, level: string) => {
+    return instructor.courses?.filter(course => course.level === level) || [];
+  };
+
   const handleBackToHome = () => {
     navigate('/');
   };
+
+  const renderInstructorCard = (instructor: Instructor, level: string) => (
+    <Card key={instructor.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+      <div className="relative overflow-hidden">
+        <img
+          src={instructor.avatar_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
+          alt={instructor.fullname}
+          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+        />
+        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+          {level === 'basic' && levelMap.basic}
+          {level === 'intermediate' && levelMap.intermediate}
+          {level === 'advance' && levelMap.advance}
+        </div>
+      </div>
+      <CardHeader className="text-center">
+        <CardTitle className="text-xl font-bold text-gray-900">{instructor.fullname}</CardTitle>
+        <CardDescription className="text-gray-600">
+          Giảng viên chuyên nghiệp
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="text-center">
+        {(() => {
+          const levelCourses = getInstructorCoursesForLevel(instructor, level);
+          return levelCourses.length > 0 ? (
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">Đang phụ trách:</p>
+              <div className="space-y-1">
+                {levelCourses.map((course) => (
+                  <div key={course.id} className="text-sm text-gray-600">
+                    {course.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">
+              Chưa phụ trách khóa học {levelMap[level]} nào
+            </p>
+          );
+        })()}
+      </CardContent>
+    </Card>
+  );
 
   if (loading) {
     return (
@@ -120,106 +173,25 @@ const InstructorsPage = () => {
 
           <TabsContent value="basic">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getInstructorsByLevel('basic').map((instructor) => (
-                <Card key={instructor.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={instructor.avatar_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
-                      alt={instructor.fullname}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {levelMap.basic}
-                    </div>
-                  </div>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-xl font-bold text-gray-900">{instructor.fullname}</CardTitle>
-                    <CardDescription className="text-gray-600">
-                      Giảng viên chuyên nghiệp
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <p className="text-sm text-gray-500 mb-2">
-                      Email: {instructor.email}
-                    </p>
-                    {instructor.age && (
-                      <p className="text-sm text-gray-500">
-                        Tuổi: {instructor.age}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+              {getInstructorsByLevel('basic').map((instructor) => 
+                renderInstructorCard(instructor, 'basic')
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="intermediate">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getInstructorsByLevel('intermediate').map((instructor) => (
-                <Card key={instructor.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={instructor.avatar_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
-                      alt={instructor.fullname}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {levelMap.intermediate}
-                    </div>
-                  </div>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-xl font-bold text-gray-900">{instructor.fullname}</CardTitle>
-                    <CardDescription className="text-gray-600">
-                      Giảng viên chuyên nghiệp
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <p className="text-sm text-gray-500 mb-2">
-                      Email: {instructor.email}
-                    </p>
-                    {instructor.age && (
-                      <p className="text-sm text-gray-500">
-                        Tuổi: {instructor.age}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+              {getInstructorsByLevel('intermediate').map((instructor) => 
+                renderInstructorCard(instructor, 'intermediate')
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="advance">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getInstructorsByLevel('advance').map((instructor) => (
-                <Card key={instructor.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={instructor.avatar_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
-                      alt={instructor.fullname}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {levelMap.advance}
-                    </div>
-                  </div>
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-xl font-bold text-gray-900">{instructor.fullname}</CardTitle>
-                    <CardDescription className="text-gray-600">
-                      Giảng viên chuyên nghiệp
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <p className="text-sm text-gray-500 mb-2">
-                      Email: {instructor.email}
-                    </p>
-                    {instructor.age && (
-                      <p className="text-sm text-gray-500">
-                        Tuổi: {instructor.age}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+              {getInstructorsByLevel('advance').map((instructor) => 
+                renderInstructorCard(instructor, 'advance')
+              )}
             </div>
           </TabsContent>
         </Tabs>

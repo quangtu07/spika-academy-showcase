@@ -12,6 +12,13 @@ interface Instructor {
   email: string;
   avatar_url: string | null;
   age: number | null;
+  courses?: Course[];
+}
+
+interface Course {
+  id: string;
+  name: string;
+  level: 'basic' | 'intermediate' | 'advance';
 }
 
 const InstructorsSection = () => {
@@ -19,6 +26,12 @@ const InstructorsSection = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const levelMap = {
+    basic: 'Cơ bản',
+    intermediate: 'Trung cấp',
+    advance: 'Nâng cao'
+  };
 
   useEffect(() => {
     fetchInstructors();
@@ -28,7 +41,10 @@ const InstructorsSection = () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          courses!courses_instructor_id_fkey(id, name, level)
+        `)
         .eq('role', 'teacher')
         .limit(3);
 
@@ -80,7 +96,7 @@ const InstructorsSection = () => {
                 <img
                   src={instructor.avatar_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
                   alt={instructor.fullname}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
                 />
               </div>
               <CardHeader className="text-center">
@@ -90,12 +106,20 @@ const InstructorsSection = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-sm text-gray-500 mb-4">
-                  Email: {instructor.email}
-                </p>
-                {instructor.age && (
+                {instructor.courses && instructor.courses.length > 0 ? (
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 mb-2">Đang phụ trách:</p>
+                    <div className="space-y-1">
+                      {instructor.courses.map((course) => (
+                        <div key={course.id} className="text-sm text-gray-600">
+                          {course.name} ({levelMap[course.level]})
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
                   <p className="text-sm text-gray-500">
-                    Tuổi: {instructor.age}
+                    Chưa phụ trách khóa học nào
                   </p>
                 )}
               </CardContent>
