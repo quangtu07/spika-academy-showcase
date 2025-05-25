@@ -7,11 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [formData, setFormData] = useState({
     username: '',
     fullname: '',
@@ -21,31 +23,63 @@ const ProfilePage = () => {
   });
   const [avatarFile, setAvatarFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) {
-      navigate('/');
-      return;
-    }
+    checkUser();
+  }, []);
 
+  const checkUser = async () => {
     try {
-      const userData = JSON.parse(currentUser);
-      setUser(userData);
-      setFormData({
-        username: userData.username || '',
-        fullname: userData.fullname || '',
-        age: userData.age || '',
-        phone_number: userData.phone_number || '',
-        avatar_url: userData.avatar_url || ''
-      });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/');
+        return;
+      }
+
+      setUser(session.user);
+      await fetchProfile(session.user.id);
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      console.error('Error checking user:', error);
       navigate('/');
     }
-  }, [navigate]);
+  };
+
+  const fetchProfile = async (userId) => {
+    try {
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      if (profileData) {
+        setProfile(profileData);
+        setFormData({
+          username: profileData.username || '',
+          fullname: profileData.fullname || '',
+          age: profileData.age ? profileData.age.toString() : '',
+          phone_number: profileData.phone_number || '',
+          avatar_url: profileData.avatar_url || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải thông tin hồ sơ",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -68,21 +102,82 @@ const ProfilePage = () => {
     }
   };
 
+  const uploadAvatar = async (file, userId) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${userId}-${Math.random()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    const { data } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Simulate API call for updating user profile
-      const updatedUser = {
-        ...user,
-        ...formData,
-        age: formData.age ? parseInt(formData.age) : null
+      if (!user) {
+        throw new Error('Không có thông tin người dùng');
+      }
+
+      let avatarUrl = formData.avatar_url;
+
+      // Upload new avatar if file is selected
+      if (avatarFile) {
+        // Delete old avatar if exists
+        if (profile?.avatar_url && profile.avatar_url.includes('supabase')) {
+          const oldPath = profile.avatar_url.split('/').pop();
+          await supabase.storage
+            .from('avatars')
+            .remove([oldPath]);
+        }
+
+        avatarUrl = await uploadAvatar(avatarFile, user.id);
+      }
+
+      const updateData = {
+        username: formData.username,
+        fullname: formData.fullname,
+        age: formData.age ? parseInt(formData.age) : null,
+        phone_number: formData.phone_number,
+        avatar_url: avatarUrl,
+        updated_at: new Date().toISOString()
       };
 
-      // Update localStorage
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          email: user.email,
+          ...updateData
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      // Update local state
+      setProfile({ ...profile, ...updateData });
+      setFormData(prev => ({ ...prev, avatar_url: avatarUrl }));
+      setAvatarFile(null);
+
+      // Update localStorage for compatibility with existing components
+      const updatedUser = {
+        ...user,
+        ...updateData
+      };
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-      setUser(updatedUser);
 
       toast({
         title: "Cập nhật thành công",
@@ -110,8 +205,12 @@ const ProfilePage = () => {
       .slice(0, 2);
   };
 
-  if (!user) {
-    return <div>Loading...</div>;
+  if (isLoadingProfile) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div>Đang tải...</div>
+      </div>
+    );
   }
 
   return (
@@ -159,6 +258,7 @@ const ProfilePage = () => {
                       value={formData.username}
                       onChange={handleInputChange}
                       placeholder="Nhập tên đăng nhập"
+                      required
                     />
                   </div>
 
@@ -170,6 +270,7 @@ const ProfilePage = () => {
                       value={formData.fullname}
                       onChange={handleInputChange}
                       placeholder="Nhập họ và tên"
+                      required
                     />
                   </div>
 
