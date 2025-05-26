@@ -1,7 +1,10 @@
 
 import React from 'react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const ActivitiesSection = () => {
+  const { ref, isVisible } = useScrollAnimation();
+
   const activities = [
     {
       image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
@@ -32,7 +35,14 @@ const ActivitiesSection = () => {
   return (
     <section className="py-20 bg-white font-roboto" id="activities">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div 
+          ref={ref}
+          className={`text-center mb-16 transition-all duration-1000 ${
+            isVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-10'
+          }`}
+        >
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Hoạt động nổi bật</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Những khoảnh khắc đáng nhớ trong hành trình học tập tại Spika
@@ -41,7 +51,17 @@ const ActivitiesSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activities.map((activity, index) => (
-            <div key={index} className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div 
+              key={index} 
+              className={`group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-700 ${
+                isVisible 
+                  ? 'opacity-100 translate-y-0 scale-100' 
+                  : 'opacity-0 translate-y-10 scale-95'
+              }`}
+              style={{ 
+                transitionDelay: `${index * 150 + 300}ms` 
+              }}
+            >
               <img
                 src={activity.image}
                 alt={activity.title}

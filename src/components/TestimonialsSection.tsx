@@ -1,8 +1,11 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const TestimonialsSection = () => {
+  const { ref, isVisible } = useScrollAnimation();
+
   const testimonials = [
     {
       name: "Nguyễn Minh Anh",
@@ -30,7 +33,14 @@ const TestimonialsSection = () => {
   return (
     <section className="py-20 bg-gray-50 font-roboto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div 
+          ref={ref}
+          className={`text-center mb-16 transition-all duration-1000 ${
+            isVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-10'
+          }`}
+        >
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Học viên nói gì về Spika</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Những chia sẻ chân thực từ các học viên đã thành công
@@ -39,7 +49,17 @@ const TestimonialsSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="hover:shadow-xl transition-shadow duration-300">
+            <Card 
+              key={index} 
+              className={`hover:shadow-xl transition-all duration-700 ${
+                isVisible 
+                  ? 'opacity-100 translate-y-0 rotate-0' 
+                  : 'opacity-0 translate-y-10 rotate-1'
+              }`}
+              style={{ 
+                transitionDelay: `${index * 200 + 300}ms` 
+              }}
+            >
               <CardContent className="p-6">
                 <div className="flex items-center mb-4">
                   <img

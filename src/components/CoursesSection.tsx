@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 interface Course {
   id: string;
@@ -25,6 +26,7 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { ref, isVisible } = useScrollAnimation();
 
   const levelMap = {
     basic: 'Cơ bản',
@@ -77,7 +79,14 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
   return (
     <section className="py-20 bg-gray-50 font-roboto" id="courses">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div 
+          ref={ref}
+          className={`text-center mb-16 transition-all duration-1000 ${
+            isVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-10'
+          }`}
+        >
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Khóa học nổi bật</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Chọn khóa học phù hợp với trình độ và mục tiêu của bạn
@@ -85,8 +94,18 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courses.map((course) => (
-            <Card key={course.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+          {courses.map((course, index) => (
+            <Card 
+              key={course.id} 
+              className={`overflow-hidden hover:shadow-xl transition-all duration-700 group ${
+                isVisible 
+                  ? 'opacity-100 translate-y-0' 
+                  : 'opacity-0 translate-y-10'
+              }`}
+              style={{ 
+                transitionDelay: `${index * 200 + 300}ms` 
+              }}
+            >
               <div className="relative overflow-hidden">
                 <img
                   src={course.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
@@ -125,7 +144,11 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className={`text-center mt-12 transition-all duration-700 delay-1000 ${
+          isVisible 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-10'
+        }`}>
           <Button 
             onClick={handleViewAllCourses}
             className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg"
