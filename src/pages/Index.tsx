@@ -17,27 +17,13 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <div className="animate-fade-in">
-        <HeroCarousel onOpenRegistrationModal={() => setIsRegistrationModalOpen(true)} />
-      </div>
-      <div className="animate-fade-in animation-delay-200">
-        <AboutSection />
-      </div>
-      <div className="animate-fade-in animation-delay-400">
-        <CoursesSection onOpenRegistrationModal={() => setIsRegistrationModalOpen(true)} />
-      </div>
-      <div className="animate-fade-in animation-delay-600">
-        <CommitmentsSection />
-      </div>
-      <div className="animate-fade-in animation-delay-800">
-        <ActivitiesSection />
-      </div>
-      <div className="animate-fade-in animation-delay-1000">
-        <TestimonialsSection />
-      </div>
-      <div className="animate-fade-in animation-delay-1200">
-        <ContactSection />
-      </div>
+      <HeroCarousel onOpenRegistrationModal={() => setIsRegistrationModalOpen(true)} />
+      <AboutSection />
+      <CoursesSection onOpenRegistrationModal={() => setIsRegistrationModalOpen(true)} />
+      <CommitmentsSection />
+      <ActivitiesSection />
+      <TestimonialsSection />
+      <ContactSection />
       <Footer />
       <RegistrationModal 
         isOpen={isRegistrationModalOpen}

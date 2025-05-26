@@ -116,36 +116,5 @@ export default {
 			}
 		}
 	},
-	plugins: [
-		require("tailwindcss-animate"),
-		function({ addUtilities }: any) {
-			const newUtilities = {
-				'.animation-delay-200': {
-					'animation-delay': '200ms',
-				},
-				'.animation-delay-300': {
-					'animation-delay': '300ms',
-				},
-				'.animation-delay-400': {
-					'animation-delay': '400ms',
-				},
-				'.animation-delay-500': {
-					'animation-delay': '500ms',
-				},
-				'.animation-delay-600': {
-					'animation-delay': '600ms',
-				},
-				'.animation-delay-800': {
-					'animation-delay': '800ms',
-				},
-				'.animation-delay-1000': {
-					'animation-delay': '1000ms',
-				},
-				'.animation-delay-1200': {
-					'animation-delay': '1200ms',
-				},
-			};
-			addUtilities(newUtilities);
-		}
-	],
+	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
