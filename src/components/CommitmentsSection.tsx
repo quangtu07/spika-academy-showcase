@@ -36,7 +36,7 @@ const CommitmentsSection = () => {
   return (
     <section className="py-20 bg-white font-roboto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Cam kết của Spika</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Ba điểm mạnh làm nên sự khác biệt của chúng tôi
@@ -45,12 +45,12 @@ const CommitmentsSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {commitments.map((commitment, index) => (
-            <div key={index} className="text-center group hover:scale-105 transition-transform duration-300">
-              <div className="bg-primary-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-100 transition-colors">
+            <div key={index} className="text-center group hover:scale-105 transition-all duration-500 animate-fade-in" style={{animationDelay: `${200 + index * 200}ms`}}>
+              <div className="bg-primary-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-100 transition-all duration-300 group-hover:rotate-6 group-hover:shadow-lg">
                 {commitment.icon}
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">{commitment.title}</h3>
-              <p className="text-gray-600 leading-relaxed">{commitment.description}</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary-600 transition-colors duration-300">{commitment.title}</h3>
+              <p className="text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">{commitment.description}</p>
             </div>
           ))}
         </div>
