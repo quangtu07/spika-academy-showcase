@@ -1,7 +1,10 @@
 
 import React from 'react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const CommitmentsSection = () => {
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
+
   const commitments = [
     {
       icon: (
@@ -36,17 +39,19 @@ const CommitmentsSection = () => {
   return (
     <section className="py-20 bg-white font-roboto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Cam kết của Spika</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <div ref={sectionRef} className={`text-center mb-16 transition-all duration-1000 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h2 className={`text-4xl font-bold text-gray-900 mb-4 transition-all duration-700 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{transitionDelay: sectionVisible ? '200ms' : '0ms'}}>
+            Cam kết của Spika
+          </h2>
+          <p className={`text-xl text-gray-600 max-w-3xl mx-auto transition-all duration-700 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{transitionDelay: sectionVisible ? '400ms' : '0ms'}}>
             Ba điểm mạnh làm nên sự khác biệt của chúng tôi
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {commitments.map((commitment, index) => (
-            <div key={index} className="text-center group hover:scale-105 transition-all duration-500 animate-fade-in" style={{animationDelay: `${200 + index * 200}ms`}}>
-              <div className="bg-primary-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-100 transition-all duration-300 group-hover:rotate-6 group-hover:shadow-lg">
+            <div key={index} className={`text-center group hover:scale-105 transition-all duration-700 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{transitionDelay: sectionVisible ? `${600 + index * 200}ms` : '0ms'}}>
+              <div className={`bg-primary-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-100 transition-all duration-500 group-hover:rotate-6 group-hover:shadow-lg ${sectionVisible ? 'animate-bounce' : ''}`} style={{animationDelay: sectionVisible ? `${800 + index * 200}ms` : '0ms', animationDuration: '1s', animationIterationCount: '1'}}>
                 {commitment.icon}
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary-600 transition-colors duration-300">{commitment.title}</h3>

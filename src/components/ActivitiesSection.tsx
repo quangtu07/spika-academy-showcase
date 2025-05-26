@@ -1,7 +1,10 @@
 
 import React from 'react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const ActivitiesSection = () => {
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
+
   const activities = [
     {
       image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
@@ -32,16 +35,18 @@ const ActivitiesSection = () => {
   return (
     <section className="py-20 bg-white font-roboto" id="activities">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Hoạt động nổi bật</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <div ref={sectionRef} className={`text-center mb-16 transition-all duration-1000 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h2 className={`text-4xl font-bold text-gray-900 mb-4 transition-all duration-700 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{transitionDelay: sectionVisible ? '200ms' : '0ms'}}>
+            Hoạt động nổi bật
+          </h2>
+          <p className={`text-xl text-gray-600 max-w-3xl mx-auto transition-all duration-700 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{transitionDelay: sectionVisible ? '400ms' : '0ms'}}>
             Những khoảnh khắc đáng nhớ trong hành trình học tập tại Spika
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activities.map((activity, index) => (
-            <div key={index} className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-500 animate-fade-in hover:scale-105" style={{animationDelay: `${100 + index * 100}ms`}}>
+            <div key={index} className={`group relative overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-700 hover:scale-105 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{transitionDelay: sectionVisible ? `${600 + index * 100}ms` : '0ms'}}>
               <img
                 src={activity.image}
                 alt={activity.title}

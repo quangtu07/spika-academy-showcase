@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 interface Course {
   id: string;
@@ -25,6 +26,7 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
 
   const levelMap = {
     basic: 'Cơ bản',
@@ -77,28 +79,30 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
   return (
     <section className="py-20 bg-gray-50 font-roboto" id="courses">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Khóa học nổi bật</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <div ref={sectionRef} className={`text-center mb-16 transition-all duration-1000 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h2 className={`text-4xl font-bold text-gray-900 mb-4 transition-all duration-700 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{transitionDelay: sectionVisible ? '200ms' : '0ms'}}>
+            Khóa học nổi bật
+          </h2>
+          <p className={`text-xl text-gray-600 max-w-3xl mx-auto transition-all duration-700 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} style={{transitionDelay: sectionVisible ? '400ms' : '0ms'}}>
             Chọn khóa học phù hợp với trình độ và mục tiêu của bạn
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courses.map((course) => (
-            <Card key={course.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+          {courses.map((course, index) => (
+            <Card key={course.id} className={`overflow-hidden hover:shadow-xl transition-all duration-700 group ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{transitionDelay: sectionVisible ? `${600 + index * 200}ms` : '0ms'}}>
               <div className="relative overflow-hidden">
                 <img
                   src={course.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
                   alt={course.name}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className="absolute top-4 right-4 bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                <div className="absolute top-4 right-4 bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium transform group-hover:scale-110 transition-transform duration-300">
                   {levelMap[course.level] || course.level}
                 </div>
               </div>
               <CardHeader>
-                <CardTitle className="text-xl font-bold text-gray-900">{course.name}</CardTitle>
+                <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors duration-300">{course.name}</CardTitle>
                 <CardDescription className="text-gray-600">
                   {course.description}
                 </CardDescription>
@@ -115,7 +119,7 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
                   )}
                 </div>
                 <Button 
-                  className="w-full bg-primary-600 hover:bg-primary-700 text-white"
+                  className="w-full bg-primary-600 hover:bg-primary-700 text-white hover:scale-105 transition-all duration-300"
                   onClick={onOpenRegistrationModal}
                 >
                   Liên hệ tư vấn
@@ -125,10 +129,10 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className={`text-center mt-12 transition-all duration-1000 ${sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{transitionDelay: sectionVisible ? '1200ms' : '0ms'}}>
           <Button 
             onClick={handleViewAllCourses}
-            className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg"
+            className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg hover:scale-105 transition-all duration-300"
           >
             Xem tất cả khóa học
           </Button>
