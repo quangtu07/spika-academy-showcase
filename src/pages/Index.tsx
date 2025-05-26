@@ -8,7 +8,6 @@ import CommitmentsSection from '@/components/CommitmentsSection';
 import ActivitiesSection from '@/components/ActivitiesSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import ContactSection from '@/components/ContactSection';
-import ChatBox from '@/components/ChatBox';
 import Footer from '@/components/Footer';
 import RegistrationModal from '@/components/RegistrationModal';
 
@@ -25,7 +24,6 @@ const Index = () => {
       <ActivitiesSection />
       <TestimonialsSection />
       <ContactSection />
-      <ChatBox />
       <Footer />
       <RegistrationModal 
         isOpen={isRegistrationModalOpen}
