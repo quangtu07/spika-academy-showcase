@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const ContactSection = () => {
-  const { ref, isVisible } = useScrollAnimation();
+  const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
   return (
     <section className="py-20 bg-white font-roboto" id="contact">

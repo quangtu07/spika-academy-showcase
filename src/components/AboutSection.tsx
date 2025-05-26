@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { useCountAnimation } from '@/hooks/useCountAnimation';
 
 const AboutSection = () => {
-  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
-  const { ref: statsRef, isVisible: statsVisible } = useScrollAnimation(0.3);
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation<HTMLDivElement>();
+  const { ref: statsRef, isVisible: statsVisible } = useScrollAnimation<HTMLDivElement>(0.3);
   
   const years = useCountAnimation(10, statsVisible, 2000, '+');
   const students = useCountAnimation(1000, statsVisible, 2500, '+');

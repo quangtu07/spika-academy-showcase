@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const ActivitiesSection = () => {
-  const { ref, isVisible } = useScrollAnimation();
+  const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
   const activities = [
     {
