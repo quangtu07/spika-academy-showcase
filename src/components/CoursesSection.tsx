@@ -92,10 +92,10 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
             <div 
               key={course.id} 
               ref={courseRefs[index]}
-              className="reveal reveal-fade-up"
+              className="reveal reveal-fade-up h-full"
               style={{ animationDelay: `${index * 200}ms` }}
             >
-              <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+              <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col">
                 <div className="relative overflow-hidden">
                   <img
                     src={course.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
@@ -103,13 +103,13 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
-                <CardHeader>
+                <CardHeader className="flex-grow">
                   <CardTitle className="text-xl font-bold text-gray-900">{course.name}</CardTitle>
                   <CardDescription className="text-gray-600">
                     {course.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="mt-auto">
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-sm text-gray-500">
                       Thời gian: {course.duration} buổi
