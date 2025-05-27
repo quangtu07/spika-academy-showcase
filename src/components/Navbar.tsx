@@ -34,20 +34,6 @@ const Navbar = () => {
     }
   }, []);
 
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isLoginModalOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    // Cleanup function to restore scroll when component unmounts
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isLoginModalOpen]);
-
   const handleNavigateHome = () => {
     if (location.pathname !== '/') {
       navigate('/');
@@ -117,15 +103,9 @@ const Navbar = () => {
     }
   };
 
-  const handleLoginClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsLoginModalOpen(true);
-  };
-
   return (
     <>
-      <nav className="bg-white shadow-lg fixed w-full top-0 z-50 font-roboto transform-none">
+      <nav className="bg-white shadow-lg fixed w-full top-0 z-50 font-roboto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -154,7 +134,7 @@ const Navbar = () => {
                     <Button 
                       onClick={handleDashboardAccess}
                       variant="outline"
-                      className="text-primary-600 border-primary-600 hover:bg-primary-50 min-w-fit"
+                      className="text-primary-600 border-primary-600 hover:bg-primary-50"
                     >
                       {getDashboardButtonText()}
                     </Button>
@@ -163,8 +143,8 @@ const Navbar = () => {
                 </div>
               ) : (
                 <Button 
-                  onClick={handleLoginClick}
-                  className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 min-w-fit whitespace-nowrap"
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2"
                 >
                   Đăng nhập
                 </Button>
@@ -223,7 +203,6 @@ const Navbar = () => {
                   ) : (
                     <Button 
                       onClick={() => {
-                        handleLoginClick;
                         setIsLoginModalOpen(true);
                         setIsMenuOpen(false);
                       }}
