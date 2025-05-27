@@ -71,7 +71,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }: LoginModalProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={onClose} modal={false}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold text-gray-900">
