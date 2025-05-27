@@ -17,7 +17,6 @@ interface EnrollmentWithDetails {
     id: string;
     name: string;
     description: string;
-    level: string;
     duration: number;
     image_url: string;
     profiles: {
@@ -87,7 +86,6 @@ const StudentCourses = () => {
             id,
             name,
             description,
-            level,
             duration,
             image_url,
             profiles:instructor_id (
@@ -123,12 +121,6 @@ const StudentCourses = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const levelMap = {
-    basic: 'Cơ bản',
-    intermediate: 'Trung cấp',  
-    advance: 'Nâng cao'
   };
 
   if (isLoading) {
@@ -169,9 +161,6 @@ const StudentCourses = () => {
                   alt={enrollment.courses.name}
                   className="w-full h-48 object-cover"
                 />
-                <div className="absolute top-4 right-4 bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  {levelMap[enrollment.courses.level as keyof typeof levelMap] || enrollment.courses.level}
-                </div>
               </div>
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -197,7 +186,7 @@ const StudentCourses = () => {
                       {enrollment.courses.duration && (
                         <div className="flex items-center space-x-1 text-sm text-gray-500">
                           <Clock className="h-4 w-4" />
-                          <span>{enrollment.courses.duration} tháng</span>
+                          <span>{enrollment.courses.duration} buổi</span>
                         </div>
                       )}
                     </div>
