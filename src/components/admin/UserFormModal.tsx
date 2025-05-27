@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface User {
   id: string;
@@ -17,6 +17,7 @@ interface User {
   role: 'student' | 'teacher' | 'admin';
   age?: number;
   phone_number?: string;
+  avatar_url?: string;
 }
 
 interface UserFormModalProps {
@@ -34,7 +35,8 @@ const UserFormModal = ({ isOpen, onClose, user, onSaved }: UserFormModalProps) =
     fullname: '',
     role: 'student' as 'student' | 'teacher' | 'admin',
     age: '',
-    phone_number: ''
+    phone_number: '',
+    avatar_url: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,11 +47,12 @@ const UserFormModal = ({ isOpen, onClose, user, onSaved }: UserFormModalProps) =
       setFormData({
         username: user.username,
         email: user.email,
-        password: '', // Don't pre-fill password for security
+        password: '',
         fullname: user.fullname,
         role: user.role,
         age: user.age ? user.age.toString() : '',
-        phone_number: user.phone_number || ''
+        phone_number: user.phone_number || '',
+        avatar_url: user.avatar_url || ''
       });
     } else {
       setFormData({
@@ -59,10 +62,57 @@ const UserFormModal = ({ isOpen, onClose, user, onSaved }: UserFormModalProps) =
         fullname: '',
         role: 'student',
         age: '',
-        phone_number: ''
+        phone_number: '',
+        avatar_url: ''
       });
     }
   }, [user]);
+
+  const handleAvatarUpload = async (file: File) => {
+    try {
+      // Generate a random ID for new users
+      const tempId = !user ? `temp-${Math.random().toString(36).substr(2, 9)}` : user.id;
+      
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${tempId}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, avatar_url: publicUrl }));
+
+      toast({
+        title: "Thành công",
+        description: "Đã tải lên ảnh đại diện",
+        className: "bg-green-50 border-green-200 text-green-900",
+      });
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải lên ảnh đại diện",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getInitials = (fullname: string) => {
+    if (!fullname) return 'U';
+    return fullname
+      .split(' ')
+      .map(name => name.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,6 +126,7 @@ const UserFormModal = ({ isOpen, onClose, user, onSaved }: UserFormModalProps) =
         role: formData.role,
         age: formData.age ? parseInt(formData.age) : null,
         phone_number: formData.phone_number || null,
+        avatar_url: formData.avatar_url || null,
         ...(formData.password && { password: formData.password })
       };
 
@@ -139,6 +190,36 @@ const UserFormModal = ({ isOpen, onClose, user, onSaved }: UserFormModalProps) =
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          <div className="flex items-center space-x-4">
+            <Avatar className="h-20 w-20">
+              <AvatarImage src={formData.avatar_url} alt={formData.fullname} />
+              <AvatarFallback className="bg-primary-600 text-white text-xl">
+                {getInitials(formData.fullname || 'U')}
+              </AvatarFallback>
+            </Avatar>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file) {
+                    handleAvatarUpload(file);
+                  }
+                };
+                input.click();
+              }}
+              className="flex items-center space-x-2"
+            >
+              <Upload className="h-4 w-4" />
+              <span>Tải lên ảnh</span>
+            </Button>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="username">Tên đăng nhập</Label>

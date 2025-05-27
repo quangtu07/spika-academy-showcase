@@ -1,14 +1,25 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, ArrowUpDown } from 'lucide-react';
+import { Plus, Edit, Trash2, ArrowUpDown, Upload, GraduationCap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import UserFormModal from './UserFormModal';
+import EnrollmentFormModal from './EnrollmentFormModal';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface User {
   id: string;
@@ -19,16 +30,19 @@ interface User {
   age?: number;
   phone_number?: string;
   created_at: string;
+  avatar_url?: string;
 }
 
-type SortField = 'fullname' | 'age';
+type SortField = 'fullname' | 'age' | 'username' | 'email' | 'phone_number';
 type SortOrder = 'asc' | 'desc';
 
 const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState('student');
   const [sortField, setSortField] = useState<SortField>('fullname');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
@@ -60,8 +74,6 @@ const UserManagement = () => {
   };
 
   const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa người dùng này?')) return;
-
     try {
       const { error } = await supabase
         .from('profiles')
@@ -83,6 +95,8 @@ const UserManagement = () => {
         description: "Không thể xóa người dùng",
         variant: "destructive",
       });
+    } finally {
+      setDeletingUser(null);
     }
   };
 
@@ -100,6 +114,14 @@ const UserManagement = () => {
     fetchUsers();
     setIsModalOpen(false);
     setEditingUser(null);
+  };
+
+  const handleEnrollmentSaved = () => {
+    toast({
+      title: "Thành công",
+      description: "Đã đăng ký khóa học thành công",
+      className: "bg-green-50 border-green-200 text-green-900",
+    });
   };
 
   const handleSort = (field: SortField) => {
@@ -124,6 +146,15 @@ const UserManagement = () => {
       } else if (sortField === 'age') {
         aValue = a.age || 0;
         bValue = b.age || 0;
+      } else if (sortField === 'username') {
+        aValue = a.username.toLowerCase();
+        bValue = b.username.toLowerCase();
+      } else if (sortField === 'email') {
+        aValue = a.email.toLowerCase();
+        bValue = b.email.toLowerCase();
+      } else if (sortField === 'phone_number') {
+        aValue = a.phone_number || '';
+        bValue = b.phone_number || '';
       }
 
       if (sortOrder === 'asc') {
@@ -144,6 +175,64 @@ const UserManagement = () => {
     return <Badge className={roleInfo.color}>{roleInfo.label}</Badge>;
   };
 
+  const handleAvatarUpload = async (userId: string, file: File) => {
+    try {
+      // 1. Upload file to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // 3. Update user profile with avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', userId);
+
+      if (updateError) throw updateError;
+
+      // 4. Update local state
+      setUsers(users.map(user => 
+        user.id === userId 
+          ? { ...user, avatar_url: publicUrl }
+          : user
+      ));
+
+      toast({
+        title: "Thành công",
+        description: "Đã cập nhật ảnh đại diện",
+        className: "bg-green-50 border-green-200 text-green-900",
+      });
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải lên ảnh đại diện",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getInitials = (fullname: string) => {
+    if (!fullname) return 'U';
+    return fullname
+      .split(' ')
+      .map(name => name.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   const renderUserTable = (roleFilter: string) => {
     const sortedUsers = getSortedUsers(roleFilter);
 
@@ -151,7 +240,17 @@ const UserManagement = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Tên đăng nhập</TableHead>
+            <TableHead>Ảnh đại diện</TableHead>
+            <TableHead>
+              <Button 
+                variant="ghost" 
+                onClick={() => handleSort('username')}
+                className="flex items-center space-x-1 p-0 h-auto font-medium"
+              >
+                <span>Tên đăng nhập</span>
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </TableHead>
             <TableHead>
               <Button 
                 variant="ghost" 
@@ -162,7 +261,16 @@ const UserManagement = () => {
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
             </TableHead>
-            <TableHead>Email</TableHead>
+            <TableHead>
+              <Button 
+                variant="ghost" 
+                onClick={() => handleSort('email')}
+                className="flex items-center space-x-1 p-0 h-auto font-medium"
+              >
+                <span>Email</span>
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </TableHead>
             <TableHead>
               <Button 
                 variant="ghost" 
@@ -173,13 +281,30 @@ const UserManagement = () => {
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
             </TableHead>
-            <TableHead>Điện thoại</TableHead>
+            <TableHead>
+              <Button 
+                variant="ghost" 
+                onClick={() => handleSort('phone_number')}
+                className="flex items-center space-x-1 p-0 h-auto font-medium"
+              >
+                <span>Điện thoại</span>
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </TableHead>
             <TableHead>Thao tác</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedUsers.map((user) => (
             <TableRow key={user.id}>
+              <TableCell>
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={user.avatar_url} alt={user.fullname} />
+                  <AvatarFallback className="bg-primary-600 text-white">
+                    {getInitials(user.fullname)}
+                  </AvatarFallback>
+                </Avatar>
+              </TableCell>
               <TableCell className="font-medium">{user.username}</TableCell>
               <TableCell>{user.fullname}</TableCell>
               <TableCell>{user.email}</TableCell>
@@ -197,7 +322,7 @@ const UserManagement = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDeleteUser(user.id)}
+                    onClick={() => setDeletingUser(user)}
                     className="text-red-600 hover:text-red-700"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -240,10 +365,19 @@ const UserManagement = () => {
                 Quản lý tất cả tài khoản người dùng theo vai trò
               </CardDescription>
             </div>
-            <Button onClick={handleAddUser} className="flex items-center space-x-2">
-              <Plus className="h-4 w-4" />
-              <span>Thêm người dùng</span>
-            </Button>
+            <div className="flex items-center space-x-3">
+              <Button 
+                onClick={() => setIsEnrollmentModalOpen(true)} 
+                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white"
+              >
+                <GraduationCap className="h-4 w-4" />
+                <span>Đăng ký khóa học</span>
+              </Button>
+              <Button onClick={handleAddUser} className="flex items-center space-x-2">
+                <Plus className="h-4 w-4" />
+                <span>Thêm người dùng</span>
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -281,6 +415,33 @@ const UserManagement = () => {
         user={editingUser}
         onSaved={handleUserSaved}
       />
+
+      <EnrollmentFormModal
+        isOpen={isEnrollmentModalOpen}
+        onClose={() => setIsEnrollmentModalOpen(false)}
+        onSaved={handleEnrollmentSaved}
+      />
+
+      <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa người dùng</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa người dùng "{deletingUser?.fullname}"? 
+              Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deletingUser && handleDeleteUser(deletingUser.id)}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Xác nhận xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

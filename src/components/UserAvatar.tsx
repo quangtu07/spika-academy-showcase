@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, UserCog } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface UserAvatarProps {
@@ -34,10 +34,6 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
         variant: "destructive",
       });
     }
-  };
-
-  const handleEditProfile = () => {
-    navigate('/profile/edit');
   };
 
   const getInitials = (fullname: string) => {
@@ -92,16 +88,6 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
-          className="cursor-pointer text-gray-700 focus:text-gray-700 focus:bg-gray-100"
-          onSelect={(e) => {
-            e.preventDefault();
-            handleEditProfile();
-          }}
-        >
-          <UserCog className="mr-2 h-4 w-4" />
-          <span>Chỉnh sửa hồ sơ</span>
-        </DropdownMenuItem>
         <DropdownMenuItem 
           className="cursor-pointer text-red-600 focus:text-red-600"
           onSelect={(e) => {

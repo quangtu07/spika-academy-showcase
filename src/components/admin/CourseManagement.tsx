@@ -1,12 +1,21 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import CourseFormModal from './CourseFormModal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface Course {
   id: string;
@@ -18,6 +27,7 @@ interface Course {
   instructor_id: string;
   instructor_name?: string;
   created_at: string;
+  enrolled_count: number;
 }
 
 const CourseManagement = () => {
@@ -25,6 +35,7 @@ const CourseManagement = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [deletingCourse, setDeletingCourse] = useState<Course | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -37,7 +48,8 @@ const CourseManagement = () => {
         .from('courses')
         .select(`
           *,
-          profiles!courses_instructor_id_fkey(fullname)
+          profiles!courses_instructor_id_fkey(fullname),
+          enrollments(count)
         `)
         .order('created_at', { ascending: false });
 
@@ -45,7 +57,8 @@ const CourseManagement = () => {
 
       const coursesWithInstructor = data?.map(course => ({
         ...course,
-        instructor_name: course.profiles?.fullname || 'Không xác định'
+        instructor_name: course.profiles?.fullname || 'Không xác định',
+        enrolled_count: course.enrollments[0].count
       })) || [];
 
       setCourses(coursesWithInstructor);
@@ -62,8 +75,6 @@ const CourseManagement = () => {
   };
 
   const handleDeleteCourse = async (courseId: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa khóa học này?')) return;
-
     try {
       const { error } = await supabase
         .from('courses')
@@ -85,6 +96,8 @@ const CourseManagement = () => {
         description: "Không thể xóa khóa học",
         variant: "destructive",
       });
+    } finally {
+      setDeletingCourse(null);
     }
   };
 
@@ -155,6 +168,12 @@ const CourseManagement = () => {
                 <TableHead>Giáo viên</TableHead>
                 <TableHead>Thời lượng</TableHead>
                 <TableHead>Giá</TableHead>
+                <TableHead>
+                  <div className="flex items-center space-x-1">
+                    <Users className="h-4 w-4" />
+                    <span>Học viên</span>
+                  </div>
+                </TableHead>
                 <TableHead>Thao tác</TableHead>
               </TableRow>
             </TableHeader>
@@ -175,6 +194,12 @@ const CourseManagement = () => {
                   <TableCell>{course.duration ? `${course.duration} buổi` : '-'}</TableCell>
                   <TableCell>{formatCurrency(course.price)}</TableCell>
                   <TableCell>
+                    <div className="flex items-center space-x-1">
+                      <span className="font-medium">{course.enrolled_count}</span>
+                      <span className="text-gray-500">học viên</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
                     <div className="flex items-center space-x-2">
                       <Button
                         variant="outline"
@@ -186,7 +211,7 @@ const CourseManagement = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDeleteCourse(course.id)}
+                        onClick={() => setDeletingCourse(course)}
                         className="text-red-600 hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -206,6 +231,27 @@ const CourseManagement = () => {
         course={editingCourse}
         onSaved={handleCourseSaved}
       />
+
+      <AlertDialog open={!!deletingCourse} onOpenChange={(open) => !open && setDeletingCourse(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa khóa học</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa khóa học "{deletingCourse?.name}"? 
+              Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deletingCourse && handleDeleteCourse(deletingCourse.id)}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Xác nhận xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

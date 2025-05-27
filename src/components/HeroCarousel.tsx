@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface HeroCarouselProps {
   onOpenRegistrationModal: () => void;
@@ -8,6 +8,12 @@ interface HeroCarouselProps {
 
 const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
+
+  const handleRegistration = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onOpenRegistrationModal();
+  };
 
   const slides = [
     {
@@ -15,26 +21,21 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
       title: "Trở thành MC chuyên nghiệp",
       subtitle: "Khóa học đào tạo MC toàn diện từ cơ bản đến nâng cao",
       cta: "Đăng ký ngay",
-      action: () => onOpenRegistrationModal()
+      action: handleRegistration
     },
     {
       image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
       title: "Giảng viên kinh nghiệm",
       subtitle: "Đội ngũ giảng viên giàu kinh nghiệm và tâm huyết",
-      cta: "Tìm hiểu thêm",
-      action: () => {
-        const instructorsSection = document.querySelector('#instructors');
-        if (instructorsSection) {
-          instructorsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
+      cta: "Đăng ký ngay",
+      action: handleRegistration
     },
     {
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
       title: "Học linh hoạt - Hiệu quả cao",
       subtitle: "Phương pháp học tập hiện đại, phù hợp với mọi đối tượng",
       cta: "Đăng ký ngay",
-      action: () => onOpenRegistrationModal()
+      action: handleRegistration
     }
   ];
 

@@ -69,14 +69,14 @@ const CoursesPage = () => {
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         <div className="mb-8">
-          <Button
+          {/* <Button
             onClick={handleBackToHome}
             variant="outline"
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Quay lại trang chủ
-          </Button>
+          </Button> */}
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Tất cả khóa học</h1>
           <p className="text-xl text-gray-600">
             Khám phá các khóa học MC chất lượng cao

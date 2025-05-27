@@ -8,6 +8,7 @@ interface OverviewStats {
   totalCourses: number;
   totalStudents: number;
   totalTeachers: number;
+  totalAdmins: number;
 }
 
 const AdminOverview = () => {
@@ -15,7 +16,8 @@ const AdminOverview = () => {
     totalUsers: 0,
     totalCourses: 0,
     totalStudents: 0,
-    totalTeachers: 0
+    totalTeachers: 0,
+    totalAdmins: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -39,12 +41,14 @@ const AdminOverview = () => {
         const totalUsers = users.length;
         const totalStudents = users.filter(u => u.role === 'student').length;
         const totalTeachers = users.filter(u => u.role === 'teacher').length;
+        const totalAdmins = users.filter(u => u.role === 'admin').length;
 
         setStats({
           totalUsers,
           totalCourses: courses?.length || 0,
           totalStudents,
-          totalTeachers
+          totalTeachers,
+          totalAdmins
         });
       }
     } catch (error) {
@@ -56,8 +60,8 @@ const AdminOverview = () => {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[...Array(4)].map((_, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        {[...Array(5)].map((_, i) => (
           <Card key={i} className="animate-pulse">
             <CardHeader className="space-y-2">
               <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -70,7 +74,7 @@ const AdminOverview = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Tổng người dùng</CardTitle>
@@ -80,6 +84,19 @@ const AdminOverview = () => {
           <div className="text-2xl font-bold">{stats.totalUsers}</div>
           <p className="text-xs text-muted-foreground">
             Tất cả tài khoản trong hệ thống
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Admin</CardTitle>
+          <Users className="h-4 w-4 text-red-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-red-600">{stats.totalAdmins}</div>
+          <p className="text-xs text-muted-foreground">
+            Số lượng quản trị viên
           </p>
         </CardContent>
       </Card>
