@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, ArrowUpDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import UserFormModal from './UserFormModal';
@@ -20,11 +21,17 @@ interface User {
   created_at: string;
 }
 
+type SortField = 'fullname' | 'age';
+type SortOrder = 'asc' | 'desc';
+
 const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [activeTab, setActiveTab] = useState('student');
+  const [sortField, setSortField] = useState<SortField>('fullname');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -95,6 +102,38 @@ const UserManagement = () => {
     setEditingUser(null);
   };
 
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const getSortedUsers = (roleFilter: string) => {
+    const filteredUsers = users.filter(user => user.role === roleFilter);
+    
+    return filteredUsers.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      if (sortField === 'fullname') {
+        aValue = a.fullname.toLowerCase();
+        bValue = b.fullname.toLowerCase();
+      } else if (sortField === 'age') {
+        aValue = a.age || 0;
+        bValue = b.age || 0;
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+  };
+
   const getRoleBadge = (role: string) => {
     const roleMap = {
       'student': { label: 'Học viên', color: 'bg-blue-100 text-blue-800' },
@@ -103,6 +142,73 @@ const UserManagement = () => {
     };
     const roleInfo = roleMap[role] || { label: 'Không xác định', color: 'bg-gray-100 text-gray-800' };
     return <Badge className={roleInfo.color}>{roleInfo.label}</Badge>;
+  };
+
+  const renderUserTable = (roleFilter: string) => {
+    const sortedUsers = getSortedUsers(roleFilter);
+
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Tên đăng nhập</TableHead>
+            <TableHead>
+              <Button 
+                variant="ghost" 
+                onClick={() => handleSort('fullname')}
+                className="flex items-center space-x-1 p-0 h-auto font-medium"
+              >
+                <span>Họ tên</span>
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>
+              <Button 
+                variant="ghost" 
+                onClick={() => handleSort('age')}
+                className="flex items-center space-x-1 p-0 h-auto font-medium"
+              >
+                <span>Tuổi</span>
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </TableHead>
+            <TableHead>Điện thoại</TableHead>
+            <TableHead>Thao tác</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedUsers.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell className="font-medium">{user.username}</TableCell>
+              <TableCell>{user.fullname}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.age || '-'}</TableCell>
+              <TableCell>{user.phone_number || '-'}</TableCell>
+              <TableCell>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditUser(user)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDeleteUser(user.id)}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
   };
 
   if (loading) {
@@ -131,7 +237,7 @@ const UserManagement = () => {
             <div>
               <CardTitle>Quản lý người dùng</CardTitle>
               <CardDescription>
-                Quản lý tất cả tài khoản người dùng trong hệ thống
+                Quản lý tất cả tài khoản người dùng theo vai trò
               </CardDescription>
             </div>
             <Button onClick={handleAddUser} className="flex items-center space-x-2">
@@ -141,50 +247,31 @@ const UserManagement = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tên đăng nhập</TableHead>
-                <TableHead>Họ tên</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Vai trò</TableHead>
-                <TableHead>Tuổi</TableHead>
-                <TableHead>Điện thoại</TableHead>
-                <TableHead>Thao tác</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.username}</TableCell>
-                  <TableCell>{user.fullname}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{getRoleBadge(user.role)}</TableCell>
-                  <TableCell>{user.age || '-'}</TableCell>
-                  <TableCell>{user.phone_number || '-'}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditUser(user)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="student">
+                Học viên ({users.filter(u => u.role === 'student').length})
+              </TabsTrigger>
+              <TabsTrigger value="teacher">
+                Giáo viên ({users.filter(u => u.role === 'teacher').length})
+              </TabsTrigger>
+              <TabsTrigger value="admin">
+                Quản trị ({users.filter(u => u.role === 'admin').length})
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="student" className="mt-6">
+              {renderUserTable('student')}
+            </TabsContent>
+
+            <TabsContent value="teacher" className="mt-6">
+              {renderUserTable('teacher')}
+            </TabsContent>
+
+            <TabsContent value="admin" className="mt-6">
+              {renderUserTable('admin')}
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 

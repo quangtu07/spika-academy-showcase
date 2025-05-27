@@ -44,6 +44,17 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: '',
+      price: '',
+      duration: '',
+      image_url: '',
+      instructor_id: ''
+    });
+  };
+
   useEffect(() => {
     fetchInstructors();
   }, []);
@@ -59,16 +70,9 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         instructor_id: course.instructor_id
       });
     } else {
-      setFormData({
-        name: '',
-        description: '',
-        price: '',
-        duration: '',
-        image_url: '',
-        instructor_id: ''
-      });
+      resetForm();
     }
-  }, [course]);
+  }, [course, isOpen]);
 
   const fetchInstructors = async () => {
     try {
@@ -125,6 +129,9 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
           description: "Đã tạo khóa học mới thành công",
           className: "bg-green-50 border-green-200 text-green-900",
         });
+        
+        // Reset form after successful creation
+        resetForm();
       }
 
       onSaved();
