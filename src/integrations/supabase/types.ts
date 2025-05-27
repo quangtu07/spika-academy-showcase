@@ -55,7 +55,6 @@ export type Database = {
           id: string
           image_url: string | null
           instructor_id: string
-          level: Database["public"]["Enums"]["course_level"] | null
           name: string
           price: number | null
           updated_at: string | null
@@ -67,7 +66,6 @@ export type Database = {
           id?: string
           image_url?: string | null
           instructor_id: string
-          level?: Database["public"]["Enums"]["course_level"] | null
           name: string
           price?: number | null
           updated_at?: string | null
@@ -79,7 +77,6 @@ export type Database = {
           id?: string
           image_url?: string | null
           instructor_id?: string
-          level?: Database["public"]["Enums"]["course_level"] | null
           name?: string
           price?: number | null
           updated_at?: string | null

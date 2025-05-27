@@ -11,7 +11,6 @@ interface Course {
   id: string;
   name: string;
   description: string;
-  level: string;
   duration: number;
   price: number;
   enrollments_count: number;
@@ -45,7 +44,6 @@ const TeacherCourses = () => {
           id,
           name,
           description,
-          level,
           duration,
           price,
           enrollments (
@@ -60,7 +58,6 @@ const TeacherCourses = () => {
         id: course.id,
         name: course.name,
         description: course.description,
-        level: course.level,
         duration: course.duration,
         price: course.price,
         enrollments_count: course.enrollments?.length || 0
@@ -76,24 +73,6 @@ const TeacherCourses = () => {
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getLevelBadgeColor = (level: string) => {
-    switch (level) {
-      case 'basic': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advance': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getLevelText = (level: string) => {
-    switch (level) {
-      case 'basic': return 'Cơ bản';
-      case 'intermediate': return 'Trung cấp';
-      case 'advance': return 'Nâng cao';
-      default: return level;
     }
   };
 
@@ -139,9 +118,6 @@ const TeacherCourses = () => {
                   <div className="space-y-1">
                     <CardTitle className="line-clamp-2">{course.name}</CardTitle>
                     <div className="flex items-center space-x-2">
-                      <Badge className={getLevelBadgeColor(course.level)}>
-                        {getLevelText(course.level)}
-                      </Badge>
                       <Badge variant="outline" className="border-blue-500 text-blue-700">
                         {course.enrollments_count} học viên
                       </Badge>

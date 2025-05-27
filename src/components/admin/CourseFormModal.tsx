@@ -15,7 +15,6 @@ interface Course {
   description?: string;
   price?: number;
   duration?: number;
-  level: 'basic' | 'intermediate' | 'advance';
   image_url?: string;
   instructor_id: string;
 }
@@ -38,7 +37,6 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
     description: '',
     price: '',
     duration: '',
-    level: 'basic' as 'basic' | 'intermediate' | 'advance',
     image_url: '',
     instructor_id: ''
   });
@@ -57,7 +55,6 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         description: course.description || '',
         price: course.price ? course.price.toString() : '',
         duration: course.duration ? course.duration.toString() : '',
-        level: course.level,
         image_url: course.image_url || '',
         instructor_id: course.instructor_id
       });
@@ -67,7 +64,6 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         description: '',
         price: '',
         duration: '',
-        level: 'basic',
         image_url: '',
         instructor_id: ''
       });
@@ -98,7 +94,6 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         description: formData.description || null,
         price: formData.price ? parseFloat(formData.price) : null,
         duration: formData.duration ? parseInt(formData.duration) : null,
-        level: formData.level,
         image_url: formData.image_url || null,
         instructor_id: formData.instructor_id
       };
@@ -174,35 +169,20 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="instructor_id">Giáo viên</Label>
-              <Select value={formData.instructor_id} onValueChange={(value) => setFormData({...formData, instructor_id: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn giáo viên" />
-                </SelectTrigger>
-                <SelectContent>
-                  {instructors.map((instructor) => (
-                    <SelectItem key={instructor.id} value={instructor.id}>
-                      {instructor.fullname}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="level">Cấp độ</Label>
-              <Select value={formData.level} onValueChange={(value: 'basic' | 'intermediate' | 'advance') => setFormData({...formData, level: value})}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="basic">Cơ bản</SelectItem>
-                  <SelectItem value="intermediate">Trung cấp</SelectItem>
-                  <SelectItem value="advance">Nâng cao</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label htmlFor="instructor_id">Giáo viên</Label>
+            <Select value={formData.instructor_id} onValueChange={(value) => setFormData({...formData, instructor_id: value})}>
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn giáo viên" />
+              </SelectTrigger>
+              <SelectContent>
+                {instructors.map((instructor) => (
+                  <SelectItem key={instructor.id} value={instructor.id}>
+                    {instructor.fullname}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -218,7 +198,7 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
               />
             </div>
             <div>
-              <Label htmlFor="duration">Thời lượng (giờ)</Label>
+              <Label htmlFor="duration">Thời lượng (buổi)</Label>
               <Input
                 id="duration"
                 type="number"

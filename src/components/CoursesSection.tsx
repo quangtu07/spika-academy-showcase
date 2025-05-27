@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,6 @@ interface Course {
   description: string;
   image_url: string;
   duration: number;
-  level: 'basic' | 'intermediate' | 'advance';
   price: number;
 }
 
@@ -34,12 +34,6 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
     useScrollReveal({ threshold: 0.2, rootMargin: '50px' })
   ];
   const buttonRef = useScrollReveal({ threshold: 0.2 });
-
-  const levelMap = {
-    basic: 'Cơ bản',
-    intermediate: 'Trung cấp',  
-    advance: 'Nâng cao'
-  };
 
   useEffect(() => {
     fetchCourses();
@@ -89,7 +83,7 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
         <div ref={titleRef} className="text-center mb-16 reveal reveal-fade-up">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Khóa học nổi bật</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Chọn khóa học phù hợp với trình độ và mục tiêu của bạn
+            Chọn khóa học phù hợp với mục tiêu của bạn
           </p>
         </div>
 
@@ -108,9 +102,6 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
                     alt={course.name}
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  <div className="absolute top-4 right-4 bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {levelMap[course.level] || course.level}
-                  </div>
                 </div>
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-gray-900">{course.name}</CardTitle>
@@ -121,7 +112,7 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
                 <CardContent>
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-sm text-gray-500">
-                      Thời gian: {course.duration} tháng
+                      Thời gian: {course.duration} buổi
                     </span>
                     {course.price && (
                       <span className="text-lg font-bold text-primary-600">

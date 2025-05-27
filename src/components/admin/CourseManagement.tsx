@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -15,7 +14,6 @@ interface Course {
   description?: string;
   price?: number;
   duration?: number;
-  level: 'basic' | 'intermediate' | 'advance';
   image_url?: string;
   instructor_id: string;
   instructor_name?: string;
@@ -106,16 +104,6 @@ const CourseManagement = () => {
     setEditingCourse(null);
   };
 
-  const getLevelBadge = (level: string) => {
-    const levelMap = {
-      'basic': { label: 'Cơ bản', color: 'bg-green-100 text-green-800' },
-      'intermediate': { label: 'Trung cấp', color: 'bg-yellow-100 text-yellow-800' },
-      'advance': { label: 'Nâng cao', color: 'bg-red-100 text-red-800' }
-    };
-    const levelInfo = levelMap[level] || { label: 'Không xác định', color: 'bg-gray-100 text-gray-800' };
-    return <Badge className={levelInfo.color}>{levelInfo.label}</Badge>;
-  };
-
   const formatCurrency = (amount?: number) => {
     if (!amount) return '-';
     return new Intl.NumberFormat('vi-VN', {
@@ -165,7 +153,6 @@ const CourseManagement = () => {
               <TableRow>
                 <TableHead>Tên khóa học</TableHead>
                 <TableHead>Giáo viên</TableHead>
-                <TableHead>Cấp độ</TableHead>
                 <TableHead>Thời lượng</TableHead>
                 <TableHead>Giá</TableHead>
                 <TableHead>Thao tác</TableHead>
@@ -185,8 +172,7 @@ const CourseManagement = () => {
                     </div>
                   </TableCell>
                   <TableCell>{course.instructor_name}</TableCell>
-                  <TableCell>{getLevelBadge(course.level)}</TableCell>
-                  <TableCell>{course.duration ? `${course.duration}h` : '-'}</TableCell>
+                  <TableCell>{course.duration ? `${course.duration} buổi` : '-'}</TableCell>
                   <TableCell>{formatCurrency(course.price)}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
