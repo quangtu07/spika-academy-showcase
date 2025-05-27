@@ -16,6 +16,7 @@ const Navbar = () => {
   const menuItems = [
     { name: 'Trang chủ', href: '#home', action: () => handleNavigateHome() },
     { name: 'Giới thiệu', href: '#about', action: () => handleScrollToSection('about') },
+    { name: 'Giảng viên', href: '/teachers', action: () => handleTeachersClick() },
     { name: 'Khóa học', href: '#courses', action: () => handleCoursesClick() },
     { name: 'Hoạt động', href: '#activities', action: () => handleScrollToSection('activities') },
     { name: 'Liên hệ', href: '#contact', action: () => handleScrollToSection('contact') },
@@ -57,6 +58,10 @@ const Navbar = () => {
         section.scrollIntoView({ behavior: 'smooth' });
       }
     }
+  };
+
+  const handleTeachersClick = () => {
+    navigate('/teachers');
   };
 
   const handleCoursesClick = () => {
