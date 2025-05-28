@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,16 +50,19 @@ const CourseManagement = () => {
         .select(`
           *,
           profiles!courses_instructor_id_fkey(fullname),
-          enrollments(count)
+          classes(
+            enrollments(count)
+          )
         `)
-        .order('created_at', { ascending: false });
+        .order('updated_at', { ascending: false });
 
       if (error) throw error;
 
       const coursesWithInstructor = data?.map(course => ({
         ...course,
         instructor_name: course.profiles?.fullname || 'Không xác định',
-        enrolled_count: course.enrollments[0].count
+        enrolled_count: course.classes?.reduce((total, classItem) => 
+          total + (classItem.enrollments[0]?.count || 0), 0) || 0
       })) || [];
 
       setCourses(coursesWithInstructor);

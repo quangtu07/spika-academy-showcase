@@ -366,13 +366,6 @@ const UserManagement = () => {
               </CardDescription>
             </div>
             <div className="flex items-center space-x-3">
-              <Button 
-                onClick={() => setIsEnrollmentModalOpen(true)} 
-                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white"
-              >
-                <GraduationCap className="h-4 w-4" />
-                <span>Đăng ký khóa học</span>
-              </Button>
               <Button onClick={handleAddUser} className="flex items-center space-x-2">
                 <Plus className="h-4 w-4" />
                 <span>Thêm người dùng</span>
