@@ -26,11 +26,7 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
     course_id: '',
     name: '',
     description: '',
-    max_students: '',
-    start_date: '',
-    end_date: '',
     schedule: '',
-    room: '',
     status: 'active'
   });
   const [courses, setCourses] = useState<Course[]>([]);
@@ -45,11 +41,7 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
           course_id: classData.course_id || '',
           name: classData.name || '',
           description: classData.description || '',
-          max_students: classData.max_students?.toString() || '',
-          start_date: classData.start_date ? classData.start_date.split('T')[0] : '',
-          end_date: classData.end_date ? classData.end_date.split('T')[0] : '',
           schedule: classData.schedule || '',
-          room: classData.room || '',
           status: classData.status || 'active'
         });
       } else {
@@ -57,11 +49,7 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
           course_id: '',
           name: '',
           description: '',
-          max_students: '',
-          start_date: '',
-          end_date: '',
           schedule: '',
-          room: '',
           status: 'active'
         });
       }
@@ -96,13 +84,11 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
         course_id: formData.course_id,
         name: formData.name,
         description: formData.description || null,
-        max_students: formData.max_students ? parseInt(formData.max_students) : null,
-        start_date: formData.start_date || null,
-        end_date: formData.end_date || null,
         schedule: formData.schedule || null,
-        room: formData.room || null,
         status: formData.status
       };
+
+      console.log('Submitting data:', submitData);
 
       let error;
       if (classData) {
@@ -118,7 +104,10 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
         error = insertError;
       }
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
 
       toast({
         title: "Thành công",
@@ -199,30 +188,6 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="max_students">Số học viên tối đa</Label>
-              <Input
-                id="max_students"
-                type="number"
-                value={formData.max_students}
-                onChange={(e) => handleInputChange('max_students', e.target.value)}
-                placeholder="Nhập số học viên tối đa"
-                min="1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="room">Phòng học</Label>
-              <Input
-                id="room"
-                value={formData.room}
-                onChange={(e) => handleInputChange('room', e.target.value)}
-                placeholder="Nhập phòng học"
-              />
-            </div>
-          </div>
-
           <div>
             <Label htmlFor="schedule">Lịch học</Label>
             <Input
@@ -231,28 +196,6 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
               onChange={(e) => handleInputChange('schedule', e.target.value)}
               placeholder="Ví dụ: Thứ 2, 4, 6 - 19:00-21:00"
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="start_date">Ngày bắt đầu</Label>
-              <Input
-                id="start_date"
-                type="date"
-                value={formData.start_date}
-                onChange={(e) => handleInputChange('start_date', e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="end_date">Ngày kết thúc</Label>
-              <Input
-                id="end_date"
-                type="date"
-                value={formData.end_date}
-                onChange={(e) => handleInputChange('end_date', e.target.value)}
-              />
-            </div>
           </div>
 
           <div>

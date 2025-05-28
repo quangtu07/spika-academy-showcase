@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,11 +24,7 @@ interface Class {
   course_id: string;
   name: string;
   description?: string;
-  max_students?: number;
-  start_date?: string;
-  end_date?: string;
   schedule?: string;
-  room?: string;
   status?: string;
   created_at: string;
   course_name?: string;
@@ -218,7 +213,6 @@ const ClassManagement = () => {
               <TableRow>
                 <TableHead>Tên lớp học</TableHead>
                 <TableHead>Khóa học</TableHead>
-                <TableHead>Phòng học</TableHead>
                 <TableHead>Lịch học</TableHead>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead>
@@ -248,13 +242,11 @@ const ClassManagement = () => {
                     </div>
                   </TableCell>
                   <TableCell>{classItem.course_name}</TableCell>
-                  <TableCell>{classItem.room || '-'}</TableCell>
                   <TableCell>{classItem.schedule || '-'}</TableCell>
                   <TableCell>{getStatusBadge(classItem.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-1">
                       <span className="font-medium">{classItem.enrolled_count}</span>
-                      <span className="text-gray-500">/{classItem.max_students || '∞'}</span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -330,9 +322,7 @@ const ClassManagement = () => {
                   <div className="space-y-2 text-sm">
                     <div><strong>Khóa học:</strong> {selectedClass.course_name}</div>
                     <div><strong>Mô tả:</strong> {selectedClass.description || 'Không có'}</div>
-                    <div><strong>Phòng học:</strong> {selectedClass.room || 'Chưa xác định'}</div>
                     <div><strong>Lịch học:</strong> {selectedClass.schedule || 'Chưa xác định'}</div>
-                    <div><strong>Số học viên tối đa:</strong> {selectedClass.max_students || 'Không giới hạn'}</div>
                     <div><strong>Trạng thái:</strong> {getStatusBadge(selectedClass.status)}</div>
                   </div>
                 </div>
@@ -341,8 +331,7 @@ const ClassManagement = () => {
                   <h3 className="font-semibold mb-2">Thống kê</h3>
                   <div className="space-y-2 text-sm">
                     <div><strong>Số học viên hiện tại:</strong> {selectedClass.enrolled_count}</div>
-                    <div><strong>Ngày bắt đầu:</strong> {selectedClass.start_date ? new Date(selectedClass.start_date).toLocaleDateString('vi-VN') : 'Chưa xác định'}</div>
-                    <div><strong>Ngày kết thúc:</strong> {selectedClass.end_date ? new Date(selectedClass.end_date).toLocaleDateString('vi-VN') : 'Chưa xác định'}</div>
+                    <div><strong>Ngày tạo:</strong> {new Date(selectedClass.created_at).toLocaleDateString('vi-VN')}</div>
                   </div>
                 </div>
               </div>

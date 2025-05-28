@@ -52,11 +52,9 @@ export type Database = {
           course_id: string
           created_at: string
           description: string | null
-          end_date: string | null
           id: string
           name: string
           schedule: string | null
-          start_date: string | null
           status: string | null
           updated_at: string
         }
@@ -64,11 +62,9 @@ export type Database = {
           course_id: string
           created_at?: string
           description?: string | null
-          end_date?: string | null
           id?: string
           name: string
           schedule?: string | null
-          start_date?: string | null
           status?: string | null
           updated_at?: string
         }
@@ -76,11 +72,9 @@ export type Database = {
           course_id?: string
           created_at?: string
           description?: string | null
-          end_date?: string | null
           id?: string
           name?: string
           schedule?: string | null
-          start_date?: string | null
           status?: string | null
           updated_at?: string
         }
