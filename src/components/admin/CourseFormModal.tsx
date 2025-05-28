@@ -17,7 +17,7 @@ interface Course {
   duration?: number;
   image_url?: string;
   instructor_id: string;
-  status?: string;
+  status?: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
 }
 
 interface Instructor {
@@ -32,6 +32,8 @@ interface CourseFormModalProps {
   onSaved: () => void;
 }
 
+type CourseStatus = 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
+
 const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalProps) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -40,7 +42,7 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
     duration: '',
     image_url: '',
     instructor_id: '',
-    status: ''
+    status: '' as CourseStatus | ''
   });
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +56,7 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
       duration: '',
       image_url: '',
       instructor_id: '',
-      status: ''
+      status: '' as CourseStatus | ''
     });
   };
 
@@ -71,7 +73,7 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         duration: course.duration ? course.duration.toString() : '',
         image_url: course.image_url || '',
         instructor_id: course.instructor_id,
-        status: course.status || ''
+        status: course.status || '' as CourseStatus | ''
       });
     } else {
       resetForm();
@@ -155,7 +157,7 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         duration: formData.duration ? parseInt(formData.duration) : null,
         image_url: formData.image_url || null,
         instructor_id: formData.instructor_id,
-        status: formData.status
+        status: formData.status as CourseStatus
       };
 
       if (course) {
@@ -251,7 +253,7 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
 
           <div>
             <Label htmlFor="status">Trạng thái <span className="text-red-500">*</span></Label>
-            <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})} required>
+            <Select value={formData.status} onValueChange={(value: CourseStatus) => setFormData({...formData, status: value})} required>
               <SelectTrigger>
                 <SelectValue placeholder="Chọn trạng thái" />
               </SelectTrigger>
