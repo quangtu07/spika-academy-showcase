@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2, Users } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, Image } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import CourseFormModal from './CourseFormModal';
+import { deleteCourseImage } from '@/lib/storage-helpers';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -80,12 +81,27 @@ const CourseManagement = () => {
 
   const handleDeleteCourse = async (courseId: string) => {
     try {
-      const { error } = await supabase
+      // Lấy thông tin khóa học trước khi xóa để kiểm tra ảnh
+      const { data: courseToDelete, error: fetchError } = await supabase
+        .from('courses')
+        .select('image_url')
+        .eq('id', courseId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Nếu khóa học có ảnh, xóa ảnh trước
+      if (courseToDelete?.image_url) {
+        await deleteCourseImage(courseToDelete.image_url);
+      }
+
+      // Sau đó xóa khóa học
+      const { error: deleteError } = await supabase
         .from('courses')
         .delete()
         .eq('id', courseId);
 
-      if (error) throw error;
+      if (deleteError) throw deleteError;
 
       setCourses(courses.filter(course => course.id !== courseId));
       toast({
@@ -176,6 +192,7 @@ const CourseManagement = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Ảnh</TableHead>
                 <TableHead>Tên khóa học</TableHead>
                 <TableHead>Giáo viên</TableHead>
                 <TableHead>Thời lượng</TableHead>
@@ -192,6 +209,21 @@ const CourseManagement = () => {
             <TableBody>
               {courses.map((course) => (
                 <TableRow key={course.id}>
+                  <TableCell>
+                    {course.image_url ? (
+                      <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+                        <img
+                          src={course.image_url}
+                          alt={course.name}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <Image className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                  </TableCell>
                   <TableCell className="font-medium">
                     <div>
                       <div className="font-semibold">{course.name}</div>
