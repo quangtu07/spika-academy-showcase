@@ -86,62 +86,103 @@ const TeacherReports = () => {
     if (!selectedCourse) return;
 
     try {
-      // Get course info and enrollments
+      // Get course info
       const { data: courseData, error: courseError } = await supabase
         .from('courses')
-        .select(`
-          id,
-          name,
-          enrollments (
-            id,
-            status
-          )
-        `)
+        .select('id, name')
         .eq('id', selectedCourse)
         .single();
 
       if (courseError) throw courseError;
 
-      // Get lessons and assignments for this course
-      const { data: lessonsData, error: lessonsError } = await supabase
-        .from('lessons')
-        .select(`
-          id,
-          assignments (
-            id,
-            submissions (
-              id,
-              student_id,
-              feedbacks (
-                score
-              )
-            )
-          )
-        `)
+      // Get classes for this course
+      const { data: classesData, error: classesError } = await supabase
+        .from('classes')
+        .select('id')
         .eq('course_id', selectedCourse);
 
-      if (lessonsError) throw lessonsError;
+      if (classesError) throw classesError;
 
-      // Calculate statistics
-      const totalStudents = courseData.enrollments?.length || 0;
-      const activeStudents = courseData.enrollments?.filter(e => e.status === 'active').length || 0;
+      const classIds = classesData?.map(c => c.id) || [];
+
+      // Get enrollments count
+      let totalStudents = 0;
+      let activeStudents = 0;
       
-      const allAssignments = lessonsData?.flatMap(lesson => lesson.assignments) || [];
-      const totalAssignments = allAssignments.length;
-      
-      const allSubmissions = allAssignments.flatMap(assignment => assignment.submissions) || [];
-      const submittedAssignments = allSubmissions.length;
-      
-      const allScores = allSubmissions
-        .flatMap(submission => submission.feedbacks)
-        .map(feedback => feedback.score)
-        .filter(score => score !== null);
-      
+      if (classIds.length > 0) {
+        const { data: enrollmentsData, error: enrollmentsError } = await supabase
+          .from('enrollments')
+          .select('status')
+          .in('class_id', classIds);
+
+        if (enrollmentsError) throw enrollmentsError;
+
+        totalStudents = enrollmentsData?.length || 0;
+        activeStudents = enrollmentsData?.filter(e => e.status === 'active').length || 0;
+      }
+
+      // Get lessons for these classes
+      let totalAssignments = 0;
+      let submittedAssignments = 0;
+      let allScores: number[] = [];
+
+      if (classIds.length > 0) {
+        const { data: lessonsData, error: lessonsError } = await supabase
+          .from('lessons')
+          .select('id')
+          .in('class_id', classIds);
+
+        if (lessonsError) throw lessonsError;
+
+        const lessonIds = lessonsData?.map(l => l.id) || [];
+
+        if (lessonIds.length > 0) {
+          // Get assignments
+          const { data: assignmentsData, error: assignmentsError } = await supabase
+            .from('assignments')
+            .select('id')
+            .in('lesson_id', lessonIds);
+
+          if (assignmentsError) throw assignmentsError;
+
+          totalAssignments = assignmentsData?.length || 0;
+
+          if (totalAssignments > 0) {
+            const assignmentIds = assignmentsData?.map(a => a.id) || [];
+
+            // Get submissions
+            const { data: submissionsData, error: submissionsError } = await supabase
+              .from('submissions')
+              .select('id')
+              .in('assignment_id', assignmentIds);
+
+            if (submissionsError) throw submissionsError;
+
+            submittedAssignments = submissionsData?.length || 0;
+
+            if (submittedAssignments > 0) {
+              const submissionIds = submissionsData?.map(s => s.id) || [];
+
+              // Get feedbacks with scores
+              const { data: feedbacksData, error: feedbacksError } = await supabase
+                .from('feedbacks')
+                .select('score')
+                .in('submission_id', submissionIds)
+                .not('score', 'is', null);
+
+              if (feedbacksError) throw feedbacksError;
+
+              allScores = feedbacksData?.map(f => f.score).filter(s => s !== null) as number[] || [];
+            }
+          }
+        }
+      }
+
       const averageScore = allScores.length > 0 
         ? allScores.reduce((sum, score) => sum + score, 0) / allScores.length 
         : 0;
 
-      const completionRate = totalAssignments > 0 
+      const completionRate = totalAssignments > 0 && totalStudents > 0
         ? (submittedAssignments / (totalStudents * totalAssignments)) * 100 
         : 0;
 
@@ -170,7 +211,23 @@ const TeacherReports = () => {
     if (!selectedCourse) return;
 
     try {
-      const { data, error } = await supabase
+      // Get classes for this course
+      const { data: classesData, error: classesError } = await supabase
+        .from('classes')
+        .select('id')
+        .eq('course_id', selectedCourse);
+
+      if (classesError) throw classesError;
+
+      const classIds = classesData?.map(c => c.id) || [];
+
+      if (classIds.length === 0) {
+        setStudentProgress([]);
+        return;
+      }
+
+      // Get enrollments with student info
+      const { data: enrollmentsData, error: enrollmentsError } = await supabase
         .from('enrollments')
         .select(`
           student_id,
@@ -178,45 +235,60 @@ const TeacherReports = () => {
             fullname
           )
         `)
-        .eq('course_id', selectedCourse)
+        .in('class_id', classIds)
         .eq('status', 'active');
 
-      if (error) throw error;
+      if (enrollmentsError) throw enrollmentsError;
 
       const progressData: StudentProgress[] = [];
 
-      for (const enrollment of data || []) {
-        // Get assignments for this course
-        const { data: assignmentsData } = await supabase
-          .from('assignments')
-          .select(`
-            id,
-            submissions!inner (
-              student_id,
-              feedbacks (
-                score
-              )
-            ),
-            lessons!inner (
-              course_id
-            )
-          `)
-          .eq('lessons.course_id', selectedCourse);
+      for (const enrollment of enrollmentsData || []) {
+        // Get lessons for these classes
+        const { data: lessonsData } = await supabase
+          .from('lessons')
+          .select('id')
+          .in('class_id', classIds);
 
-        const totalAssignments = assignmentsData?.length || 0;
-        const studentSubmissions = assignmentsData?.filter(
-          assignment => assignment.submissions.some(sub => sub.student_id === enrollment.student_id)
-        ) || [];
-        
-        const submittedCount = studentSubmissions.length;
-        
-        const scores = studentSubmissions
-          .flatMap(assignment => 
-            assignment.submissions
-              .filter(sub => sub.student_id === enrollment.student_id)
-              .flatMap(sub => sub.feedbacks.map(f => f.score))
-              .filter(score => score !== null)
-          );
+        const lessonIds = lessonsData?.map(l => l.id) || [];
+        let totalAssignments = 0;
+        let submittedCount = 0;
+        let scores: number[] = [];
+
+        if (lessonIds.length > 0) {
+          // Get assignments
+          const { data: assignmentsData } = await supabase
+            .from('assignments')
+            .select('id')
+            .in('lesson_id', lessonIds);
+
+          totalAssignments = assignmentsData?.length || 0;
+
+          if (totalAssignments > 0) {
+            const assignmentIds = assignmentsData?.map(a => a.id) || [];
+
+            // Get student submissions
+            const { data: submissionsData } = await supabase
+              .from('submissions')
+              .select('id')
+              .in('assignment_id', assignmentIds)
+              .eq('student_id', enrollment.student_id);
+
+            submittedCount = submissionsData?.length || 0;
+
+            if (submittedCount > 0) {
+              const submissionIds = submissionsData?.map(s => s.id) || [];
+
+              // Get feedbacks with scores
+              const { data: feedbacksData } = await supabase
+                .from('feedbacks')
+                .select('score')
+                .in('submission_id', submissionIds)
+                .not('score', 'is', null);
+
+              scores = feedbacksData?.map(f => f.score).filter(s => s !== null) as number[] || [];
+            }
+          }
+        }
 
         const averageScore = scores.length > 0 
           ? scores.reduce((sum, score) => sum + score, 0) / scores.length 
