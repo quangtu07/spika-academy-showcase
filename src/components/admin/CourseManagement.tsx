@@ -27,7 +27,7 @@ interface Course {
   image_url?: string;
   instructor_id: string;
   instructor_name?: string;
-  status?: string;
+  status?: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
   created_at: string;
   enrolled_count: number;
 }
