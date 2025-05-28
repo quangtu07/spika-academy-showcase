@@ -57,6 +57,7 @@ export type Database = {
           instructor_id: string
           name: string
           price: number | null
+          status: Database["public"]["Enums"]["course_status"] | null
           updated_at: string | null
         }
         Insert: {
@@ -68,6 +69,7 @@ export type Database = {
           instructor_id: string
           name: string
           price?: number | null
+          status?: Database["public"]["Enums"]["course_status"] | null
           updated_at?: string | null
         }
         Update: {
@@ -79,6 +81,7 @@ export type Database = {
           instructor_id?: string
           name?: string
           price?: number | null
+          status?: Database["public"]["Enums"]["course_status"] | null
           updated_at?: string | null
         }
         Relationships: [
@@ -360,6 +363,7 @@ export type Database = {
     }
     Enums: {
       course_level: "basic" | "intermediate" | "advance"
+      course_status: "Đang mở" | "Đang bắt đầu" | "Kết thúc"
       user_role: "student" | "teacher" | "admin"
     }
     CompositeTypes: {
@@ -477,6 +481,7 @@ export const Constants = {
   public: {
     Enums: {
       course_level: ["basic", "intermediate", "advance"],
+      course_status: ["Đang mở", "Đang bắt đầu", "Kết thúc"],
       user_role: ["student", "teacher", "admin"],
     },
   },

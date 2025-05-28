@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +27,7 @@ interface Course {
   image_url?: string;
   instructor_id: string;
   instructor_name?: string;
+  status?: string;
   created_at: string;
   enrolled_count: number;
 }
@@ -117,12 +119,20 @@ const CourseManagement = () => {
     setEditingCourse(null);
   };
 
-  const formatCurrency = (amount?: number) => {
-    if (!amount) return '-';
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(amount);
+  const getStatusBadge = (status?: string) => {
+    const statusColors = {
+      'Đang mở': 'bg-green-100 text-green-800',
+      'Đang bắt đầu': 'bg-blue-100 text-blue-800',
+      'Kết thúc': 'bg-gray-100 text-gray-800'
+    };
+
+    const colorClass = status ? statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800';
+
+    return (
+      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${colorClass}`}>
+        {status || 'Không xác định'}
+      </span>
+    );
   };
 
   if (loading) {
@@ -167,7 +177,7 @@ const CourseManagement = () => {
                 <TableHead>Tên khóa học</TableHead>
                 <TableHead>Giáo viên</TableHead>
                 <TableHead>Thời lượng</TableHead>
-                <TableHead>Giá</TableHead>
+                <TableHead>Trạng thái</TableHead>
                 <TableHead>
                   <div className="flex items-center space-x-1">
                     <Users className="h-4 w-4" />
@@ -192,7 +202,7 @@ const CourseManagement = () => {
                   </TableCell>
                   <TableCell>{course.instructor_name}</TableCell>
                   <TableCell>{course.duration ? `${course.duration} buổi` : '-'}</TableCell>
-                  <TableCell>{formatCurrency(course.price)}</TableCell>
+                  <TableCell>{getStatusBadge(course.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-1">
                       <span className="font-medium">{course.enrolled_count}</span>

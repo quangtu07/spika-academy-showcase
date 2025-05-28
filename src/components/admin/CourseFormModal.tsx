@@ -17,6 +17,7 @@ interface Course {
   duration?: number;
   image_url?: string;
   instructor_id: string;
+  status?: string;
 }
 
 interface Instructor {
@@ -38,7 +39,8 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
     price: '',
     duration: '',
     image_url: '',
-    instructor_id: ''
+    instructor_id: '',
+    status: ''
   });
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +53,8 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
       price: '',
       duration: '',
       image_url: '',
-      instructor_id: ''
+      instructor_id: '',
+      status: ''
     });
   };
 
@@ -67,7 +70,8 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         price: course.price ? course.price.toString() : '',
         duration: course.duration ? course.duration.toString() : '',
         image_url: course.image_url || '',
-        instructor_id: course.instructor_id
+        instructor_id: course.instructor_id,
+        status: course.status || ''
       });
     } else {
       resetForm();
@@ -92,6 +96,57 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
     e.preventDefault();
     setIsLoading(true);
 
+    // Validate required fields
+    if (!formData.name.trim()) {
+      toast({
+        title: "Lỗi",
+        description: "Tên khóa học là bắt buộc",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      toast({
+        title: "Lỗi",
+        description: "Mô tả là bắt buộc",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.instructor_id) {
+      toast({
+        title: "Lỗi",
+        description: "Giáo viên là bắt buộc",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.duration) {
+      toast({
+        title: "Lỗi",
+        description: "Thời lượng là bắt buộc",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.status) {
+      toast({
+        title: "Lỗi",
+        description: "Trạng thái là bắt buộc",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const courseData = {
         name: formData.name,
@@ -99,7 +154,8 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         price: formData.price ? parseFloat(formData.price) : null,
         duration: formData.duration ? parseInt(formData.duration) : null,
         image_url: formData.image_url || null,
-        instructor_id: formData.instructor_id
+        instructor_id: formData.instructor_id,
+        status: formData.status
       };
 
       if (course) {
@@ -157,7 +213,7 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div>
-            <Label htmlFor="name">Tên khóa học</Label>
+            <Label htmlFor="name">Tên khóa học <span className="text-red-500">*</span></Label>
             <Input
               id="name"
               value={formData.name}
@@ -167,18 +223,19 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
           </div>
 
           <div>
-            <Label htmlFor="description">Mô tả</Label>
+            <Label htmlFor="description">Mô tả <span className="text-red-500">*</span></Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
               rows={3}
+              required
             />
           </div>
 
           <div>
-            <Label htmlFor="instructor_id">Giáo viên</Label>
-            <Select value={formData.instructor_id} onValueChange={(value) => setFormData({...formData, instructor_id: value})}>
+            <Label htmlFor="instructor_id">Giáo viên <span className="text-red-500">*</span></Label>
+            <Select value={formData.instructor_id} onValueChange={(value) => setFormData({...formData, instructor_id: value})} required>
               <SelectTrigger>
                 <SelectValue placeholder="Chọn giáo viên" />
               </SelectTrigger>
@@ -188,6 +245,20 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
                     {instructor.fullname}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="status">Trạng thái <span className="text-red-500">*</span></Label>
+            <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn trạng thái" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Đang mở">Đang mở</SelectItem>
+                <SelectItem value="Đang bắt đầu">Đang bắt đầu</SelectItem>
+                <SelectItem value="Kết thúc">Kết thúc</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -205,13 +276,14 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
               />
             </div>
             <div>
-              <Label htmlFor="duration">Thời lượng (buổi)</Label>
+              <Label htmlFor="duration">Thời lượng (buổi) <span className="text-red-500">*</span></Label>
               <Input
                 id="duration"
                 type="number"
                 value={formData.duration}
                 onChange={(e) => setFormData({...formData, duration: e.target.value})}
                 min="1"
+                required
               />
             </div>
           </div>
