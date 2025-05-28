@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Home, Users, BookOpen, BarChart3, AlertCircle } from 'lucide-react';
+import { Home, Users, BookOpen, BarChart3, AlertCircle, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
 import UserManagement from '@/components/admin/UserManagement';
 import CourseManagement from '@/components/admin/CourseManagement';
+import ClassManagement from '@/components/admin/ClassManagement';
 import AdminOverview from '@/components/admin/AdminOverview';
 
 const AdminDashboard = () => {
@@ -96,7 +97,7 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview" className="flex items-center space-x-2">
               <BarChart3 className="h-4 w-4" />
               <span>Tổng quan</span>
@@ -108,6 +109,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="courses" className="flex items-center space-x-2">
               <BookOpen className="h-4 w-4" />
               <span>Quản lý khóa học</span>
+            </TabsTrigger>
+            <TabsTrigger value="classes" className="flex items-center space-x-2">
+              <GraduationCap className="h-4 w-4" />
+              <span>Quản lý lớp học</span>
             </TabsTrigger>
           </TabsList>
 
@@ -121,6 +126,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="courses">
             <CourseManagement />
+          </TabsContent>
+
+          <TabsContent value="classes">
+            <ClassManagement />
           </TabsContent>
         </Tabs>
       </div>
