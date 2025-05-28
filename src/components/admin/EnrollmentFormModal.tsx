@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -6,12 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-interface Course {
+interface Class {
   id: string;
   name: string;
-  description?: string;
-  price?: number;
-  duration?: number;
+  course_id: string;
+  courses: {
+    name: string;
+  };
 }
 
 interface Student {
@@ -28,17 +30,17 @@ interface EnrollmentFormModalProps {
 const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalProps) => {
   const [formData, setFormData] = useState({
     student_id: '',
-    course_id: '',
+    class_id: '',
   });
   const [students, setStudents] = useState<Student[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
       fetchStudents();
-      fetchCourses();
+      fetchClasses();
     }
   }, [isOpen]);
 
@@ -61,19 +63,25 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
     }
   };
 
-  const fetchCourses = async () => {
+  const fetchClasses = async () => {
     try {
       const { data, error } = await supabase
-        .from('courses')
-        .select('id, name, description, price, duration');
+        .from('classes')
+        .select(`
+          id,
+          name,
+          course_id,
+          courses!inner(name)
+        `)
+        .eq('status', 'active');
 
       if (error) throw error;
-      setCourses(data || []);
+      setClasses(data || []);
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('Error fetching classes:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể tải danh sách khóa học",
+        description: "Không thể tải danh sách lớp học",
         variant: "destructive",
       });
     }
@@ -81,7 +89,7 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.student_id || !formData.course_id) {
+    if (!formData.student_id || !formData.class_id) {
       toast({
         title: "Lỗi",
         description: "Vui lòng chọn đầy đủ thông tin",
@@ -97,13 +105,13 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
         .from('enrollments')
         .select('id')
         .eq('student_id', formData.student_id)
-        .eq('course_id', formData.course_id)
+        .eq('class_id', formData.class_id)
         .single();
 
       if (existingEnrollment) {
         toast({
           title: "Lỗi",
-          description: "Học viên đã đăng ký khóa học này",
+          description: "Học viên đã đăng ký lớp học này",
           variant: "destructive",
         });
         return;
@@ -113,7 +121,7 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
         .from('enrollments')
         .insert({
           student_id: formData.student_id,
-          course_id: formData.course_id,
+          class_id: formData.class_id,
           status: 'active',
           enrolled_at: new Date().toISOString(),
         });
@@ -122,7 +130,7 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
 
       toast({
         title: "Thành công",
-        description: "Đã đăng ký khóa học thành công",
+        description: "Đã đăng ký lớp học thành công",
         className: "bg-green-50 border-green-200 text-green-900",
       });
 
@@ -132,7 +140,7 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
       console.error('Error creating enrollment:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể đăng ký khóa học",
+        description: "Không thể đăng ký lớp học",
         variant: "destructive",
       });
     } finally {
@@ -145,7 +153,7 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-900">
-            Đăng ký khóa học
+            Đăng ký lớp học
           </DialogTitle>
         </DialogHeader>
 
@@ -170,18 +178,18 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="course">Khóa học</Label>
+            <Label htmlFor="class">Lớp học</Label>
             <Select
-              value={formData.course_id}
-              onValueChange={(value) => setFormData({ ...formData, course_id: value })}
+              value={formData.class_id}
+              onValueChange={(value) => setFormData({ ...formData, class_id: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Chọn khóa học" />
+                <SelectValue placeholder="Chọn lớp học" />
               </SelectTrigger>
               <SelectContent>
-                {courses.map((course) => (
-                  <SelectItem key={course.id} value={course.id}>
-                    {course.name}
+                {classes.map((classItem) => (
+                  <SelectItem key={classItem.id} value={classItem.id}>
+                    {classItem.name} - {classItem.courses.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -212,4 +220,4 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
   );
 };
 
-export default EnrollmentFormModal; 
+export default EnrollmentFormModal;

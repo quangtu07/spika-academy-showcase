@@ -10,17 +10,22 @@ import { useToast } from '@/hooks/use-toast';
 interface EnrollmentWithDetails {
   id: string;
   student_id: string;
-  course_id: string;
+  class_id: string;
   enrolled_at: string;
   status: string;
-  courses: {
+  classes: {
     id: string;
     name: string;
     description: string;
-    duration: number;
-    image_url: string;
-    profiles: {
-      fullname: string;
+    courses: {
+      id: string;
+      name: string;
+      description: string;
+      duration: number;
+      image_url: string;
+      profiles: {
+        fullname: string;
+      };
     };
   };
 }
@@ -77,19 +82,24 @@ const StudentCourses = () => {
       console.log('=== DEBUG INFO ===');
       console.log('Tìm enrollments cho user:', userId);
       
-      // Query enrollments với join courses và instructor details
+      // Query enrollments với join classes và courses và instructor details
       const { data: enrollmentsData, error: enrollmentError } = await supabase
         .from('enrollments')
         .select(`
           *,
-          courses (
+          classes!inner (
             id,
             name,
             description,
-            duration,
-            image_url,
-            profiles:instructor_id (
-              fullname
+            courses!inner (
+              id,
+              name,
+              description,
+              duration,
+              image_url,
+              profiles:instructor_id (
+                fullname
+              )
             )
           )
         `)
@@ -135,8 +145,8 @@ const StudentCourses = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Đăng ký khóa học</h2>
-        <p className="text-gray-600">Danh sách các khóa học bạn đã đăng ký</p>
+        <h2 className="text-2xl font-bold text-gray-900">Đăng ký lớp học</h2>
+        <p className="text-gray-600">Danh sách các lớp học bạn đã đăng ký</p>
       </div>
 
       {enrollments.length === 0 ? (
@@ -144,10 +154,10 @@ const StudentCourses = () => {
           <CardContent className="flex flex-col items-center justify-center py-12">
             <BookOpen className="h-12 w-12 text-gray-400 mb-4" />
             <p className="text-gray-500 text-center">
-              Bạn chưa đăng ký khóa học nào.
+              Bạn chưa đăng ký lớp học nào.
             </p>
             <p className="text-xs text-gray-400 mt-2">
-              Vui lòng liên hệ quản trị viên để đăng ký khóa học.
+              Vui lòng liên hệ quản trị viên để đăng ký lớp học.
             </p>
           </CardContent>
         </Card>
@@ -157,8 +167,8 @@ const StudentCourses = () => {
             <Card key={enrollment.id} className="hover:shadow-lg transition-shadow overflow-hidden">
               <div className="relative">
                 <img
-                  src={enrollment.courses.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
-                  alt={enrollment.courses.name}
+                  src={enrollment.classes.courses.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
+                  alt={enrollment.classes.courses.name}
                   className="w-full h-48 object-cover"
                 />
               </div>
@@ -166,11 +176,14 @@ const StudentCourses = () => {
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
                     <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2">
-                      {enrollment.courses.name}
+                      {enrollment.classes.name}
                     </CardTitle>
+                    <p className="text-sm text-gray-600">
+                      Khóa: {enrollment.classes.courses.name}
+                    </p>
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <User className="h-4 w-4" />
-                      <span>GV: {enrollment.courses.profiles?.fullname || 'Chưa có thông tin'}</span>
+                      <span>GV: {enrollment.classes.courses.profiles?.fullname || 'Chưa có thông tin'}</span>
                     </div>
                     <div className="flex items-center space-x-4">
                       <Badge variant="outline" className={
@@ -183,10 +196,10 @@ const StudentCourses = () => {
                         {enrollment.status === 'active' ? 'Đang học' : 
                          enrollment.status === 'completed' ? 'Hoàn thành' : 'Đã dừng'}
                       </Badge>
-                      {enrollment.courses.duration && (
+                      {enrollment.classes.courses.duration && (
                         <div className="flex items-center space-x-1 text-sm text-gray-500">
                           <Clock className="h-4 w-4" />
-                          <span>{enrollment.courses.duration} buổi</span>
+                          <span>{enrollment.classes.courses.duration} buổi</span>
                         </div>
                       )}
                     </div>
@@ -196,7 +209,7 @@ const StudentCourses = () => {
               <CardContent>
                 <div className="space-y-4">
                   <p className="text-sm text-gray-600 line-clamp-2">
-                    {enrollment.courses.description}
+                    {enrollment.classes.description || enrollment.classes.courses.description}
                   </p>
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-gray-500">

@@ -19,31 +19,35 @@ interface Student {
   enrollment: {
     status: string;
     enrolled_at: string;
-    course: {
+    class: {
       id: string;
       name: string;
+      course: {
+        id: string;
+        name: string;
+      };
     };
   };
 }
 
 const TeacherStudents = () => {
   const [students, setStudents] = useState<Student[]>([]);
-  const [courses, setCourses] = useState<any[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<string>('all');
+  const [classes, setClasses] = useState<any[]>([]);
+  const [selectedClass, setSelectedClass] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchTeacherCourses();
+    fetchTeacherClasses();
   }, []);
 
   useEffect(() => {
-    if (courses.length > 0) {
+    if (classes.length > 0) {
       fetchStudents();
     }
-  }, [courses, selectedCourse]);
+  }, [classes, selectedClass]);
 
-  const fetchTeacherCourses = async () => {
+  const fetchTeacherClasses = async () => {
     try {
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
       
@@ -57,17 +61,25 @@ const TeacherStudents = () => {
       }
 
       const { data, error } = await supabase
-        .from('courses')
-        .select('id, name')
-        .eq('instructor_id', currentUser.id);
+        .from('classes')
+        .select(`
+          id,
+          name,
+          courses!inner(
+            id,
+            name,
+            instructor_id
+          )
+        `)
+        .eq('courses.instructor_id', currentUser.id);
 
       if (error) throw error;
-      setCourses(data || []);
+      setClasses(data || []);
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('Error fetching classes:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể tải danh sách khóa học",
+        description: "Không thể tải danh sách lớp học",
         variant: "destructive",
       });
     }
@@ -82,11 +94,15 @@ const TeacherStudents = () => {
         .select(`
           status,
           enrolled_at,
-          course_id,
-          courses!inner (
+          class_id,
+          classes!inner (
             id,
             name,
-            instructor_id
+            courses!inner (
+              id,
+              name,
+              instructor_id
+            )
           ),
           profiles!inner (
             id,
@@ -97,10 +113,10 @@ const TeacherStudents = () => {
             avatar_url
           )
         `)
-        .eq('courses.instructor_id', currentUser.id);
+        .eq('classes.courses.instructor_id', currentUser.id);
 
-      if (selectedCourse !== 'all') {
-        query = query.eq('course_id', selectedCourse);
+      if (selectedClass !== 'all') {
+        query = query.eq('class_id', selectedClass);
       }
 
       const { data, error } = await query;
@@ -117,9 +133,13 @@ const TeacherStudents = () => {
         enrollment: {
           status: enrollment.status,
           enrolled_at: enrollment.enrolled_at,
-          course: {
-            id: enrollment.courses.id,
-            name: enrollment.courses.name
+          class: {
+            id: enrollment.classes.id,
+            name: enrollment.classes.name,
+            course: {
+              id: enrollment.classes.courses.id,
+              name: enrollment.classes.courses.name
+            }
           }
         }
       })) || [];
@@ -175,15 +195,15 @@ const TeacherStudents = () => {
           <h2 className="text-2xl font-bold text-gray-900">Học viên</h2>
           <p className="text-gray-600">Danh sách học viên trong các lớp của bạn</p>
         </div>
-        <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+        <Select value={selectedClass} onValueChange={setSelectedClass}>
           <SelectTrigger className="w-64">
-            <SelectValue placeholder="Chọn khóa học" />
+            <SelectValue placeholder="Chọn lớp học" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tất cả khóa học</SelectItem>
-            {courses.map((course) => (
-              <SelectItem key={course.id} value={course.id}>
-                {course.name}
+            <SelectItem value="all">Tất cả lớp học</SelectItem>
+            {classes.map((classItem) => (
+              <SelectItem key={classItem.id} value={classItem.id}>
+                {classItem.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -195,9 +215,9 @@ const TeacherStudents = () => {
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Users className="h-12 w-12 text-gray-400 mb-4" />
             <p className="text-gray-500 text-center">
-              {selectedCourse === 'all' 
-                ? 'Chưa có học viên nào đăng ký khóa học của bạn.' 
-                : 'Chưa có học viên nào trong khóa học này.'
+              {selectedClass === 'all' 
+                ? 'Chưa có học viên nào đăng ký lớp học của bạn.' 
+                : 'Chưa có học viên nào trong lớp học này.'
               }
             </p>
           </CardContent>
@@ -205,7 +225,7 @@ const TeacherStudents = () => {
       ) : (
         <div className="grid gap-4">
           {students.map((student) => (
-            <Card key={`${student.id}-${student.enrollment.course.id}`} className="hover:shadow-lg transition-shadow">
+            <Card key={`${student.id}-${student.enrollment.class.id}`} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -220,7 +240,7 @@ const TeacherStudents = () => {
                       <div className="flex items-center space-x-2 mt-1">
                         <Badge variant="outline" className="text-xs">
                           <BookOpen className="h-3 w-3 mr-1" />
-                          {student.enrollment.course.name}
+                          {student.enrollment.class.name}
                         </Badge>
                         {getStatusBadge(student.enrollment.status)}
                       </div>
