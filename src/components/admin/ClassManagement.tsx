@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, Users, UserPlus, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ClassFormModal from './ClassFormModal';
@@ -38,6 +38,7 @@ interface Class {
 }
 
 const ClassManagement = () => {
+  const navigate = useNavigate();
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -144,14 +145,8 @@ const ClassManagement = () => {
     setSelectedClass(null);
   };
 
-  const handleViewDetails = (classItem: Class) => {
-    setSelectedClass(classItem);
-    setIsDetailModalOpen(true);
-  };
-
-  const handleAddStudent = (classItem: Class) => {
-    setSelectedClass(classItem);
-    setIsEnrollmentModalOpen(true);
+  const handleViewClassDetail = (classItem: Class) => {
+    navigate(`/admin/class/${classItem.id}`);
   };
 
   const getStatusBadge = (status?: string) => {
@@ -229,7 +224,7 @@ const ClassManagement = () => {
                 <TableRow 
                   key={classItem.id}
                   className="cursor-pointer hover:bg-gray-50"
-                  onClick={() => handleViewDetails(classItem)}
+                  onClick={() => handleViewClassDetail(classItem)}
                 >
                   <TableCell className="font-medium">
                     <div>
@@ -254,24 +249,17 @@ const ClassManagement = () => {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => handleViewClassDetail(classItem)}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleEditClass(classItem)}
                       >
                         <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleAddStudent(classItem)}
-                        className="text-green-600 hover:text-green-700"
-                      >
-                        <UserPlus className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewDetails(classItem)}
-                      >
-                        <Eye className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
@@ -303,81 +291,6 @@ const ClassManagement = () => {
         classData={selectedClass}
         onSaved={handleEnrollmentSaved}
       />
-
-      {/* Class Detail Modal */}
-      <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Chi tiết lớp học: {selectedClass?.name}</DialogTitle>
-            <DialogDescription>
-              Thông tin chi tiết và danh sách học viên trong lớp
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedClass && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h3 className="font-semibold mb-2">Thông tin lớp học</h3>
-                  <div className="space-y-2 text-sm">
-                    <div><strong>Khóa học:</strong> {selectedClass.course_name}</div>
-                    <div><strong>Mô tả:</strong> {selectedClass.description || 'Không có'}</div>
-                    <div><strong>Lịch học:</strong> {selectedClass.schedule || 'Chưa xác định'}</div>
-                    <div><strong>Trạng thái:</strong> {getStatusBadge(selectedClass.status)}</div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold mb-2">Thống kê</h3>
-                  <div className="space-y-2 text-sm">
-                    <div><strong>Số học viên hiện tại:</strong> {selectedClass.enrolled_count}</div>
-                    <div><strong>Ngày tạo:</strong> {new Date(selectedClass.created_at).toLocaleDateString('vi-VN')}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold">Danh sách học viên ({selectedClass.enrolled_count})</h3>
-                  <Button
-                    onClick={() => handleAddStudent(selectedClass)}
-                    size="sm"
-                    className="flex items-center space-x-2"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                    <span>Thêm học viên</span>
-                  </Button>
-                </div>
-                
-                {selectedClass.students && selectedClass.students.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Họ tên</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Ngày đăng ký</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {selectedClass.students.map((student) => (
-                        <TableRow key={student.id}>
-                          <TableCell className="font-medium">{student.fullname}</TableCell>
-                          <TableCell>{student.email}</TableCell>
-                          <TableCell>{new Date(student.enrolled_at).toLocaleDateString('vi-VN')}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    Chưa có học viên nào đăng ký lớp này
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
 
       <AlertDialog open={!!deletingClass} onOpenChange={(open) => !open && setDeletingClass(null)}>
         <AlertDialogContent>
