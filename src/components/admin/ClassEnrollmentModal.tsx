@@ -34,7 +34,7 @@ const ClassEnrollmentModal: React.FC<ClassEnrollmentModalProps> = ({ isOpen, onC
 
   const fetchAvailableStudents = async () => {
     try {
-      // Lấy danh sách học viên chưa đăng ký lớp này
+      // Lấy danh sách học viên đã đăng ký lớp này
       const { data: enrolledStudents, error: enrolledError } = await supabase
         .from('enrollments')
         .select('student_id')
@@ -44,11 +44,17 @@ const ClassEnrollmentModal: React.FC<ClassEnrollmentModalProps> = ({ isOpen, onC
 
       const enrolledStudentIds = enrolledStudents?.map(e => e.student_id) || [];
 
-      const { data: allStudents, error: studentsError } = await supabase
+      // Tạo query để loại trừ học viên đã đăng ký
+      let query = supabase
         .from('profiles')
         .select('id, fullname, email')
-        .eq('role', 'student')
-        .not('id', 'in', `(${enrolledStudentIds.join(',')})`);
+        .eq('role', 'student');
+
+      if (enrolledStudentIds.length > 0) {
+        query = query.not('id', 'in', `(${enrolledStudentIds.join(',')})`);
+      }
+
+      const { data: allStudents, error: studentsError } = await query;
 
       if (studentsError) throw studentsError;
 
@@ -68,15 +74,10 @@ const ClassEnrollmentModal: React.FC<ClassEnrollmentModalProps> = ({ isOpen, onC
 
     setLoading(true);
     try {
-      // Kiểm tra số lượng học viên hiện tại
-      if (classData.max_students && classData.enrolled_count >= classData.max_students) {
-        toast({
-          title: "Lỗi",
-          description: "Lớp học đã đạt số lượng học viên tối đa",
-          variant: "destructive",
-        });
-        return;
-      }
+      console.log('Enrolling student:', {
+        student_id: selectedStudentId,
+        class_id: classData.id
+      });
 
       const { error } = await supabase
         .from('enrollments')
@@ -86,7 +87,10 @@ const ClassEnrollmentModal: React.FC<ClassEnrollmentModalProps> = ({ isOpen, onC
           status: 'active'
         }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Enrollment error:', error);
+        throw error;
+      }
 
       toast({
         title: "Thành công",
@@ -100,7 +104,7 @@ const ClassEnrollmentModal: React.FC<ClassEnrollmentModalProps> = ({ isOpen, onC
     } catch (error) {
       console.error('Error enrolling student:', error);
       toast({
-        title: "Lỗi",
+        title: "Lỗi", 
         description: "Không thể thêm học viên vào lớp",
         variant: "destructive",
       });
@@ -109,8 +113,13 @@ const ClassEnrollmentModal: React.FC<ClassEnrollmentModalProps> = ({ isOpen, onC
     }
   };
 
+  const handleClose = () => {
+    setSelectedStudentId('');
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Thêm học viên vào lớp</DialogTitle>
@@ -148,7 +157,7 @@ const ClassEnrollmentModal: React.FC<ClassEnrollmentModalProps> = ({ isOpen, onC
           <div className="flex justify-end space-x-2 pt-4">
             <Button
               variant="outline"
-              onClick={onClose}
+              onClick={handleClose}
               disabled={loading}
             >
               Hủy
