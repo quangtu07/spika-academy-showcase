@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Home, Users, BookOpen, BarChart3, AlertCircle, GraduationCap } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
 import UserManagement from '@/components/admin/UserManagement';
@@ -14,6 +13,7 @@ import AdminOverview from '@/components/admin/AdminOverview';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('overview');
   const { userRole, isLoading } = useUserRole();
   const { toast } = useToast();
@@ -28,6 +28,15 @@ const AdminDashboard = () => {
       navigate('/');
     }
   }, [userRole, isLoading, navigate, toast]);
+
+  useEffect(() => {
+    // Check if we have a state indicating which tab to show
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+      // Clear the state to avoid persisting it
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   const handleGoHome = () => {
     navigate('/');

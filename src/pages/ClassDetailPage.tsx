@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -37,6 +36,7 @@ interface Class {
 const ClassDetailPage = () => {
   const { classId } = useParams<{ classId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [classData, setClassData] = useState<Class | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -117,6 +117,15 @@ const ClassDetailPage = () => {
     );
   };
 
+  const handleGoBack = () => {
+    const tab = searchParams.get('tab');
+    if (tab === 'classes') {
+      navigate('/admin', { state: { activeTab: 'classes' } });
+    } else {
+      navigate('/admin');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -156,7 +165,7 @@ const ClassDetailPage = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <Button
-                onClick={() => navigate('/admin')}
+                onClick={handleGoBack}
                 variant="outline"
                 className="flex items-center space-x-2"
               >

@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Plus, Edit, Trash2, Users, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -148,7 +148,7 @@ const ClassManagement = () => {
   };
 
   const handleViewClassDetail = (classItem: Class) => {
-    navigate(`/admin/class/${classItem.id}`);
+    navigate(`/admin/class/${classItem.id}?tab=classes`);
   };
 
   const getStatusBadge = (status?: string) => {
@@ -248,14 +248,23 @@ const ClassManagement = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewClassDetail(classItem)}
-                        className="text-blue-600 hover:text-blue-700"
-                      >
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewClassDetail(classItem)}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              <ArrowRight className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Xem chi tiết</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       <Button
                         variant="outline"
                         size="sm"
