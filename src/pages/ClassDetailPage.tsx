@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ArrowLeft, Users, BookOpen, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import ClassEnrollmentModal from '@/components/admin/ClassEnrollmentModal';
 
 interface Class {
   id: string;
@@ -39,6 +40,7 @@ const ClassDetailPage = () => {
   const [searchParams] = useSearchParams();
   const [classData, setClassData] = useState<Class | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -126,6 +128,11 @@ const ClassDetailPage = () => {
     }
   };
 
+  const handleEnrollmentSaved = () => {
+    fetchClassDetails();
+    setIsEnrollmentModalOpen(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -158,153 +165,169 @@ const ClassDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <Button
-                onClick={handleGoBack}
-                variant="outline"
-                className="flex items-center space-x-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Quay lại</span>
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{classData.name}</h1>
-                <p className="text-sm text-gray-600">Chi tiết lớp học</p>
+    <>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center space-x-3">
+                <Button
+                  onClick={handleGoBack}
+                  variant="outline"
+                  className="flex items-center space-x-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Quay lại</span>
+                </Button>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">{classData.name}</h1>
+                  <p className="text-sm text-gray-600">Chi tiết lớp học</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Class Info Card */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Thông tin lớp học</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Khóa học:</strong> {classData.course_name}</div>
-                  <div><strong>Mô tả:</strong> {classData.description || 'Không có'}</div>
-                  <div><strong>Lịch học:</strong> {classData.schedule || 'Chưa xác định'}</div>
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Class Info Card */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Thông tin lớp học</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="space-y-2 text-sm">
+                    <div><strong>Khóa học:</strong> {classData.course_name}</div>
+                    <div><strong>Mô tả:</strong> {classData.description || 'Không có'}</div>
+                    <div><strong>Lịch học:</strong> {classData.schedule || 'Chưa xác định'}</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="space-y-2 text-sm">
+                    <div><strong>Trạng thái:</strong> {getStatusBadge(classData.status)}</div>
+                    <div><strong>Số học viên:</strong> {classData.enrolled_count}</div>
+                    <div><strong>Ngày tạo:</strong> {new Date(classData.created_at).toLocaleDateString('vi-VN')}</div>
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Trạng thái:</strong> {getStatusBadge(classData.status)}</div>
-                  <div><strong>Số học viên:</strong> {classData.enrolled_count}</div>
-                  <div><strong>Ngày tạo:</strong> {new Date(classData.created_at).toLocaleDateString('vi-VN')}</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Tabs */}
-        <Tabs defaultValue="students" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="students" className="flex items-center space-x-2">
-              <Users className="h-4 w-4" />
-              <span>Danh sách học viên</span>
-            </TabsTrigger>
-            <TabsTrigger value="lessons" className="flex items-center space-x-2">
-              <BookOpen className="h-4 w-4" />
-              <span>Danh sách buổi học</span>
-            </TabsTrigger>
-          </TabsList>
+          {/* Tabs */}
+          <Tabs defaultValue="students" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="students" className="flex items-center space-x-2">
+                <Users className="h-4 w-4" />
+                <span>Danh sách học viên</span>
+              </TabsTrigger>
+              <TabsTrigger value="lessons" className="flex items-center space-x-2">
+                <BookOpen className="h-4 w-4" />
+                <span>Danh sách buổi học</span>
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="students">
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Danh sách học viên ({classData.enrolled_count})</CardTitle>
-                    <CardDescription>Tất cả học viên đã đăng ký lớp học này</CardDescription>
+            <TabsContent value="students">
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Danh sách học viên ({classData.enrolled_count})</CardTitle>
+                      <CardDescription>Tất cả học viên đã đăng ký lớp học này</CardDescription>
+                    </div>
+                    <Button 
+                      onClick={() => setIsEnrollmentModalOpen(true)}
+                      className="flex items-center space-x-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Thêm học viên</span>
+                    </Button>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {classData.students && classData.students.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>STT</TableHead>
-                        <TableHead>Họ tên</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Ngày đăng ký</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {classData.students.map((student, index) => (
-                        <TableRow key={student.id}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell className="font-medium">{student.fullname}</TableCell>
-                          <TableCell>{student.email}</TableCell>
-                          <TableCell>{new Date(student.enrolled_at).toLocaleDateString('vi-VN')}</TableCell>
+                </CardHeader>
+                <CardContent>
+                  {classData.students && classData.students.length > 0 ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>STT</TableHead>
+                          <TableHead>Họ tên</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Ngày đăng ký</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    Chưa có học viên nào đăng ký lớp này
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                      </TableHeader>
+                      <TableBody>
+                        {classData.students.map((student, index) => (
+                          <TableRow key={student.id}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell className="font-medium">{student.fullname}</TableCell>
+                            <TableCell>{student.email}</TableCell>
+                            <TableCell>{new Date(student.enrolled_at).toLocaleDateString('vi-VN')}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      Chưa có học viên nào đăng ký lớp này
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          <TabsContent value="lessons">
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Danh sách buổi học ({classData.lessons?.length || 0})</CardTitle>
-                    <CardDescription>Tất cả buổi học trong lớp</CardDescription>
+            <TabsContent value="lessons">
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Danh sách buổi học ({classData.lessons?.length || 0})</CardTitle>
+                      <CardDescription>Tất cả buổi học trong lớp</CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {classData.lessons && classData.lessons.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Buổi học</TableHead>
-                        <TableHead>Tiêu đề</TableHead>
-                        <TableHead>Mô tả</TableHead>
-                        <TableHead>Ngày tạo</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {classData.lessons.map((lesson) => (
-                        <TableRow key={lesson.id}>
-                          <TableCell className="font-medium">Buổi {lesson.lesson_number}</TableCell>
-                          <TableCell>{lesson.title}</TableCell>
-                          <TableCell>{lesson.description || '-'}</TableCell>
-                          <TableCell>{new Date(lesson.created_at).toLocaleDateString('vi-VN')}</TableCell>
+                </CardHeader>
+                <CardContent>
+                  {classData.lessons && classData.lessons.length > 0 ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Buổi học</TableHead>
+                          <TableHead>Tiêu đề</TableHead>
+                          <TableHead>Mô tả</TableHead>
+                          <TableHead>Ngày tạo</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    Chưa có buổi học nào được tạo cho lớp này
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                      </TableHeader>
+                      <TableBody>
+                        {classData.lessons.map((lesson) => (
+                          <TableRow key={lesson.id}>
+                            <TableCell className="font-medium">Buổi {lesson.lesson_number}</TableCell>
+                            <TableCell>{lesson.title}</TableCell>
+                            <TableCell>{lesson.description || '-'}</TableCell>
+                            <TableCell>{new Date(lesson.created_at).toLocaleDateString('vi-VN')}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      Chưa có buổi học nào được tạo cho lớp này
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
+
+      <ClassEnrollmentModal
+        isOpen={isEnrollmentModalOpen}
+        onClose={() => setIsEnrollmentModalOpen(false)}
+        classData={classData}
+        onSaved={handleEnrollmentSaved}
+      />
+    </>
   );
 };
 
