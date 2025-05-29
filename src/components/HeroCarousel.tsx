@@ -47,7 +47,7 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
   }, [slides.length]);
 
   return (
-    <div className="relative h-screen overflow-hidden font-roboto" id="home">
+    <div className="relative h-[600px] md:h-[700px] overflow-hidden font-roboto" id="home">
       {slides.map((slide, index) => (
         <div
           key={index}
