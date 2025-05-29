@@ -1,4 +1,7 @@
 
+// import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+// import { Resend } from "npm:resend@2.0.0";
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
@@ -30,7 +33,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "MC Training Center <onboarding@resend.dev>",
       to: ["linhquangtu07@gmail.com"], // Đổi thành email đã đăng ký với Resend
-      subject: "Đăng ký tư vấn khóa học MC mới",
+      subject: "Tiếp nhận thông tin đăng ký tư vấn khóa học",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">

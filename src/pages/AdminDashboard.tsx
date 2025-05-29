@@ -87,7 +87,7 @@ const AdminDashboard = () => {
                 <span className="text-white font-bold text-xl">S</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Spika Admin</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Admin</h1>
                 <p className="text-sm text-gray-600">Bảng điều khiển quản trị</p>
               </div>
             </div>

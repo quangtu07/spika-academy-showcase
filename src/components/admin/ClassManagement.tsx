@@ -153,18 +153,15 @@ const ClassManagement = () => {
 
   const getStatusBadge = (status?: string) => {
     const statusColors = {
-      'active': 'bg-green-100 text-green-800',
-      'inactive': 'bg-gray-100 text-gray-800',
-      'completed': 'bg-blue-100 text-blue-800'
+      'Đang hoạt động': 'bg-green-100 text-green-800',
+      'Đã kết thúc': 'bg-gray-100 text-gray-800'
     };
 
     const colorClass = status ? statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800';
 
     return (
       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${colorClass}`}>
-        {status === 'active' ? 'Đang hoạt động' : 
-         status === 'inactive' ? 'Không hoạt động' : 
-         status === 'completed' ? 'Đã hoàn thành' : 'Không xác định'}
+        {status || 'Không xác định'}
       </span>
     );
   };

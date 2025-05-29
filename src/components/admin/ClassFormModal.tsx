@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -14,6 +13,8 @@ interface Course {
   name: string;
 }
 
+type ClassStatus = 'Đang hoạt động' | 'Đã kết thúc';
+
 interface ClassFormModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -27,7 +28,7 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
     name: '',
     description: '',
     schedule: '',
-    status: 'active'
+    status: 'Đang hoạt động' as ClassStatus
   });
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
           name: classData.name || '',
           description: classData.description || '',
           schedule: classData.schedule || '',
-          status: classData.status || 'active'
+          status: classData.status || 'Đang hoạt động'
         });
       } else {
         setFormData({
@@ -50,7 +51,7 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
           name: '',
           description: '',
           schedule: '',
-          status: 'active'
+          status: 'Đang hoạt động'
         });
       }
     }
@@ -208,9 +209,8 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Đang hoạt động</SelectItem>
-                <SelectItem value="inactive">Không hoạt động</SelectItem>
-                <SelectItem value="completed">Đã hoàn thành</SelectItem>
+                <SelectItem value="Đang hoạt động">Đang hoạt động</SelectItem>
+                <SelectItem value="Đã kết thúc">Đã kết thúc</SelectItem>
               </SelectContent>
             </Select>
           </div>

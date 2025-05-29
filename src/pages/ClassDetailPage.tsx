@@ -4,10 +4,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Users, BookOpen, Plus } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, Plus, Pencil, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ClassEnrollmentModal from '@/components/admin/ClassEnrollmentModal';
+import LessonFormModal from '@/components/admin/LessonFormModal';
+import LessonEditModal from '@/components/admin/LessonEditModal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Class {
   id: string;
@@ -17,6 +29,7 @@ interface Class {
   schedule?: string;
   status?: string;
   created_at: string;
+  updated_at?: string;
   course_name?: string;
   enrolled_count: number;
   students?: Array<{
@@ -28,11 +41,25 @@ interface Class {
   lessons?: Array<{
     id: string;
     title: string;
-    description?: string;
+    content?: string;
     lesson_number: number;
     created_at: string;
+    updated_at?: string;
   }>;
 }
+
+const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+};
 
 const ClassDetailPage = () => {
   const { classId } = useParams<{ classId: string }>();
@@ -41,6 +68,10 @@ const ClassDetailPage = () => {
   const [classData, setClassData] = useState<Class | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
+  const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
+  const [isLessonEditModalOpen, setIsLessonEditModalOpen] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -65,9 +96,10 @@ const ClassDetailPage = () => {
           lessons(
             id,
             title,
-            description,
+            content,
             lesson_number,
-            created_at
+            created_at,
+            updated_at
           )
         `)
         .eq('id', classId)
@@ -131,6 +163,45 @@ const ClassDetailPage = () => {
   const handleEnrollmentSaved = () => {
     fetchClassDetails();
     setIsEnrollmentModalOpen(false);
+  };
+
+  const handleLessonSaved = () => {
+    fetchClassDetails();
+    setIsLessonModalOpen(false);
+  };
+
+  const handleEditLesson = (lesson: any) => {
+    setSelectedLesson(lesson);
+    setIsLessonEditModalOpen(true);
+  };
+
+  const handleDeleteLesson = async (lessonId: string) => {
+    try {
+      const { error } = await supabase
+        .from('lessons')
+        .delete()
+        .eq('id', lessonId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Thành công",
+        description: "Đã xóa buổi học",
+        className: "bg-green-50 border-green-200 text-green-900",
+      });
+
+      fetchClassDetails();
+    } catch (error: any) {
+      console.error('Error deleting lesson:', error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể xóa buổi học",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setSelectedLesson(null);
+    }
   };
 
   if (loading) {
@@ -209,7 +280,8 @@ const ClassDetailPage = () => {
                   <div className="space-y-2 text-sm">
                     <div><strong>Trạng thái:</strong> {getStatusBadge(classData.status)}</div>
                     <div><strong>Số học viên:</strong> {classData.enrolled_count}</div>
-                    <div><strong>Ngày tạo:</strong> {new Date(classData.created_at).toLocaleDateString('vi-VN')}</div>
+                    <div><strong>Ngày tạo:</strong> {formatDateTime(classData.created_at)}</div>
+                    <div><strong>Lần cập nhật cuối:</strong> {classData.updated_at ? formatDateTime(classData.updated_at) : 'Chưa cập nhật'}</div>
                   </div>
                 </div>
               </div>
@@ -285,6 +357,13 @@ const ClassDetailPage = () => {
                       <CardTitle>Danh sách buổi học ({classData.lessons?.length || 0})</CardTitle>
                       <CardDescription>Tất cả buổi học trong lớp</CardDescription>
                     </div>
+                    <Button 
+                      onClick={() => setIsLessonModalOpen(true)}
+                      className="flex items-center space-x-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Thêm buổi học</span>
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -294,8 +373,10 @@ const ClassDetailPage = () => {
                         <TableRow>
                           <TableHead>Buổi học</TableHead>
                           <TableHead>Tiêu đề</TableHead>
-                          <TableHead>Mô tả</TableHead>
+                          <TableHead>Nội dung</TableHead>
                           <TableHead>Ngày tạo</TableHead>
+                          <TableHead>Cập nhật lần cuối</TableHead>
+                          <TableHead className="text-right">Thao tác</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -303,8 +384,31 @@ const ClassDetailPage = () => {
                           <TableRow key={lesson.id}>
                             <TableCell className="font-medium">Buổi {lesson.lesson_number}</TableCell>
                             <TableCell>{lesson.title}</TableCell>
-                            <TableCell>{lesson.description || '-'}</TableCell>
-                            <TableCell>{new Date(lesson.created_at).toLocaleDateString('vi-VN')}</TableCell>
+                            <TableCell>{lesson.content || '-'}</TableCell>
+                            <TableCell>{formatDateTime(lesson.created_at)}</TableCell>
+                            <TableCell>{lesson.updated_at ? formatDateTime(lesson.updated_at) : '-'}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleEditLesson(lesson)}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-500 hover:text-red-700"
+                                  onClick={() => {
+                                    setSelectedLesson(lesson);
+                                    setIsDeleteDialogOpen(true);
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -327,6 +431,56 @@ const ClassDetailPage = () => {
         classData={classData}
         onSaved={handleEnrollmentSaved}
       />
+
+      <LessonFormModal
+        isOpen={isLessonModalOpen}
+        onClose={() => setIsLessonModalOpen(false)}
+        classData={classData}
+        onSaved={() => {
+          fetchClassDetails();
+          setIsLessonModalOpen(false);
+        }}
+      />
+
+      <LessonEditModal
+        isOpen={isLessonEditModalOpen}
+        onClose={() => {
+          setIsLessonEditModalOpen(false);
+          setSelectedLesson(null);
+        }}
+        lesson={selectedLesson}
+        onSaved={() => {
+          fetchClassDetails();
+          setIsLessonEditModalOpen(false);
+          setSelectedLesson(null);
+        }}
+      />
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa buổi học</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa buổi học "{selectedLesson?.title}"?
+              Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setIsDeleteDialogOpen(false);
+              setSelectedLesson(null);
+            }}>
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => selectedLesson && handleDeleteLesson(selectedLesson.id)}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Xác nhận xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

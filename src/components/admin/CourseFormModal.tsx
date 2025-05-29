@@ -139,14 +139,14 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
     try {
       // Validate required fields
       if (!formData.name.trim() || !formData.instructor_id) {
-        toast({
-          title: "Lỗi",
+      toast({
+        title: "Lỗi",
           description: "Vui lòng điền đầy đủ thông tin bắt buộc",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
 
       const courseData: any = {
         name: formData.name.trim(),
@@ -188,11 +188,11 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         }
       }
 
-      toast({
-        title: "Thành công",
+        toast({
+          title: "Thành công",
         description: `Đã ${course ? 'cập nhật' : 'thêm'} khóa học thành công`,
-        className: "bg-green-50 border-green-200 text-green-900",
-      });
+          className: "bg-green-50 border-green-200 text-green-900",
+        });
 
       onSaved();
       onClose();

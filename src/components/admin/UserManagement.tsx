@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, ArrowUpDown, Upload, GraduationCap } from 'lucide-react';
+import { Plus, Edit, Trash2, ArrowUpDown, Upload, GraduationCap, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import UserFormModal from './UserFormModal';
@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 
 interface User {
   id: string;
@@ -43,10 +44,22 @@ const UserManagement = () => {
   const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('student');
   const [sortField, setSortField] = useState<SortField>('fullname');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Kiểm tra nếu có userRoleTab từ state khi quay lại từ UserDetailPage
+    if (location.state?.userRoleTab) {
+      setActiveTab(location.state.userRoleTab);
+      // Xóa state để tránh việc lưu trữ không cần thiết
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   useEffect(() => {
     fetchUsers();
@@ -233,6 +246,12 @@ const UserManagement = () => {
       .slice(0, 2);
   };
 
+  const handleViewUserDetail = (user: User) => {
+    const roleTab = user.role === 'student' ? 'student' : 
+                   user.role === 'teacher' ? 'teacher' : 'admin';
+    navigate(`/admin/user/${user.id}?tab=${roleTab}`);
+  };
+
   const renderUserTable = (roleFilter: string) => {
     const sortedUsers = getSortedUsers(roleFilter);
 
@@ -274,16 +293,6 @@ const UserManagement = () => {
             <TableHead>
               <Button 
                 variant="ghost" 
-                onClick={() => handleSort('age')}
-                className="flex items-center space-x-1 p-0 h-auto font-medium"
-              >
-                <span>Tuổi</span>
-                <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button 
-                variant="ghost" 
                 onClick={() => handleSort('phone_number')}
                 className="flex items-center space-x-1 p-0 h-auto font-medium"
               >
@@ -308,7 +317,6 @@ const UserManagement = () => {
               <TableCell className="font-medium">{user.username}</TableCell>
               <TableCell>{user.fullname}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.age || '-'}</TableCell>
               <TableCell>{user.phone_number || '-'}</TableCell>
               <TableCell>
                 <div className="flex items-center space-x-2">
@@ -326,6 +334,14 @@ const UserManagement = () => {
                     className="text-red-600 hover:text-red-700"
                   >
                     <Trash2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleViewUserDetail(user)}
+                    className="text-blue-600 hover:text-blue-700"
+                  >
+                    <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>
               </TableCell>

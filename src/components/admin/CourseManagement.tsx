@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2, Users, Image } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, Image, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import CourseFormModal from './CourseFormModal';
@@ -17,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { useNavigate } from 'react-router-dom';
 
 interface Course {
   id: string;
@@ -30,6 +31,7 @@ interface Course {
   status?: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
   created_at: string;
   enrolled_count: number;
+  updated_at?: string;
 }
 
 const CourseManagement = () => {
@@ -39,6 +41,7 @@ const CourseManagement = () => {
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [deletingCourse, setDeletingCourse] = useState<Course | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCourses();
@@ -153,6 +156,23 @@ const CourseManagement = () => {
     );
   };
 
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+  };
+
+  const handleViewCourseDetail = (course: Course) => {
+    navigate(`/admin/course/${course.id}?tab=courses`);
+  };
+
   if (loading) {
     return (
       <Card>
@@ -259,6 +279,14 @@ const CourseManagement = () => {
                         className="text-red-600 hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewCourseDetail(course)}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <ArrowRight className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>
