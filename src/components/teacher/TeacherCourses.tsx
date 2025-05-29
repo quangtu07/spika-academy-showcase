@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { BookOpen, Users, Plus, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import CourseFormModal from '@/components/admin/CourseFormModal';
 
 interface Course {
   id: string;
@@ -13,12 +13,25 @@ interface Course {
   description: string;
   duration: number;
   price: number;
+  image_url?: string;
+  status: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
+  instructor_id: string;
   enrollments_count: number;
+}
+
+interface Profile {
+  id: string;
+  username: string;
+  email: string;
+  fullname: string;
+  role: string;
 }
 
 const TeacherCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -27,9 +40,10 @@ const TeacherCourses = () => {
 
   const fetchTeacherCourses = async () => {
     try {
-      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      
-      if (!currentUser) {
+      // Lấy thông tin user từ localStorage
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}') as Profile;
+
+      if (!currentUser?.id) {
         toast({
           title: "Lỗi",
           description: "Vui lòng đăng nhập để xem khóa học",
@@ -38,29 +52,25 @@ const TeacherCourses = () => {
         return;
       }
 
+      // Lấy danh sách khóa học của giảng viên
       const { data, error } = await supabase
         .from('courses')
         .select(`
-          id,
-          name,
-          description,
-          duration,
-          price,
-          enrollments (
-            id
+          *,
+          profiles!courses_instructor_id_fkey(fullname),
+          classes(
+            enrollments(count)
           )
         `)
-        .eq('instructor_id', currentUser.id);
+        .eq('instructor_id', currentUser.id)
+        .order('updated_at', { ascending: false });
 
       if (error) throw error;
 
       const formattedCourses = data?.map(course => ({
-        id: course.id,
-        name: course.name,
-        description: course.description,
-        duration: course.duration,
-        price: course.price,
-        enrollments_count: course.enrollments?.length || 0
+        ...course,
+        enrollments_count: course.classes?.reduce((total, classItem) => 
+          total + (classItem.enrollments[0]?.count || 0), 0) || 0
       })) || [];
 
       setCourses(formattedCourses);
@@ -76,6 +86,27 @@ const TeacherCourses = () => {
     }
   };
 
+  const handleEditCourse = (course: Course) => {
+    setEditingCourse(course);
+    setIsModalOpen(true);
+  };
+
+  const handleCourseSaved = () => {
+    fetchTeacherCourses();
+    setIsModalOpen(false);
+    setEditingCourse(null);
+  };
+
+  const getStatusBadge = (status: string) => {
+    const statusMap = {
+      'Đang mở': { label: 'Đang mở', color: 'bg-green-100 text-green-800' },
+      'Đang bắt đầu': { label: 'Đang bắt đầu', color: 'bg-blue-100 text-blue-800' },
+      'Kết thúc': { label: 'Kết thúc', color: 'bg-gray-100 text-gray-800' }
+    };
+    const statusInfo = statusMap[status] || { label: status, color: 'bg-gray-100 text-gray-800' };
+    return <Badge className={statusInfo.color}>{statusInfo.label}</Badge>;
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -85,79 +116,86 @@ const TeacherCourses = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Khóa học của tôi</h2>
-          <p className="text-gray-600">Quản lý các khóa học bạn đang giảng dạy</p>
+    <>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Khóa học của tôi</h2>
+            <p className="text-gray-600">Quản lý các khóa học bạn đang giảng dạy</p>
+          </div>
         </div>
-        <Button className="bg-primary-600 hover:bg-primary-700">
-          <Plus className="h-4 w-4 mr-2" />
-          Thêm khóa học
-        </Button>
-      </div>
 
-      {courses.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <BookOpen className="h-12 w-12 text-gray-400 mb-4" />
-            <p className="text-gray-500 text-center">
-              Bạn chưa có khóa học nào.
-            </p>
-            <Button className="mt-4 bg-primary-600 hover:bg-primary-700">
-              Tạo khóa học đầu tiên
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2">
-          {courses.map((course) => (
-            <Card key={course.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <CardTitle className="line-clamp-2">{course.name}</CardTitle>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="outline" className="border-blue-500 text-blue-700">
-                        {course.enrollments_count} học viên
-                      </Badge>
+        {courses.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <BookOpen className="h-12 w-12 text-gray-400 mb-4" />
+              <p className="text-gray-500 text-center">
+                Bạn chưa có khóa học nào.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {courses.map((course) => (
+              <Card key={course.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <CardTitle className="line-clamp-2">{course.name}</CardTitle>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline" className="border-blue-500 text-blue-700">
+                          {course.enrollments_count} học viên
+                        </Badge>
+                        {getStatusBadge(course.status)}
+                      </div>
                     </div>
-                  </div>
-                  <Button variant="ghost" size="sm">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </div>
-                <CardDescription className="line-clamp-3">
-                  {course.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between text-sm text-gray-600">
-                    <div className="flex items-center space-x-1">
-                      <Users className="h-4 w-4" />
-                      <span>{course.enrollments_count} học viên</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <span>{course.duration} buổi</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-primary-600">
-                      {course.price?.toLocaleString('vi-VN')} VNĐ
-                    </span>
-                    <Button size="sm" variant="outline">
-                      Quản lý
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleEditCourse(course)}
+                    >
+                      <Edit className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+                  <CardDescription className="line-clamp-3">
+                    {course.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                      <div className="flex items-center space-x-1">
+                        <Users className="h-4 w-4" />
+                        <span>{course.enrollments_count} học viên</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <span>{course.duration} buổi</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-bold text-primary-600">
+                        {course.price?.toLocaleString('vi-VN')} VNĐ
+                      </span>
+                      <Button size="sm" variant="outline">
+                        Quản lý
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <CourseFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        course={editingCourse}
+        onSaved={handleCourseSaved}
+      />
+    </>
   );
 };
 

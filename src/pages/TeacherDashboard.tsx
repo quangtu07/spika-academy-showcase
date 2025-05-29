@@ -1,16 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Home, Users, BookOpen, MessageSquare, BarChart3 } from 'lucide-react';
+import { Home, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
 import TeacherCourses from '@/components/teacher/TeacherCourses';
-import TeacherStudents from '@/components/teacher/TeacherStudents';
-import TeacherFeedback from '@/components/teacher/TeacherFeedback';
-import TeacherReports from '@/components/teacher/TeacherReports';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
@@ -92,39 +88,15 @@ const TeacherDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-1">
             <TabsTrigger value="courses" className="flex items-center space-x-2">
               <BookOpen className="h-4 w-4" />
               <span>Khóa học</span>
-            </TabsTrigger>
-            <TabsTrigger value="students" className="flex items-center space-x-2">
-              <Users className="h-4 w-4" />
-              <span>Học viên</span>
-            </TabsTrigger>
-            <TabsTrigger value="feedback" className="flex items-center space-x-2">
-              <MessageSquare className="h-4 w-4" />
-              <span>Nhận xét</span>
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center space-x-2">
-              <BarChart3 className="h-4 w-4" />
-              <span>Báo cáo</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="courses">
             <TeacherCourses />
-          </TabsContent>
-
-          <TabsContent value="students">
-            <TeacherStudents />
-          </TabsContent>
-
-          <TabsContent value="feedback">
-            <TeacherFeedback />
-          </TabsContent>
-
-          <TabsContent value="reports">
-            <TeacherReports />
           </TabsContent>
         </Tabs>
       </div>

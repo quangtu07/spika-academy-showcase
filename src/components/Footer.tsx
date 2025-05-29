@@ -1,19 +1,18 @@
-
 import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white py-12 font-roboto">
+    <footer className="bg-gray-900 text-white py-12 font-roboto" id="contact">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="col-span-1">
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">S</span>
               </div>
               <span className="text-2xl font-bold">Spika</span>
             </div>
-            <p className="text-gray-400 mb-4 max-w-md">
+            <p className="text-gray-400 mb-4">
               Trung tâm đào tạo MC hàng đầu, nơi ươm mầm và phát triển tài năng dẫn chương trình chuyên nghiệp.
             </p>
             <div className="flex space-x-4">
@@ -29,7 +28,7 @@ const Footer = () => {
               </a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.758-1.378l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.624 0 11.99-5.367 11.99-11.987C24.007 5.367 18.641.001 12.017.001z"/>
+                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.878-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.758-1.378l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.624 0 11.99-5.367 11.99-11.987C24.007 5.367 18.641.001 12.017.001z"/>
                 </svg>
               </a>
             </div>
@@ -42,18 +41,29 @@ const Footer = () => {
               <li><a href="#about" className="text-gray-400 hover:text-white transition-colors">Giới thiệu</a></li>
               <li><a href="#courses" className="text-gray-400 hover:text-white transition-colors">Khóa học</a></li>
               <li><a href="#activities" className="text-gray-400 hover:text-white transition-colors">Hoạt động</a></li>
-              <li><a href="#contact" className="text-gray-400 hover:text-white transition-colors">Liên hệ</a></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-bold mb-4">Liên hệ</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>123 Đường ABC, Quận XYZ</li>
-              <li>TP. Hồ Chí Minh</li>
-              <li>0123 456 789</li>
-              <li>info@spika.edu.vn</li>
-            </ul>
+            <h3 className="text-lg font-bold mb-4">Thông tin liên hệ</h3>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-gray-300">Địa chỉ</h4>
+                <p className="text-gray-400">123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-300">Điện thoại / Zalo</h4>
+                <p className="text-gray-400">0123 456 789</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-300">Email</h4>
+                <p className="text-gray-400">info@spika.edu.vn</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-300">Thời gian làm việc</h4>
+                <p className="text-gray-400">Thứ 2 - Chủ nhật: 8:00 - 21:00</p>
+              </div>
+            </div>
           </div>
         </div>
 
