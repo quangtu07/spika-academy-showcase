@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -56,15 +57,38 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
     setIsLoading(true);
 
     try {
-      // Xử lý logic gửi form ở đây
-      toast({
-        title: "Đăng ký thành công!",
-        description: "Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
+      // Tìm tên khóa học từ ID được chọn
+      const selectedCourse = courses.find(course => course.id === formData.course);
+      const courseName = selectedCourse ? selectedCourse.name : 'Chưa xác định';
+
+      console.log('Sending consultation request:', {
+        fullName: formData.fullName,
+        phone: formData.phone,
+        courseName
       });
+
+      // Gửi email thông qua edge function
+      const { data, error } = await supabase.functions.invoke('send-consultation-email', {
+        body: {
+          fullName: formData.fullName,
+          phone: formData.phone,
+          courseName: courseName
+        }
+      });
+
+      if (error) throw error;
+
+      console.log('Email sent successfully:', data);
+
+      toast({
+        title: "Cảm ơn bạn đã đăng ký tư vấn!",
+        description: "Chúng mình sẽ liên hệ với bạn sớm nhất.",
+      });
+      
       setFormData({ fullName: '', phone: '', course: '' });
       onClose();
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Error submitting consultation request:', error);
       toast({
         title: "Lỗi",
         description: "Không thể gửi thông tin. Vui lòng thử lại sau.",
