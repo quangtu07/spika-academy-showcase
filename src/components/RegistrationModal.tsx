@@ -1,11 +1,16 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Course {
+  id: string;
+  name: string;
+}
 
 interface RegistrationModalProps {
   isOpen: boolean;
@@ -18,25 +23,56 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
     phone: '',
     course: ''
   });
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const courses = [
-    'MC Cơ bản',
-    'MC Sự kiện',
-    'MC Chuyên nghiệp',
-    'MC Truyền hình',
-    'MC Wedding'
-  ];
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const fetchCourses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('id, name')
+        .eq('status', 'Đang mở')
+        .order('name');
+
+      if (error) throw error;
+      setCourses(data || []);
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải danh sách khóa học. Vui lòng thử lại sau.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    toast({
-      title: "Đăng ký thành công!",
-      description: "Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
-    });
-    setFormData({ fullName: '', phone: '', course: '' });
-    onClose();
+    setIsLoading(true);
+
+    try {
+      // Xử lý logic gửi form ở đây
+      toast({
+        title: "Đăng ký thành công!",
+        description: "Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
+      });
+      setFormData({ fullName: '', phone: '', course: '' });
+      onClose();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể gửi thông tin. Vui lòng thử lại sau.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -93,8 +129,8 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
               </SelectTrigger>
               <SelectContent>
                 {courses.map((course) => (
-                  <SelectItem key={course} value={course}>
-                    {course}
+                  <SelectItem key={course.id} value={course.id}>
+                    {course.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -106,14 +142,16 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
               variant="outline" 
               onClick={onClose}
               className="flex-1"
+              disabled={isLoading}
             >
               Hủy
             </Button>
             <Button 
               type="submit" 
               className="flex-1 bg-primary-600 hover:bg-primary-700 text-white"
+              disabled={isLoading}
             >
-              Gửi thông tin
+              {isLoading ? "Đang gửi..." : "Gửi thông tin"}
             </Button>
           </div>
         </form>
