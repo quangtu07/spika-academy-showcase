@@ -15,8 +15,6 @@ interface Course {
   price?: number;
   duration?: number;
   image_url?: string;
-  instructor_id: string;
-  instructor_name?: string;
   status?: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
   created_at: string;
   updated_at?: string;
@@ -63,7 +61,6 @@ const CourseDetailPage = () => {
         .from('courses')
         .select(`
           *,
-          profiles!courses_instructor_id_fkey(fullname),
           classes(
             id,
             name,
@@ -79,7 +76,6 @@ const CourseDetailPage = () => {
 
       const courseWithDetails = {
         ...data,
-        instructor_name: data.profiles?.fullname || 'Không xác định',
         classes: data.classes?.map((classItem: any) => ({
           ...classItem,
           enrolled_count: classItem.enrollments[0]?.count || 0
@@ -210,7 +206,6 @@ const CourseDetailPage = () => {
                 </div>
                 <div>
                   <div className="space-y-2 text-sm">
-                    <div><strong>Giáo viên:</strong> {courseData.instructor_name}</div>
                     <div><strong>Mô tả:</strong> {courseData.description || 'Không có'}</div>
                     <div><strong>Thời lượng:</strong> {courseData.duration ? `${courseData.duration} buổi` : 'Chưa xác định'}</div>
                     <div><strong>Học phí:</strong> {courseData.price ? `${courseData.price.toLocaleString('vi-VN')}đ` : 'Chưa xác định'}</div>

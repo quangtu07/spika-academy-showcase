@@ -15,7 +15,6 @@ interface Course {
   price: number;
   image_url?: string;
   status: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
-  instructor_id: string;
   enrollments_count: number;
 }
 

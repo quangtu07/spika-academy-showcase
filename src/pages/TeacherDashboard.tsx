@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Home, BookOpen } from 'lucide-react';
+import { Home, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
-import TeacherCourses from '@/components/teacher/TeacherCourses';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('courses');
+  const [activeTab, setActiveTab] = useState('classes');
   const { userRole, isLoading } = useUserRole();
   const { toast } = useToast();
 
@@ -89,14 +88,14 @@ const TeacherDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-1">
-            <TabsTrigger value="courses" className="flex items-center space-x-2">
-              <BookOpen className="h-4 w-4" />
-              <span>Khóa học</span>
+            <TabsTrigger value="classes" className="flex items-center space-x-2">
+              <Users className="h-4 w-4" />
+              <span>Lớp học</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="courses">
-            <TeacherCourses />
+          <TabsContent value="classes">
+            {/* <TeacherClasses /> */}
           </TabsContent>
         </Tabs>
       </div>

@@ -22,24 +22,30 @@ import { useNavigate } from 'react-router-dom';
 interface Course {
   id: string;
   name: string;
-  description?: string;
-  price?: number;
-  duration?: number;
+  description: string;
+  duration: number;
+  price: number;
   image_url?: string;
-  instructor_id: string;
-  instructor_name?: string;
-  status?: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
+  status: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
   created_at: string;
+  updated_at: string;
+  classes?: {
+    enrollments: {
+      count: number;
+    }[];
+  }[];
+}
+
+interface FormattedCourse extends Course {
   enrolled_count: number;
-  updated_at?: string;
 }
 
 const CourseManagement = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<FormattedCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
-  const [deletingCourse, setDeletingCourse] = useState<Course | null>(null);
+  const [editingCourse, setEditingCourse] = useState<FormattedCourse | null>(null);
+  const [deletingCourse, setDeletingCourse] = useState<FormattedCourse | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -53,7 +59,6 @@ const CourseManagement = () => {
         .from('courses')
         .select(`
           *,
-          profiles!courses_instructor_id_fkey(fullname),
           classes(
             enrollments(count)
           )
@@ -62,14 +67,13 @@ const CourseManagement = () => {
 
       if (error) throw error;
 
-      const coursesWithInstructor = data?.map(course => ({
+      const formattedCourses = (data || []).map(course => ({
         ...course,
-        instructor_name: course.profiles?.fullname || 'Không xác định',
         enrolled_count: course.classes?.reduce((total, classItem) => 
           total + (classItem.enrollments[0]?.count || 0), 0) || 0
-      })) || [];
+      }));
 
-      setCourses(coursesWithInstructor);
+      setCourses(formattedCourses);
     } catch (error) {
       console.error('Error fetching courses:', error);
       toast({
@@ -124,7 +128,7 @@ const CourseManagement = () => {
     }
   };
 
-  const handleEditCourse = (course: Course) => {
+  const handleEditCourse = (course: FormattedCourse) => {
     setEditingCourse(course);
     setIsModalOpen(true);
   };
@@ -140,18 +144,16 @@ const CourseManagement = () => {
     setEditingCourse(null);
   };
 
-  const getStatusBadge = (status?: string) => {
+  const getStatusBadge = (status: Course['status']) => {
     const statusColors = {
       'Đang mở': 'bg-green-100 text-green-800',
       'Đang bắt đầu': 'bg-blue-100 text-blue-800',
       'Kết thúc': 'bg-gray-100 text-gray-800'
     };
 
-    const colorClass = status ? statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800';
-
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${colorClass}`}>
-        {status || 'Không xác định'}
+      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[status]}`}>
+        {status}
       </span>
     );
   };
@@ -169,7 +171,7 @@ const CourseManagement = () => {
     });
   };
 
-  const handleViewCourseDetail = (course: Course) => {
+  const handleViewCourseDetail = (course: FormattedCourse) => {
     navigate(`/admin/course/${course.id}?tab=courses`);
   };
 
@@ -214,8 +216,8 @@ const CourseManagement = () => {
               <TableRow>
                 <TableHead>Ảnh</TableHead>
                 <TableHead>Tên khóa học</TableHead>
-                <TableHead>Giáo viên</TableHead>
                 <TableHead>Thời lượng</TableHead>
+                <TableHead>Giá (VNĐ)</TableHead>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead>
                   <div className="flex items-center space-x-1">
@@ -254,8 +256,10 @@ const CourseManagement = () => {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>{course.instructor_name}</TableCell>
-                  <TableCell>{course.duration ? `${course.duration} buổi` : '-'}</TableCell>
+                  <TableCell>{course.duration} buổi</TableCell>
+                  <TableCell>
+                    {course.price ? course.price.toLocaleString('vi-VN') : 'Chưa cập nhật'}
+                  </TableCell>
                   <TableCell>{getStatusBadge(course.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-1">

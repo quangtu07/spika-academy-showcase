@@ -4,62 +4,71 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Users, BookOpen, Plus, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import ClassEnrollmentModal from '@/components/admin/ClassEnrollmentModal';
-import LessonFormModal from '@/components/admin/LessonFormModal';
-import LessonEditModal from '@/components/admin/LessonEditModal';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
-interface Class {
+interface DatabaseClass {
   id: string;
-  course_id: string;
   name: string;
-  description?: string;
-  schedule?: string;
-  status?: string;
+  description: string | null;
+  schedule: string | null;
+  status: string | null;
   created_at: string;
-  updated_at?: string;
-  course_name?: string;
-  enrolled_count: number;
-  students?: Array<{
+  updated_at: string | null;
+  instructor_id: string;
+  course_id: string;
+  course: {
+    id: string;
+    name: string;
+    description: string | null;
+  };
+  instructor: {
     id: string;
     fullname: string;
     email: string;
-    enrolled_at: string;
-  }>;
-  lessons?: Array<{
-    id: string;
-    title: string;
-    content?: string;
-    lesson_number: number;
-    created_at: string;
-    updated_at?: string;
-  }>;
+  }[];
 }
 
-const formatDateTime = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleString('vi-VN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  });
-};
+interface Class {
+  id: string;
+  name: string;
+  description: string | null;
+  schedule: string | null;
+  status: string | null;
+  created_at: string;
+  updated_at: string | null;
+  instructor_id: string;
+  course_id: string;
+  course: {
+    id: string;
+    name: string;
+    description: string | null;
+  };
+  instructor: {
+    id: string;
+    fullname: string;
+    email: string;
+  };
+  enrollments: Array<{
+    id: string;
+    student_id: string;
+    enrolled_at: string;
+    student: {
+      id: string;
+      fullname: string;
+      email: string;
+    } | null;
+  }>;
+  lessons: Array<{
+    id: string;
+    title: string;
+    content: string | null;
+    lesson_number: number;
+    created_at: string;
+    updated_at: string | null;
+  }>;
+}
 
 const ClassDetailPage = () => {
   const { classId } = useParams<{ classId: string }>();
@@ -67,11 +76,6 @@ const ClassDetailPage = () => {
   const [searchParams] = useSearchParams();
   const [classData, setClassData] = useState<Class | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
-  const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
-  const [isLessonEditModalOpen, setIsLessonEditModalOpen] = useState(false);
-  const [selectedLesson, setSelectedLesson] = useState<any>(null);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -82,73 +86,87 @@ const ClassDetailPage = () => {
 
   const fetchClassDetails = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch class details with course and instructor
+      const { data: classData, error: classError } = await supabase
         .from('classes')
         .select(`
           *,
-          courses!classes_course_id_fkey(name),
-          enrollments(
+          course:courses!inner (
             id,
-            student_id,
-            enrolled_at,
-            profiles!enrollments_student_id_fkey(fullname, email)
+            name,
+            description
           ),
-          lessons(
+          instructor:profiles!inner (
             id,
-            title,
-            content,
-            lesson_number,
-            created_at,
-            updated_at
+            fullname,
+            email
           )
         `)
         .eq('id', classId)
         .single();
 
-      if (error) throw error;
+      if (classError) throw classError;
 
-      const classWithDetails = {
-        ...data,
-        course_name: data.courses?.name || 'Không xác định',
-        enrolled_count: data.enrollments?.length || 0,
-        students: data.enrollments?.map((enrollment: any) => ({
-          id: enrollment.student_id,
-          fullname: enrollment.profiles?.fullname || 'Không xác định',
-          email: enrollment.profiles?.email || '',
-          enrolled_at: enrollment.enrolled_at
-        })) || [],
-        lessons: data.lessons?.sort((a: any, b: any) => a.lesson_number - b.lesson_number) || []
+      if (!classData) {
+        throw new Error('Không tìm thấy thông tin lớp học');
+      }
+
+      const dbClass = classData as DatabaseClass;
+
+      // Fetch enrollments
+      const { data: enrollmentsData, error: enrollmentsError } = await supabase
+        .from('enrollments')
+        .select(`
+          id,
+          student_id,
+          enrolled_at,
+          student:profiles (
+            id,
+            fullname,
+            email
+          )
+        `)
+        .eq('class_id', classId);
+
+      if (enrollmentsError) throw enrollmentsError;
+
+      // Fetch lessons
+      const { data: lessonsData, error: lessonsError } = await supabase
+        .from('lessons')
+        .select('*')
+        .eq('class_id', classId)
+        .order('lesson_number', { ascending: true });
+
+      if (lessonsError) throw lessonsError;
+
+      // Transform data to match our Class interface
+      const transformedData: Class = {
+        id: dbClass.id,
+        name: dbClass.name,
+        description: dbClass.description,
+        schedule: dbClass.schedule,
+        status: dbClass.status,
+        created_at: dbClass.created_at,
+        updated_at: dbClass.updated_at,
+        instructor_id: dbClass.instructor_id,
+        course_id: dbClass.course_id,
+        course: dbClass.course,
+        instructor: dbClass.instructor[0], // Get first instructor from array
+        enrollments: enrollmentsData || [],
+        lessons: lessonsData || []
       };
 
-      setClassData(classWithDetails);
-    } catch (error) {
+      setClassData(transformedData);
+    } catch (error: any) {
       console.error('Error fetching class details:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể tải thông tin lớp học",
+        description: error.message || "Không thể tải thông tin lớp học",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  };
-
-  const getStatusBadge = (status?: string) => {
-    const statusColors = {
-      'active': 'bg-green-100 text-green-800',
-      'inactive': 'bg-gray-100 text-gray-800',
-      'completed': 'bg-blue-100 text-blue-800'
-    };
-
-    const colorClass = status ? statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800';
-
-    return (
-      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${colorClass}`}>
-        {status === 'active' ? 'Đang hoạt động' : 
-         status === 'inactive' ? 'Không hoạt động' : 
-         status === 'completed' ? 'Đã hoàn thành' : 'Không xác định'}
-      </span>
-    );
   };
 
   const handleGoBack = () => {
@@ -160,48 +178,21 @@ const ClassDetailPage = () => {
     }
   };
 
-  const handleEnrollmentSaved = () => {
-    fetchClassDetails();
-    setIsEnrollmentModalOpen(false);
-  };
+  const getStatusBadge = (status: string | null) => {
+    const statusMap = {
+      'active': { text: 'Đang hoạt động', class: 'bg-green-100 text-green-800' },
+      'inactive': { text: 'Không hoạt động', class: 'bg-gray-100 text-gray-800' },
+      'completed': { text: 'Đã hoàn thành', class: 'bg-blue-100 text-blue-800' }
+    };
 
-  const handleLessonSaved = () => {
-    fetchClassDetails();
-    setIsLessonModalOpen(false);
-  };
+    const defaultStatus = { text: 'Không xác định', class: 'bg-gray-100 text-gray-800' };
+    const statusInfo = status ? statusMap[status as keyof typeof statusMap] || defaultStatus : defaultStatus;
 
-  const handleEditLesson = (lesson: any) => {
-    setSelectedLesson(lesson);
-    setIsLessonEditModalOpen(true);
-  };
-
-  const handleDeleteLesson = async (lessonId: string) => {
-    try {
-      const { error } = await supabase
-        .from('lessons')
-        .delete()
-        .eq('id', lessonId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Thành công",
-        description: "Đã xóa buổi học",
-        className: "bg-green-50 border-green-200 text-green-900",
-      });
-
-      fetchClassDetails();
-    } catch (error: any) {
-      console.error('Error deleting lesson:', error);
-      toast({
-        title: "Lỗi",
-        description: error.message || "Không thể xóa buổi học",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDeleteDialogOpen(false);
-      setSelectedLesson(null);
-    }
+    return (
+      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusInfo.class}`}>
+        {statusInfo.text}
+      </span>
+    );
   };
 
   if (loading) {
@@ -271,17 +262,24 @@ const ClassDetailPage = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="space-y-2 text-sm">
-                    <div><strong>Khóa học:</strong> {classData.course_name}</div>
-                    <div><strong>Mô tả:</strong> {classData.description || 'Không có'}</div>
+                    <div><strong>Khóa học:</strong> {classData.course?.name || 'Không xác định'}</div>
+                    <div><strong>Giảng viên:</strong> {classData.instructor?.fullname || 'Không xác định'}</div>
+                    <div><strong>Email giảng viên:</strong> {classData.instructor?.email || 'Không xác định'}</div>
+                    <div><strong>Mô tả khóa học:</strong> {classData.course?.description || 'Không có'}</div>
+                    <div><strong>Mô tả lớp học:</strong> {classData.description || 'Không có'}</div>
                     <div><strong>Lịch học:</strong> {classData.schedule || 'Chưa xác định'}</div>
                   </div>
                 </div>
                 <div>
                   <div className="space-y-2 text-sm">
                     <div><strong>Trạng thái:</strong> {getStatusBadge(classData.status)}</div>
-                    <div><strong>Số học viên:</strong> {classData.enrolled_count}</div>
-                    <div><strong>Ngày tạo:</strong> {formatDateTime(classData.created_at)}</div>
-                    <div><strong>Lần cập nhật cuối:</strong> {classData.updated_at ? formatDateTime(classData.updated_at) : 'Chưa cập nhật'}</div>
+                    <div><strong>Số học viên:</strong> {classData.enrollments?.length || 0}</div>
+                    <div><strong>Số buổi học:</strong> {classData.lessons?.length || 0}</div>
+                    <div><strong>Ngày tạo:</strong> {new Date(classData.created_at).toLocaleString('vi-VN')}</div>
+                    <div>
+                      <strong>Lần cập nhật cuối:</strong> 
+                      {classData.updated_at ? new Date(classData.updated_at).toLocaleString('vi-VN') : 'Chưa cập nhật'}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -304,22 +302,11 @@ const ClassDetailPage = () => {
             <TabsContent value="students">
               <Card>
                 <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <CardTitle>Danh sách học viên ({classData.enrolled_count})</CardTitle>
-                      <CardDescription>Tất cả học viên đã đăng ký lớp học này</CardDescription>
-                    </div>
-                    <Button 
-                      onClick={() => setIsEnrollmentModalOpen(true)}
-                      className="flex items-center space-x-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      <span>Thêm học viên</span>
-                    </Button>
-                  </div>
+                  <CardTitle>Danh sách học viên ({classData.enrollments?.length || 0})</CardTitle>
+                  <CardDescription>Tất cả học viên đã đăng ký lớp học này</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {classData.students && classData.students.length > 0 ? (
+                  {classData.enrollments && classData.enrollments.length > 0 ? (
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -330,12 +317,12 @@ const ClassDetailPage = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {classData.students.map((student, index) => (
-                          <TableRow key={student.id}>
+                        {classData.enrollments.map((enrollment, index) => (
+                          <TableRow key={enrollment.id}>
                             <TableCell>{index + 1}</TableCell>
-                            <TableCell className="font-medium">{student.fullname}</TableCell>
-                            <TableCell>{student.email}</TableCell>
-                            <TableCell>{new Date(student.enrolled_at).toLocaleDateString('vi-VN')}</TableCell>
+                            <TableCell className="font-medium">{enrollment.student?.fullname || 'Không xác định'}</TableCell>
+                            <TableCell>{enrollment.student?.email || ''}</TableCell>
+                            <TableCell>{new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -352,19 +339,8 @@ const ClassDetailPage = () => {
             <TabsContent value="lessons">
               <Card>
                 <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <CardTitle>Danh sách buổi học ({classData.lessons?.length || 0})</CardTitle>
-                      <CardDescription>Tất cả buổi học trong lớp</CardDescription>
-                    </div>
-                    <Button 
-                      onClick={() => setIsLessonModalOpen(true)}
-                      className="flex items-center space-x-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      <span>Thêm buổi học</span>
-                    </Button>
-                  </div>
+                  <CardTitle>Danh sách buổi học ({classData.lessons?.length || 0})</CardTitle>
+                  <CardDescription>Tất cả buổi học trong lớp</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {classData.lessons && classData.lessons.length > 0 ? (
@@ -376,7 +352,6 @@ const ClassDetailPage = () => {
                           <TableHead>Nội dung</TableHead>
                           <TableHead>Ngày tạo</TableHead>
                           <TableHead>Cập nhật lần cuối</TableHead>
-                          <TableHead className="text-right">Thao tác</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -385,29 +360,9 @@ const ClassDetailPage = () => {
                             <TableCell className="font-medium">Buổi {lesson.lesson_number}</TableCell>
                             <TableCell>{lesson.title}</TableCell>
                             <TableCell>{lesson.content || '-'}</TableCell>
-                            <TableCell>{formatDateTime(lesson.created_at)}</TableCell>
-                            <TableCell>{lesson.updated_at ? formatDateTime(lesson.updated_at) : '-'}</TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleEditLesson(lesson)}
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="text-red-500 hover:text-red-700"
-                                  onClick={() => {
-                                    setSelectedLesson(lesson);
-                                    setIsDeleteDialogOpen(true);
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
+                            <TableCell>{new Date(lesson.created_at).toLocaleString('vi-VN')}</TableCell>
+                            <TableCell>
+                              {lesson.updated_at ? new Date(lesson.updated_at).toLocaleString('vi-VN') : '-'}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -424,65 +379,8 @@ const ClassDetailPage = () => {
           </Tabs>
         </div>
       </div>
-
-      <ClassEnrollmentModal
-        isOpen={isEnrollmentModalOpen}
-        onClose={() => setIsEnrollmentModalOpen(false)}
-        classData={classData}
-        onSaved={handleEnrollmentSaved}
-      />
-
-      <LessonFormModal
-        isOpen={isLessonModalOpen}
-        onClose={() => setIsLessonModalOpen(false)}
-        classData={classData}
-        onSaved={() => {
-          fetchClassDetails();
-          setIsLessonModalOpen(false);
-        }}
-      />
-
-      <LessonEditModal
-        isOpen={isLessonEditModalOpen}
-        onClose={() => {
-          setIsLessonEditModalOpen(false);
-          setSelectedLesson(null);
-        }}
-        lesson={selectedLesson}
-        onSaved={() => {
-          fetchClassDetails();
-          setIsLessonEditModalOpen(false);
-          setSelectedLesson(null);
-        }}
-      />
-
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa buổi học</AlertDialogTitle>
-            <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa buổi học "{selectedLesson?.title}"?
-              Hành động này không thể hoàn tác.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setIsDeleteDialogOpen(false);
-              setSelectedLesson(null);
-            }}>
-              Hủy
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => selectedLesson && handleDeleteLesson(selectedLesson.id)}
-              className="bg-red-600 hover:bg-red-700 text-white"
-            >
-              Xác nhận xóa
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 };
 
-export default ClassDetailPage;
+export default ClassDetailPage; 

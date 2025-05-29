@@ -24,19 +24,42 @@ import {
 interface Class {
   id: string;
   course_id: string;
+  instructor_id: string;
   name: string;
-  description?: string;
-  schedule?: string;
-  status?: string;
+  description: string | null;
+  schedule: string | null;
+  status: string | null;
   created_at: string;
-  course_name?: string;
-  enrolled_count: number;
-  students?: Array<{
-    id: string;
+  updated_at: string | null;
+  course?: {
+    name: string;
+  };
+  instructor?: {
     fullname: string;
-    email: string;
+  };
+  enrollments?: Array<{
+    student_id: string;
     enrolled_at: string;
+    profiles: {
+      fullname: string;
+      email: string;
+    };
   }>;
+}
+
+interface SupabaseClass extends Omit<Class, 'course' | 'instructor'> {
+  course: { name: string } | null;
+  instructor: { fullname: string } | null;
+}
+
+interface EditClassData {
+  id: string;
+  course_id: string;
+  instructor_id: string;
+  name: string;
+  description: string;
+  schedule: string;
+  status: string;
 }
 
 const ClassManagement = () => {
@@ -46,7 +69,7 @@ const ClassManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [editingClass, setEditingClass] = useState<Class | null>(null);
+  const [editingClass, setEditingClass] = useState<EditClassData | null>(null);
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [deletingClass, setDeletingClass] = useState<Class | null>(null);
   const { toast } = useToast();
@@ -61,31 +84,47 @@ const ClassManagement = () => {
         .from('classes')
         .select(`
           *,
-          courses!classes_course_id_fkey(name),
-          enrollments(
-            id,
+          courses (
+            name
+          ),
+          teacher:profiles (
+            fullname
+          ),
+          enrollments (
             student_id,
             enrolled_at,
-            profiles!enrollments_student_id_fkey(fullname, email)
+            student:profiles (
+              fullname,
+              email
+            )
           )
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
+      const transformedData = (data as any[]).map(item => ({
+        id: item.id,
+        course_id: item.course_id,
+        instructor_id: item.instructor_id,
+        name: item.name,
+        description: item.description,
+        schedule: item.schedule,
+        status: item.status,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        course: item.courses,
+        instructor: item.teacher,
+        enrollments: item.enrollments?.map(enrollment => ({
+          ...enrollment,
+          profiles: enrollment.student
+        }))
+      })) as Class[];
 
-      const classesWithDetails = data?.map(classItem => ({
-        ...classItem,
-        course_name: classItem.courses?.name || 'Không xác định',
-        enrolled_count: classItem.enrollments?.length || 0,
-        students: classItem.enrollments?.map((enrollment: any) => ({
-          id: enrollment.student_id,
-          fullname: enrollment.profiles?.fullname || 'Không xác định',
-          email: enrollment.profiles?.email || '',
-          enrolled_at: enrollment.enrolled_at
-        })) || []
-      })) || [];
+      console.log('Fetched data:', data);
+      console.log('Transformed data:', transformedData);
 
-      setClasses(classesWithDetails);
+      setClasses(transformedData);
     } catch (error) {
       console.error('Error fetching classes:', error);
       toast({
@@ -100,17 +139,36 @@ const ClassManagement = () => {
 
   const handleDeleteClass = async (classId: string) => {
     try {
-      const { error } = await supabase
+      // Kiểm tra xem lớp học có buổi học nào không
+      const { data: lessons, error: lessonsError } = await supabase
+        .from('lessons')
+        .select('id')
+        .eq('class_id', classId);
+
+      if (lessonsError) throw lessonsError;
+
+      // Nếu có buổi học, xóa tất cả buổi học trước
+      if (lessons && lessons.length > 0) {
+        const { error: deleteLessonsError } = await supabase
+          .from('lessons')
+          .delete()
+          .eq('class_id', classId);
+
+        if (deleteLessonsError) throw deleteLessonsError;
+      }
+
+      // Sau đó xóa lớp học
+      const { error: deleteClassError } = await supabase
         .from('classes')
         .delete()
         .eq('id', classId);
 
-      if (error) throw error;
+      if (deleteClassError) throw deleteClassError;
 
       setClasses(classes.filter(cls => cls.id !== classId));
       toast({
         title: "Thành công",
-        description: "Đã xóa lớp học thành công",
+        description: "Đã xóa lớp học và các buổi học liên quan thành công",
         className: "bg-green-50 border-green-200 text-green-900",
       });
     } catch (error) {
@@ -126,7 +184,16 @@ const ClassManagement = () => {
   };
 
   const handleEditClass = (classItem: Class) => {
-    setEditingClass(classItem);
+    const editData: EditClassData = {
+      id: classItem.id,
+      course_id: classItem.course_id,
+      instructor_id: classItem.instructor_id,
+      name: classItem.name,
+      description: classItem.description || '',
+      schedule: classItem.schedule || '',
+      status: classItem.status || 'active'
+    };
+    setEditingClass(editData);
     setIsModalOpen(true);
   };
 
@@ -207,6 +274,7 @@ const ClassManagement = () => {
               <TableRow>
                 <TableHead>Tên lớp học</TableHead>
                 <TableHead>Khóa học</TableHead>
+                <TableHead>Giảng viên</TableHead>
                 <TableHead>Lịch học</TableHead>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead>
@@ -235,12 +303,13 @@ const ClassManagement = () => {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>{classItem.course_name}</TableCell>
+                  <TableCell>{classItem.course?.name || 'Không xác định'}</TableCell>
+                  <TableCell>{classItem.instructor?.fullname || 'Không xác định'}</TableCell>
                   <TableCell>{classItem.schedule || '-'}</TableCell>
                   <TableCell>{getStatusBadge(classItem.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-1">
-                      <span className="font-medium">{classItem.enrolled_count}</span>
+                      <span className="font-medium">{classItem.enrollments?.length || 0}</span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -288,9 +357,16 @@ const ClassManagement = () => {
 
       <ClassFormModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingClass(null);
+        }}
         classData={editingClass}
-        onSaved={handleClassSaved}
+        onSaved={() => {
+          fetchClasses();
+          setIsModalOpen(false);
+          setEditingClass(null);
+        }}
       />
 
       <ClassEnrollmentModal

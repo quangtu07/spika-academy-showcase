@@ -17,13 +17,7 @@ interface Course {
   price?: number;
   duration?: number;
   image_url?: string;
-  instructor_id: string;
   status?: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
-}
-
-interface Instructor {
-  id: string;
-  fullname: string;
 }
 
 interface CourseFormModalProps {
@@ -32,8 +26,6 @@ interface CourseFormModalProps {
   course: Course | null;
   onSaved: () => void;
 }
-
-type CourseStatus = 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -45,12 +37,10 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
     price: '',
     duration: '',
     image_url: '',
-    instructor_id: '',
-    status: '' as CourseStatus | ''
+    status: '' as Course['status'] | ''
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
-  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -61,16 +51,11 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
       price: '',
       duration: '',
       image_url: '',
-      instructor_id: '',
-      status: '' as CourseStatus | ''
+      status: '' as Course['status'] | ''
     });
     setImageFile(null);
     setImagePreview('');
   };
-
-  useEffect(() => {
-    fetchInstructors();
-  }, []);
 
   useEffect(() => {
     if (course) {
@@ -80,28 +65,13 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         price: course.price ? course.price.toString() : '',
         duration: course.duration ? course.duration.toString() : '',
         image_url: course.image_url || '',
-        instructor_id: course.instructor_id,
-        status: course.status || '' as CourseStatus | ''
+        status: course.status || '' as Course['status'] | ''
       });
       setImagePreview(course.image_url || '');
     } else {
       resetForm();
     }
   }, [course, isOpen]);
-
-  const fetchInstructors = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, fullname')
-        .in('role', ['teacher', 'admin']);
-
-      if (error) throw error;
-      setInstructors(data || []);
-    } catch (error) {
-      console.error('Error fetching instructors:', error);
-    }
-  };
 
   const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,22 +108,21 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
 
     try {
       // Validate required fields
-      if (!formData.name.trim() || !formData.instructor_id) {
-      toast({
-        title: "Lỗi",
+      if (!formData.name.trim()) {
+        toast({
+          title: "Lỗi",
           description: "Vui lòng điền đầy đủ thông tin bắt buộc",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
 
       const courseData: any = {
         name: formData.name.trim(),
         description: formData.description.trim() || null,
         price: formData.price ? parseFloat(formData.price) : null,
         duration: formData.duration ? parseInt(formData.duration) : null,
-        instructor_id: formData.instructor_id,
         status: formData.status || 'Đang mở', // Default status
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -188,11 +157,11 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
         }
       }
 
-        toast({
-          title: "Thành công",
+      toast({
+        title: "Thành công",
         description: `Đã ${course ? 'cập nhật' : 'thêm'} khóa học thành công`,
-          className: "bg-green-50 border-green-200 text-green-900",
-        });
+        className: "bg-green-50 border-green-200 text-green-900",
+      });
 
       onSaved();
       onClose();
@@ -232,26 +201,6 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="instructor_id">Giáo viên <span className="text-red-500">*</span></Label>
-            <Select
-              value={formData.instructor_id}
-              onValueChange={(value) => setFormData({ ...formData, instructor_id: value })}
-              required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn giáo viên" />
-              </SelectTrigger>
-              <SelectContent>
-                {instructors.map((instructor) => (
-                  <SelectItem key={instructor.id} value={instructor.id}>
-                    {instructor.fullname}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -327,7 +276,7 @@ const CourseFormModal = ({ isOpen, onClose, course, onSaved }: CourseFormModalPr
             <Label htmlFor="status">Trạng thái</Label>
             <Select
               value={formData.status}
-              onValueChange={(value) => setFormData({ ...formData, status: value as CourseStatus })}
+              onValueChange={(value) => setFormData({ ...formData, status: value as Course['status'] })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Chọn trạng thái" />

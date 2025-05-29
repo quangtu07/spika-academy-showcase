@@ -13,7 +13,21 @@ interface Course {
   name: string;
 }
 
+interface Instructor {
+  id: string;
+  fullname: string;
+}
+
 type ClassStatus = 'Đang hoạt động' | 'Đã kết thúc';
+
+interface FormData {
+  name: string;
+  description: string;
+  schedule: string;
+  course_id: string;
+  instructor_id: string;
+  status: 'active' | 'inactive' | 'completed';
+}
 
 interface ClassFormModalProps {
   isOpen: boolean;
@@ -28,22 +42,26 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
     name: '',
     description: '',
     schedule: '',
-    status: 'Đang hoạt động' as ClassStatus
+    status: 'Đang hoạt động' as ClassStatus,
+    instructor_id: '',
   });
   const [courses, setCourses] = useState<Course[]>([]);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
       fetchCourses();
+      fetchInstructors();
       if (classData) {
         setFormData({
           course_id: classData.course_id || '',
           name: classData.name || '',
           description: classData.description || '',
           schedule: classData.schedule || '',
-          status: classData.status || 'Đang hoạt động'
+          status: classData.status || 'Đang hoạt động',
+          instructor_id: classData.instructor_id || '',
         });
       } else {
         setFormData({
@@ -51,7 +69,8 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
           name: '',
           description: '',
           schedule: '',
-          status: 'Đang hoạt động'
+          status: 'Đang hoạt động',
+          instructor_id: '',
         });
       }
     }
@@ -76,17 +95,46 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
     }
   };
 
+  const fetchInstructors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, fullname')
+        .eq('role', 'teacher')
+        .order('fullname');
+
+      if (error) throw error;
+      setInstructors(data || []);
+    } catch (error) {
+      console.error('Error fetching instructors:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải danh sách giảng viên",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (!formData.name || !formData.course_id || !formData.instructor_id) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng điền đầy đủ thông tin bắt buộc",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    setLoading(true);
     try {
       const submitData = {
         course_id: formData.course_id,
         name: formData.name,
         description: formData.description || null,
         schedule: formData.schedule || null,
-        status: formData.status
+        status: formData.status,
+        instructor_id: formData.instructor_id,
       };
 
       console.log('Submitting data:', submitData);
@@ -211,6 +259,26 @@ const ClassFormModal: React.FC<ClassFormModalProps> = ({ isOpen, onClose, classD
               <SelectContent>
                 <SelectItem value="Đang hoạt động">Đang hoạt động</SelectItem>
                 <SelectItem value="Đã kết thúc">Đã kết thúc</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="instructor_id">Giảng viên *</Label>
+            <Select
+              value={formData.instructor_id}
+              onValueChange={(value) => handleInputChange('instructor_id', value)}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn giảng viên" />
+              </SelectTrigger>
+              <SelectContent>
+                {instructors.map((instructor) => (
+                  <SelectItem key={instructor.id} value={instructor.id}>
+                    {instructor.fullname}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
