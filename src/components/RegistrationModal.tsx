@@ -56,6 +56,15 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
     e.preventDefault();
     setIsLoading(true);
 
+    // Hiển thị thông báo cảm ơn ngay lập tức
+    toast({
+      title: "Cảm ơn bạn đã đăng ký tư vấn!",
+      description: "Chúng mình sẽ liên hệ với bạn sớm nhất.",
+    });
+    
+    setFormData({ fullName: '', phone: '', course: '' });
+    onClose();
+
     try {
       // Tìm tên khóa học từ ID được chọn
       const selectedCourse = courses.find(course => course.id === formData.course);
@@ -67,33 +76,23 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
         courseName
       });
 
-      // Gửi email thông qua edge function
-      const { data, error } = await supabase.functions.invoke('send-consultation-email', {
+      // Gửi email trong background (không đợi kết quả)
+      supabase.functions.invoke('send-consultation-email', {
         body: {
           fullName: formData.fullName,
           phone: formData.phone,
           courseName: courseName
         }
+      }).then(({ data, error }) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log('Email sent successfully:', data);
+        }
       });
 
-      if (error) throw error;
-
-      console.log('Email sent successfully:', data);
-
-      toast({
-        title: "Cảm ơn bạn đã đăng ký tư vấn!",
-        description: "Chúng mình sẽ liên hệ với bạn sớm nhất.",
-      });
-      
-      setFormData({ fullName: '', phone: '', course: '' });
-      onClose();
     } catch (error) {
       console.error('Error submitting consultation request:', error);
-      toast({
-        title: "Lỗi",
-        description: "Không thể gửi thông tin. Vui lòng thử lại sau.",
-        variant: "destructive"
-      });
     } finally {
       setIsLoading(false);
     }
