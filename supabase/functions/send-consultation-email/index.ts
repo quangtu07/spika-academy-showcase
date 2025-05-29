@@ -29,7 +29,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailResponse = await resend.emails.send({
       from: "MC Training Center <onboarding@resend.dev>",
-      to: ["linhtu0777@gmail.com"],
+      to: ["linhquangtu07@gmail.com"], // Đổi thành email đã đăng ký với Resend
       subject: "Đăng ký tư vấn khóa học MC mới",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
