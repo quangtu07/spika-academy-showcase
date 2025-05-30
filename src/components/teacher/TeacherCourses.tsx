@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ interface Course {
   duration: number;
   price: number;
   image_url?: string;
-  status: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
+  status: string;
   enrollments_count: number;
 }
 
@@ -51,25 +52,47 @@ const TeacherCourses = () => {
         return;
       }
 
-      // Lấy danh sách khóa học của giảng viên
-      const { data, error } = await supabase
+      // Simplified query to avoid type instantiation issues
+      const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
-        .select(`
-          *,
-          profiles!courses_instructor_id_fkey(fullname),
-          classes(
-            enrollments(count)
-          )
-        `)
+        .select('*')
         .eq('instructor_id', currentUser.id)
         .order('updated_at', { ascending: false });
 
-      if (error) throw error;
+      if (coursesError) throw coursesError;
 
-      const formattedCourses = data?.map(course => ({
+      // Get enrollment counts separately
+      const courseIds = coursesData?.map(course => course.id) || [];
+      let enrollmentCounts: { [key: string]: number } = {};
+
+      if (courseIds.length > 0) {
+        const { data: classesData } = await supabase
+          .from('classes')
+          .select('id, course_id')
+          .in('course_id', courseIds);
+
+        const classIds = classesData?.map(c => c.id) || [];
+        
+        if (classIds.length > 0) {
+          const { data: enrollmentsData } = await supabase
+            .from('enrollments')
+            .select('class_id')
+            .in('class_id', classIds);
+
+          // Count enrollments per course
+          classesData?.forEach(classItem => {
+            const count = enrollmentsData?.filter(e => e.class_id === classItem.id).length || 0;
+            if (!enrollmentCounts[classItem.course_id]) {
+              enrollmentCounts[classItem.course_id] = 0;
+            }
+            enrollmentCounts[classItem.course_id] += count;
+          });
+        }
+      }
+
+      const formattedCourses = coursesData?.map(course => ({
         ...course,
-        enrollments_count: course.classes?.reduce((total, classItem) => 
-          total + (classItem.enrollments[0]?.count || 0), 0) || 0
+        enrollments_count: enrollmentCounts[course.id] || 0
       })) || [];
 
       setCourses(formattedCourses);
@@ -97,7 +120,7 @@ const TeacherCourses = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusMap = {
+    const statusMap: { [key: string]: { label: string; color: string } } = {
       'Đang mở': { label: 'Đang mở', color: 'bg-green-100 text-green-800' },
       'Đang bắt đầu': { label: 'Đang bắt đầu', color: 'bg-blue-100 text-blue-800' },
       'Kết thúc': { label: 'Kết thúc', color: 'bg-gray-100 text-gray-800' }

@@ -48,7 +48,7 @@ const StudentAssignments = () => {
     try {
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
       
-      if (!currentUser) {
+      if (!currentUser.id) {
         toast({
           title: "Lỗi",
           description: "Vui lòng đăng nhập để xem bài tập",
@@ -57,43 +57,103 @@ const StudentAssignments = () => {
         return;
       }
 
-      const { data, error } = await supabase
+      // Fetch assignments with simplified queries to avoid type issues
+      const { data: assignmentsData, error: assignmentsError } = await supabase
         .from('assignments')
         .select(`
           id,
           title,
           description,
           due_date,
-          lesson:lessons (
-            title,
-            course:courses (
-              name
-            )
-          ),
-          submissions (
-            id,
-            file_url,
-            file_type,
-            submitted_at,
-            status,
-            feedbacks (
-              comment,
-              score,
-              created_at
-            )
-          )
+          lesson_id
+        `);
+
+      if (assignmentsError) throw assignmentsError;
+
+      if (!assignmentsData || assignmentsData.length === 0) {
+        setAssignments([]);
+        return;
+      }
+
+      // Fetch related data separately to avoid deep nesting issues
+      const lessonIds = assignmentsData.map(a => a.lesson_id);
+      const { data: lessonsData } = await supabase
+        .from('lessons')
+        .select('id, title, class_id')
+        .in('id', lessonIds);
+
+      const classIds = lessonsData?.map(l => l.class_id) || [];
+      const { data: classesData } = await supabase
+        .from('classes')
+        .select('id, course_id')
+        .in('id', classIds);
+
+      const courseIds = classesData?.map(c => c.course_id) || [];
+      const { data: coursesData } = await supabase
+        .from('courses')
+        .select('id, name')
+        .in('id', courseIds);
+
+      // Fetch submissions for current user
+      const assignmentIds = assignmentsData.map(a => a.id);
+      const { data: submissionsData } = await supabase
+        .from('submissions')
+        .select(`
+          id,
+          assignment_id,
+          file_url,
+          file_type,
+          submitted_at,
+          status
         `)
-        .eq('submissions.student_id', currentUser.id);
+        .eq('student_id', currentUser.id)
+        .in('assignment_id', assignmentIds);
 
-      if (error) throw error;
+      // Fetch feedbacks
+      const submissionIds = submissionsData?.map(s => s.id) || [];
+      const { data: feedbacksData } = await supabase
+        .from('feedbacks')
+        .select(`
+          submission_id,
+          comment,
+          score,
+          created_at
+        `)
+        .in('submission_id', submissionIds);
 
-      const formattedAssignments = data?.map(assignment => ({
-        ...assignment,
-        submission: assignment.submissions?.[0] ? {
-          ...assignment.submissions[0],
-          feedback: assignment.submissions[0].feedbacks?.[0]
-        } : undefined
-      })) || [];
+      // Combine all data
+      const formattedAssignments: Assignment[] = assignmentsData.map(assignment => {
+        const lesson = lessonsData?.find(l => l.id === assignment.lesson_id);
+        const classItem = classesData?.find(c => c.id === lesson?.class_id);
+        const course = coursesData?.find(c => c.id === classItem?.course_id);
+        const submission = submissionsData?.find(s => s.assignment_id === assignment.id);
+        const feedback = feedbacksData?.find(f => f.submission_id === submission?.id);
+
+        return {
+          id: assignment.id,
+          title: assignment.title,
+          description: assignment.description || '',
+          due_date: assignment.due_date || '',
+          lesson: {
+            title: lesson?.title || 'Không có tiêu đề',
+            course: {
+              name: course?.name || 'Không có tên khóa học'
+            }
+          },
+          submission: submission ? {
+            id: submission.id,
+            file_url: submission.file_url,
+            file_type: submission.file_type,
+            submitted_at: submission.submitted_at,
+            status: submission.status || 'submitted',
+            feedback: feedback ? {
+              comment: feedback.comment,
+              score: feedback.score || 0,
+              created_at: feedback.created_at
+            } : undefined
+          } : undefined
+        };
+      });
 
       setAssignments(formattedAssignments);
     } catch (error) {

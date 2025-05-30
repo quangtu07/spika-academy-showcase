@@ -23,9 +23,7 @@ interface EnrollmentWithDetails {
       description: string;
       duration: number;
       image_url: string;
-      profiles: {
-        fullname: string;
-      };
+      instructor_name?: string;
     };
   };
 }
@@ -82,32 +80,18 @@ const StudentCourses = () => {
       console.log('=== DEBUG INFO ===');
       console.log('Tìm enrollments cho user:', userId);
       
-      // Query enrollments với join classes và courses và instructor details
+      // Fetch enrollments with simplified query
       const { data: enrollmentsData, error: enrollmentError } = await supabase
         .from('enrollments')
         .select(`
-          *,
-          classes!inner (
-            id,
-            name,
-            description,
-            courses!inner (
-              id,
-              name,
-              description,
-              duration,
-              image_url,
-              profiles:instructor_id (
-                fullname
-              )
-            )
-          )
+          id,
+          student_id,
+          class_id,
+          enrolled_at,
+          status
         `)
         .eq('student_id', userId);
       
-      console.log('Query result - Data:', enrollmentsData);
-      console.log('Query result - Error:', enrollmentError);
-
       if (enrollmentError) {
         console.error('Supabase error details:', enrollmentError);
         throw enrollmentError;
@@ -119,8 +103,72 @@ const StudentCourses = () => {
         return;
       }
 
-      console.log('Successfully fetched enrollments:', enrollmentsData);
-      setEnrollments(enrollmentsData);
+      console.log('Enrollments found:', enrollmentsData);
+
+      // Fetch related data separately to avoid nested query issues
+      const classIds = enrollmentsData.map(e => e.class_id);
+      const { data: classesData } = await supabase
+        .from('classes')
+        .select(`
+          id,
+          name,
+          description,
+          course_id,
+          instructor_id
+        `)
+        .in('id', classIds);
+
+      const courseIds = classesData?.map(c => c.course_id) || [];
+      const { data: coursesData } = await supabase
+        .from('courses')
+        .select(`
+          id,
+          name,
+          description,
+          duration,
+          image_url
+        `)
+        .in('id', courseIds);
+
+      const instructorIds = classesData?.map(c => c.instructor_id) || [];
+      const { data: instructorsData } = await supabase
+        .from('profiles')
+        .select(`
+          id,
+          fullname
+        `)
+        .in('id', instructorIds);
+
+      // Combine all data safely
+      const formattedEnrollments: EnrollmentWithDetails[] = enrollmentsData.map(enrollment => {
+        const classItem = classesData?.find(c => c.id === enrollment.class_id);
+        const course = coursesData?.find(c => c.id === classItem?.course_id);
+        const instructor = instructorsData?.find(i => i.id === classItem?.instructor_id);
+
+        return {
+          id: enrollment.id,
+          student_id: enrollment.student_id,
+          class_id: enrollment.class_id,
+          enrolled_at: enrollment.enrolled_at,
+          status: enrollment.status || 'active',
+          classes: {
+            id: classItem?.id || '',
+            name: classItem?.name || 'Tên lớp không có',
+            description: classItem?.description || '',
+            courses: {
+              id: course?.id || '',
+              name: course?.name || 'Tên khóa học không có',
+              description: course?.description || '',
+              duration: course?.duration || 0,
+              image_url: course?.image_url || '',
+              instructor_name: instructor?.fullname || 'Chưa có thông tin'
+            }
+          }
+        };
+      });
+
+      console.log('Successfully formatted enrollments:', formattedEnrollments);
+      setEnrollments(formattedEnrollments);
     } catch (error) {
       console.error('Lỗi khi fetch enrollments:', error);
       toast({
@@ -183,7 +231,7 @@ const StudentCourses = () => {
                     </p>
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <User className="h-4 w-4" />
-                      <span>GV: {enrollment.classes.courses.profiles?.fullname || 'Chưa có thông tin'}</span>
+                      <span>GV: {enrollment.classes.courses.instructor_name}</span>
                     </div>
                     <div className="flex items-center space-x-4">
                       <Badge variant="outline" className={

@@ -73,7 +73,7 @@ const EnrollmentFormModal = ({ isOpen, onClose, onSaved }: EnrollmentFormModalPr
           course_id,
           courses!inner(name)
         `)
-        .eq('status', 'active');
+        .eq('status', 'Đang hoạt động');
 
       if (error) throw error;
       setClasses(data || []);
