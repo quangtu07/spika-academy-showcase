@@ -1,4 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, BookOpen, Calendar, GraduationCap } from 'lucide-react';
@@ -20,6 +22,7 @@ interface ClassData {
 const TeacherClasses = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -111,6 +114,10 @@ const TeacherClasses = () => {
     );
   };
 
+  const handleClassClick = (classId: string) => {
+    navigate(`/teacher/class/${classId}`);
+  };
+
   if (loading) {
     return (
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -166,7 +173,11 @@ const TeacherClasses = () => {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {classes.map((classItem) => (
-          <Card key={classItem.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card 
+            key={classItem.id} 
+            className="hover:shadow-lg transition-shadow cursor-pointer transform hover:scale-105"
+            onClick={() => handleClassClick(classItem.id)}
+          >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2">
@@ -183,12 +194,6 @@ const TeacherClasses = () => {
             </CardHeader>
             <CardContent className="pt-0">
               <div className="space-y-3">
-                {/* {classItem.description && (
-                  <div className="text-sm text-gray-600 line-clamp-2">
-                    {classItem.description}
-                  </div>
-                )} */}
-                
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-1 text-gray-600">
                     <Users className="w-4 h-4" />
@@ -202,12 +207,6 @@ const TeacherClasses = () => {
                     </div>
                   )}
                 </div>
-
-                {/* {classItem.courseDescription && (
-                  <div className="text-xs text-gray-500 line-clamp-1">
-                    Khóa học: {classItem.courseDescription}
-                  </div>
-                )} */}
               </div>
             </CardContent>
           </Card>
@@ -217,4 +216,4 @@ const TeacherClasses = () => {
   );
 };
 
-export default TeacherClasses; 
+export default TeacherClasses;
