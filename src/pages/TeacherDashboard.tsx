@@ -2,17 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Home, Users, AlertCircle, BookOpen, GraduationCap } from 'lucide-react';
+import { Home, Users, AlertCircle, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
 import TeacherClasses from '@/components/teacher/TeacherClasses';
-import TeacherCourses from '@/components/teacher/TeacherCourses';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('classes');
   const { userRole, isLoading } = useUserRole();
   const { toast } = useToast();
 
@@ -107,7 +104,7 @@ const TeacherDashboard = () => {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Bảng điều khiển giảng viên
                 </h1>
-                <p className="text-gray-600 mt-1">Quản lý lớp học và khóa học của bạn</p>
+                <p className="text-gray-600 mt-1">Quản lý lớp học của bạn</p>
               </div>
             </div>
             <Button 
@@ -125,34 +122,21 @@ const TeacherDashboard = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <CardHeader className="border-b bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-t-lg">
-              <TabsList className="grid w-full grid-cols-2 h-12 bg-white/20 backdrop-blur-sm">
-                <TabsTrigger 
-                  value="classes" 
-                  className="flex items-center space-x-2 text-lg data-[state=active]:bg-white data-[state=active]:text-blue-600"
-                >
-                  <Users className="h-5 w-5" />
-                  <span>Lớp học</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="courses" 
-                  className="flex items-center space-x-2 text-lg data-[state=active]:bg-white data-[state=active]:text-purple-600"
-                >
-                  <BookOpen className="h-5 w-5" />
-                  <span>Khóa học</span>
-                </TabsTrigger>
-              </TabsList>
-            </CardHeader>
+          <CardHeader className="border-b bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-t-lg">
+            <div className="flex items-center space-x-3">
+              <Users className="h-8 w-8" />
+              <div>
+                <CardTitle className="text-2xl">Lớp học của tôi</CardTitle>
+                <CardDescription className="text-blue-100 mt-1">
+                  Quản lý và theo dõi các lớp học bạn đang giảng dạy
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
 
-            <TabsContent value="classes" className="p-6">
-              <TeacherClasses />
-            </TabsContent>
-
-            <TabsContent value="courses" className="p-6">
-              <TeacherCourses />
-            </TabsContent>
-          </Tabs>
+          <CardContent className="p-8">
+            <TeacherClasses />
+          </CardContent>
         </Card>
       </div>
     </div>

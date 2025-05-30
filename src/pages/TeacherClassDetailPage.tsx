@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, Clock, MapPin, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import EnrollmentFormModal from '@/components/admin/EnrollmentFormModal';
@@ -256,7 +255,7 @@ const TeacherClassDetailPage = () => {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Chi tiết lớp học
                 </h1>
-                <p className="text-gray-600 mt-1">{classDetail.name}</p>
+                <p className="text-gray-600 mt-1">{classDetail?.name}</p>
               </div>
             </div>
           </div>
@@ -266,56 +265,133 @@ const TeacherClassDetailPage = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
-          {/* Class Information */}
-          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-t-lg">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-2xl">{classDetail.name}</CardTitle>
-                  <CardDescription className="mt-2 text-blue-100">
-                    <div className="flex items-center space-x-2">
-                      <BookOpen className="w-5 h-5" />
-                      <span className="text-lg">{classDetail.course.name}</span>
-                    </div>
-                  </CardDescription>
+          {/* Enhanced Class Information */}
+          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white relative">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full"></div>
+              <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-white/5 rounded-full"></div>
+              
+              <div className="relative z-10">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="space-y-2">
+                    <CardTitle className="text-3xl font-bold">{classDetail?.name}</CardTitle>
+                    <CardDescription className="text-blue-100 flex items-center space-x-2 text-lg">
+                      <BookOpen className="w-6 h-6" />
+                      <span className="font-medium">{classDetail?.course.name}</span>
+                    </CardDescription>
+                  </div>
+                  {classDetail && getStatusBadge(classDetail.status)}
                 </div>
-                {getStatusBadge(classDetail.status)}
+                
+                {/* Quick Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30">
+                    <div className="flex items-center space-x-3">
+                      <Users className="w-6 h-6 text-blue-100" />
+                      <div>
+                        <p className="text-blue-100 text-sm">Học viên</p>
+                        <p className="text-white text-xl font-bold">{enrollments.length}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30">
+                    <div className="flex items-center space-x-3">
+                      <BookOpen className="w-6 h-6 text-purple-100" />
+                      <div>
+                        <p className="text-purple-100 text-sm">Buổi học</p>
+                        <p className="text-white text-xl font-bold">{lessons.length}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30">
+                    <div className="flex items-center space-x-3">
+                      <GraduationCap className="w-6 h-6 text-pink-100" />
+                      <div>
+                        <p className="text-pink-100 text-sm">Trạng thái</p>
+                        <p className="text-white text-lg font-semibold">
+                          {classDetail?.status || 'Không xác định'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
-              {classDetail.description && (
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-3 text-lg">Mô tả lớp học</h4>
-                  <p className="text-gray-700 leading-relaxed">{classDetail.description}</p>
+            
+            <CardContent className="p-8 space-y-8">
+              {/* Enhanced Class Description */}
+              {classDetail?.description && (
+                <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-2xl p-8 border border-blue-100 shadow-inner">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+                      <FileText className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-2xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Mô tả lớp học
+                      </h4>
+                      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-wrap">
+                          {classDetail.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
-                  <h4 className="font-semibold text-gray-900 mb-4 text-lg flex items-center">
-                    <User className="w-5 h-5 mr-2 text-blue-600" />
-                    Giảng viên
-                  </h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-semibold">{classDetail.instructor.fullname.charAt(0)}</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{classDetail.instructor.fullname}</p>
-                        <p className="text-gray-600 text-sm">{classDetail.instructor.email}</p>
+              {/* Enhanced Teacher and Schedule Info */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Teacher Info */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-200 shadow-lg">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
+                      <User className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                        <span>Giảng viên</span>
+                      </h4>
+                      <div className="bg-white rounded-xl p-6 shadow-sm border border-blue-100">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center shadow-md">
+                            <span className="text-white font-bold text-lg">
+                              {classDetail?.instructor.fullname.charAt(0)}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-bold text-gray-900 text-lg">{classDetail?.instructor.fullname}</p>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <Mail className="w-4 h-4 text-blue-500" />
+                              <p className="text-gray-600">{classDetail?.instructor.email}</p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                {classDetail.schedule && (
-                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-100">
-                    <h4 className="font-semibold text-gray-900 mb-4 text-lg flex items-center">
-                      <Calendar className="w-5 h-5 mr-2 text-purple-600" />
-                      Lịch học
-                    </h4>
-                    <p className="text-gray-700">{classDetail.schedule}</p>
+                {/* Schedule Info */}
+                {classDetail?.schedule && (
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl p-8 border border-purple-200 shadow-lg">
+                    <div className="flex items-start space-x-4">
+                      <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+                        <Calendar className="w-8 h-8 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">Lịch học</h4>
+                        <div className="bg-white rounded-xl p-6 shadow-sm border border-purple-100">
+                          <div className="flex items-center space-x-3">
+                            <Clock className="w-5 h-5 text-purple-500" />
+                            <p className="text-gray-700 font-medium text-lg">{classDetail.schedule}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
