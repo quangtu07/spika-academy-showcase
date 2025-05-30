@@ -19,15 +19,45 @@ const AdminDashboard = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!isLoading && userRole !== 'admin') {
-      toast({
-        title: "Truy cập bị từ chối",
-        description: "Bạn không có quyền truy cập trang quản lý",
-        variant: "destructive",
-      });
-      navigate('/');
+    // Kiểm tra quyền truy cập ngay khi component mount hoặc khi role thay đổi
+    if (!isLoading) {
+      if (!userRole || userRole !== 'admin') {
+        toast({
+          title: "Truy cập bị từ chối",
+          description: "Bạn không có quyền truy cập trang quản lý. Chỉ admin mới có thể truy cập.",
+          variant: "destructive",
+        });
+        // Chuyển hướng về trang chủ sau 2 giây
+        setTimeout(() => {
+          navigate('/', { replace: true });
+        }, 2000);
+      }
     }
   }, [userRole, isLoading, navigate, toast]);
+
+  // Kiểm tra thêm khi user truy cập trực tiếp bằng URL
+  useEffect(() => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+      toast({
+        title: "Chưa đăng nhập",
+        description: "Vui lòng đăng nhập để truy cập trang quản lý",
+        variant: "destructive",
+      });
+      navigate('/', { replace: true });
+      return;
+    }
+
+    const user = JSON.parse(currentUser);
+    if (!user.role || user.role !== 'admin') {
+      toast({
+        title: "Truy cập bị từ chối",
+        description: "Tài khoản của bạn không có quyền truy cập trang quản lý",
+        variant: "destructive",
+      });
+      navigate('/', { replace: true });
+    }
+  }, [navigate, toast]);
 
   useEffect(() => {
     // Check if we have a state indicating which tab to show
@@ -42,20 +72,8 @@ const AdminDashboard = () => {
     navigate('/');
   };
 
-  // Show loading state while checking role
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang kiểm tra quyền truy cập...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Show access denied if not admin
-  if (userRole !== 'admin') {
+  if (!isLoading && (!userRole || userRole !== 'admin')) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -66,12 +84,27 @@ const AdminDashboard = () => {
               Bạn không có quyền truy cập trang quản lý. Chỉ admin mới có thể truy cập.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center">
+          <CardContent className="text-center space-y-3">
+            <p className="text-sm text-gray-600">
+              Đang chuyển hướng về trang chủ...
+            </p>
             <Button onClick={handleGoHome} className="w-full">
-              Về trang chủ
+              Về trang chủ ngay
             </Button>
           </CardContent>
         </Card>
+      </div>
+    );
+  }
+
+  // Chỉ render nội dung admin khi đã xác nhận là admin
+  if (isLoading || !userRole || userRole !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang kiểm tra quyền truy cập...</p>
+        </div>
       </div>
     );
   }

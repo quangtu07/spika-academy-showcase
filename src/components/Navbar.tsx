@@ -102,7 +102,7 @@ const Navbar = () => {
   const getDashboardButtonText = () => {
     switch (userRole) {
       case 'admin': return 'Quản lý';
-      case 'teacher': return 'Giảng viên';
+      case 'teacher': return 'Quản lý lớp học';
       case 'student': return 'Học tập';
       default: return 'Dashboard';
     }

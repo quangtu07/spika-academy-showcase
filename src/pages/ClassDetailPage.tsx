@@ -4,9 +4,23 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Users, BookOpen } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ArrowLeft, Users, BookOpen, UserPlus, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DatabaseClass {
   id: string;
@@ -70,12 +84,25 @@ interface Class {
   }>;
 }
 
+interface Student {
+  id: string;
+  fullname: string;
+  email: string;
+}
+
 const ClassDetailPage = () => {
   const { classId } = useParams<{ classId: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [classData, setClassData] = useState<Class | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
+  const [availableStudents, setAvailableStudents] = useState<Student[]>([]);
+  const [selectedStudentId, setSelectedStudentId] = useState('');
+  const [isAddingStudent, setIsAddingStudent] = useState(false);
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+  const [studentToRemove, setStudentToRemove] = useState<{id: string, name: string} | null>(null);
+  const [isRemovingStudent, setIsRemovingStudent] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -86,7 +113,7 @@ const ClassDetailPage = () => {
 
   const fetchClassDetails = async () => {
     try {
-      // Fetch class details with course and instructor
+      // Fetch class details with course
       const { data: classData, error: classError } = await supabase
         .from('classes')
         .select(`
@@ -95,11 +122,6 @@ const ClassDetailPage = () => {
             id,
             name,
             description
-          ),
-          instructor:profiles!inner (
-            id,
-            fullname,
-            email
           )
         `)
         .eq('id', classId)
@@ -111,7 +133,28 @@ const ClassDetailPage = () => {
         throw new Error('Không tìm thấy thông tin lớp học');
       }
 
-      const dbClass = classData as DatabaseClass;
+      console.log('🔍 Dữ liệu thô từ database (classes):', classData);
+
+      // Cast to proper type that includes instructor_id
+      const classRecord = classData as any;
+
+      // Fetch instructor separately
+      let instructorData = null;
+      if (classRecord.instructor_id) {
+        const { data: instructor, error: instructorError } = await supabase
+          .from('profiles')
+          .select('id, fullname, email')
+          .eq('id', classRecord.instructor_id)
+          .single();
+
+        if (instructorError) {
+          console.error('Error fetching instructor:', instructorError);
+        } else {
+          instructorData = instructor;
+        }
+      }
+
+      console.log('👨‍🏫 Dữ liệu instructor:', instructorData);
 
       // Fetch enrollments
       const { data: enrollmentsData, error: enrollmentsError } = await supabase
@@ -141,22 +184,33 @@ const ClassDetailPage = () => {
 
       // Transform data to match our Class interface
       const transformedData: Class = {
-        id: dbClass.id,
-        name: dbClass.name,
-        description: dbClass.description,
-        schedule: dbClass.schedule,
-        status: dbClass.status,
-        created_at: dbClass.created_at,
-        updated_at: dbClass.updated_at,
-        instructor_id: dbClass.instructor_id,
-        course_id: dbClass.course_id,
-        course: dbClass.course,
-        instructor: dbClass.instructor[0], // Get first instructor from array
+        id: classRecord.id,
+        name: classRecord.name,
+        description: classRecord.description,
+        schedule: classRecord.schedule,
+        status: classRecord.status,
+        created_at: classRecord.created_at,
+        updated_at: classRecord.updated_at,
+        instructor_id: classRecord.instructor_id,
+        course_id: classRecord.course_id,
+        course: classRecord.course,
+        instructor: instructorData,
         enrollments: enrollmentsData || [],
         lessons: lessonsData || []
       };
 
       setClassData(transformedData);
+      console.log('📊 Dữ liệu lớp học đã được transform:', {
+        id: transformedData.id,
+        name: transformedData.name,
+        status: transformedData.status,
+        statusType: typeof transformedData.status,
+        course: transformedData.course?.name,
+        instructor_id: transformedData.instructor_id,
+        instructor: transformedData.instructor?.fullname,
+        enrollmentsCount: transformedData.enrollments?.length,
+        lessonsCount: transformedData.lessons?.length
+      });
     } catch (error: any) {
       console.error('Error fetching class details:', error);
       toast({
@@ -169,6 +223,143 @@ const ClassDetailPage = () => {
     }
   };
 
+  const fetchAvailableStudents = async () => {
+    try {
+      // Lấy danh sách học viên chưa đăng ký lớp này
+      const { data: allStudents, error: studentsError } = await supabase
+        .from('profiles')
+        .select('id, fullname, email')
+        .eq('role', 'student');
+
+      if (studentsError) throw studentsError;
+
+      // Lấy danh sách học viên đã đăng ký lớp này
+      const { data: enrolledStudents, error: enrolledError } = await supabase
+        .from('enrollments')
+        .select('student_id')
+        .eq('class_id', classId);
+
+      if (enrolledError) throw enrolledError;
+
+      // Lọc ra những học viên chưa đăng ký
+      const enrolledStudentIds = enrolledStudents?.map(e => e.student_id) || [];
+      const available = allStudents?.filter(student => 
+        !enrolledStudentIds.includes(student.id)
+      ) || [];
+
+      setAvailableStudents(available);
+    } catch (error) {
+      console.error('Error fetching available students:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải danh sách học viên",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddStudent = async () => {
+    if (!selectedStudentId) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng chọn học viên",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAddingStudent(true);
+    try {
+      const { error } = await supabase
+        .from('enrollments')
+        .insert([
+          {
+            class_id: classId,
+            student_id: selectedStudentId,
+            enrolled_at: new Date().toISOString(),
+            status: 'active'
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Thành công",
+        description: "Đã thêm học viên vào lớp học",
+      });
+
+      // Đóng modal và reset form
+      handleCloseAddStudentModal();
+      
+      // Reload dữ liệu lớp học
+      await fetchClassDetails();
+    } catch (error: any) {
+      console.error('Error adding student:', error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể thêm học viên vào lớp học",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingStudent(false);
+    }
+  };
+
+  const handleOpenAddStudentModal = () => {
+    setIsAddStudentModalOpen(true);
+    fetchAvailableStudents();
+  };
+
+  const handleCloseAddStudentModal = () => {
+    setIsAddStudentModalOpen(false);
+    setSelectedStudentId('');
+  };
+
+  const handleRemoveStudentClick = (enrollmentId: string, studentName: string) => {
+    setStudentToRemove({ id: enrollmentId, name: studentName });
+    setIsRemoveDialogOpen(true);
+  };
+
+  const handleRemoveStudent = async () => {
+    if (!studentToRemove) return;
+
+    setIsRemovingStudent(true);
+    try {
+      const { error } = await supabase
+        .from('enrollments')
+        .delete()
+        .eq('id', studentToRemove.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Thành công",
+        description: `Đã xóa học viên ${studentToRemove.name} khỏi lớp học`,
+      });
+
+      // Đóng dialog và reset
+      setIsRemoveDialogOpen(false);
+      setStudentToRemove(null);
+      
+      // Reload dữ liệu lớp học
+      await fetchClassDetails();
+    } catch (error: any) {
+      console.error('Error removing student:', error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể xóa học viên khỏi lớp học",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRemovingStudent(false);
+    }
+  };
+
+  const handleCancelRemove = () => {
+    setIsRemoveDialogOpen(false);
+    setStudentToRemove(null);
+  };
+
   const handleGoBack = () => {
     const tab = searchParams.get('tab');
     if (tab === 'classes') {
@@ -179,17 +370,38 @@ const ClassDetailPage = () => {
   };
 
   const getStatusBadge = (status: string | null) => {
+    // Debug để kiểm tra status từ database
+    console.log('Status từ database:', status, typeof status);
+    
     const statusMap = {
-      'active': { text: 'Đang hoạt động', class: 'bg-green-100 text-green-800' },
-      'inactive': { text: 'Không hoạt động', class: 'bg-gray-100 text-gray-800' },
-      'completed': { text: 'Đã hoàn thành', class: 'bg-blue-100 text-blue-800' }
+      // Giá trị tiếng Việt từ database
+      'đang hoạt động': { text: 'Đang hoạt động', class: 'bg-green-100 text-green-800 border-green-200' },
+      'đã kết thúc': { text: 'Đã kết thúc', class: 'bg-gray-100 text-gray-800 border-gray-200' },
+      'hoàn thành': { text: 'Hoàn thành', class: 'bg-blue-100 text-blue-800 border-blue-200' },
+      'chờ bắt đầu': { text: 'Chờ bắt đầu', class: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+      'đã hủy': { text: 'Đã hủy', class: 'bg-red-100 text-red-800 border-red-200' },
+      
+      // Giá trị tiếng Anh backup (phòng trường hợp)
+      'active': { text: 'Đang hoạt động', class: 'bg-green-100 text-green-800 border-green-200' },
+      'inactive': { text: 'Không hoạt động', class: 'bg-gray-100 text-gray-800 border-gray-200' },
+      'completed': { text: 'Đã hoàn thành', class: 'bg-blue-100 text-blue-800 border-blue-200' },
+      'pending': { text: 'Chờ bắt đầu', class: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+      'cancelled': { text: 'Đã hủy', class: 'bg-red-100 text-red-800 border-red-200' }
     };
 
-    const defaultStatus = { text: 'Không xác định', class: 'bg-gray-100 text-gray-800' };
-    const statusInfo = status ? statusMap[status as keyof typeof statusMap] || defaultStatus : defaultStatus;
+    const defaultStatus = { text: 'Không xác định', class: 'bg-gray-100 text-gray-800 border-gray-200' };
+    
+    // Normalize status (trim và lowercase để so sánh chính xác)
+    const normalizedStatus = status?.toString().trim().toLowerCase();
+    console.log('Normalized status:', normalizedStatus);
+    
+    let statusInfo = defaultStatus;
+    if (normalizedStatus && statusMap[normalizedStatus as keyof typeof statusMap]) {
+      statusInfo = statusMap[normalizedStatus as keyof typeof statusMap];
+    }
 
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusInfo.class}`}>
+      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${statusInfo.class}`}>
         {statusInfo.text}
       </span>
     );
@@ -275,9 +487,9 @@ const ClassDetailPage = () => {
                     <div><strong>Trạng thái:</strong> {getStatusBadge(classData.status)}</div>
                     <div><strong>Số học viên:</strong> {classData.enrollments?.length || 0}</div>
                     <div><strong>Số buổi học:</strong> {classData.lessons?.length || 0}</div>
-                    <div><strong>Ngày tạo:</strong> {new Date(classData.created_at).toLocaleString('vi-VN')}</div>
+                    <div><strong>Ngày tạo: </strong> {new Date(classData.created_at).toLocaleString('vi-VN')}</div>
                     <div>
-                      <strong>Lần cập nhật cuối:</strong> 
+                      <strong>Lần cập nhật cuối: </strong> 
                       {classData.updated_at ? new Date(classData.updated_at).toLocaleString('vi-VN') : 'Chưa cập nhật'}
                     </div>
                   </div>
@@ -302,8 +514,16 @@ const ClassDetailPage = () => {
             <TabsContent value="students">
               <Card>
                 <CardHeader>
-                  <CardTitle>Danh sách học viên ({classData.enrollments?.length || 0})</CardTitle>
-                  <CardDescription>Tất cả học viên đã đăng ký lớp học này</CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Danh sách học viên ({classData.enrollments?.length || 0})</CardTitle>
+                      <CardDescription>Tất cả học viên đã đăng ký lớp học này</CardDescription>
+                    </div>
+                    <Button onClick={handleOpenAddStudentModal} className="flex items-center space-x-2">
+                      <UserPlus className="h-4 w-4" />
+                      <span>Thêm học viên</span>
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {classData.enrollments && classData.enrollments.length > 0 ? (
@@ -314,6 +534,7 @@ const ClassDetailPage = () => {
                           <TableHead>Họ tên</TableHead>
                           <TableHead>Email</TableHead>
                           <TableHead>Ngày đăng ký</TableHead>
+                          <TableHead className="text-center">Thao tác</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -323,6 +544,25 @@ const ClassDetailPage = () => {
                             <TableCell className="font-medium">{enrollment.student?.fullname || 'Không xác định'}</TableCell>
                             <TableCell>{enrollment.student?.email || ''}</TableCell>
                             <TableCell>{new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}</TableCell>
+                            <TableCell className="text-center">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleRemoveStudentClick(enrollment.id, enrollment.student?.fullname || 'Học viên')}
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Xóa học viên khỏi lớp học</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -379,6 +619,82 @@ const ClassDetailPage = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Add Student Modal */}
+      <Dialog open={isAddStudentModalOpen} onOpenChange={handleCloseAddStudentModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Thêm học viên vào lớp học</DialogTitle>
+            <DialogDescription>
+              Chọn học viên từ danh sách bên dưới để thêm vào lớp học
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {availableStudents.length > 0 ? (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="student-select" className="text-right">
+                  Học viên
+                </Label>
+                <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Chọn học viên" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableStudents.map((student) => (
+                      <SelectItem key={student.id} value={student.id}>
+                        {student.fullname} - {student.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-gray-500 mb-2">
+                  <Users className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p className="text-lg font-medium">Không có học viên nào</p>
+                  <p className="text-sm">Tất cả học viên có trong hệ thống đã được đăng ký lớp học này</p>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button 
+              type="submit" 
+              onClick={handleAddStudent} 
+              disabled={isAddingStudent || availableStudents.length === 0 || !selectedStudentId}
+            >
+              {isAddingStudent ? 'Đang thêm...' : 'Thêm học viên'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Remove Student Dialog */}
+      <AlertDialog open={isRemoveDialogOpen} onOpenChange={handleCancelRemove}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa học viên</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa học viên <strong>{studentToRemove?.name}</strong> khỏi lớp học này?
+              <br />
+              <span className="text-sm text-red-600 mt-2 block">
+                Thao tác này không thể hoàn tác.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isRemovingStudent}>Hủy</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleRemoveStudent}
+              disabled={isRemovingStudent}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isRemovingStudent ? 'Đang xóa...' : 'Xóa'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

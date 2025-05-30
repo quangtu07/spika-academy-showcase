@@ -6,6 +6,7 @@ import { Home, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
+import TeacherClasses from '@/components/teacher/TeacherClasses';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
@@ -95,7 +96,7 @@ const TeacherDashboard = () => {
           </TabsList>
 
           <TabsContent value="classes">
-            {/* <TeacherClasses /> */}
+            <TeacherClasses />
           </TabsContent>
         </Tabs>
       </div>
