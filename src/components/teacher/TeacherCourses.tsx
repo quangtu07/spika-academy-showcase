@@ -15,7 +15,7 @@ interface Course {
   duration: number;
   price: number;
   image_url?: string;
-  status: string;
+  status: "Đang mở" | "Đang bắt đầu" | "Kết thúc";
   enrollments_count: number;
 }
 
@@ -40,7 +40,6 @@ const TeacherCourses = () => {
 
   const fetchTeacherCourses = async () => {
     try {
-      // Lấy thông tin user từ localStorage
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}') as Profile;
 
       if (!currentUser?.id) {
@@ -52,10 +51,10 @@ const TeacherCourses = () => {
         return;
       }
 
-      // Simplified query to avoid type instantiation issues
+      // Get courses for the instructor
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
-        .select('*')
+        .select('id, name, description, duration, price, image_url, status')
         .eq('instructor_id', currentUser.id)
         .order('updated_at', { ascending: false });
 
@@ -91,7 +90,13 @@ const TeacherCourses = () => {
       }
 
       const formattedCourses = coursesData?.map(course => ({
-        ...course,
+        id: course.id,
+        name: course.name,
+        description: course.description || '',
+        duration: course.duration,
+        price: course.price || 0,
+        image_url: course.image_url,
+        status: (course.status || 'Đang mở') as "Đang mở" | "Đang bắt đầu" | "Kết thúc",
         enrollments_count: enrollmentCounts[course.id] || 0
       })) || [];
 
@@ -119,13 +124,13 @@ const TeacherCourses = () => {
     setEditingCourse(null);
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusMap: { [key: string]: { label: string; color: string } } = {
+  const getStatusBadge = (status: "Đang mở" | "Đang bắt đầu" | "Kết thúc") => {
+    const statusMap = {
       'Đang mở': { label: 'Đang mở', color: 'bg-green-100 text-green-800' },
       'Đang bắt đầu': { label: 'Đang bắt đầu', color: 'bg-blue-100 text-blue-800' },
       'Kết thúc': { label: 'Kết thúc', color: 'bg-gray-100 text-gray-800' }
     };
-    const statusInfo = statusMap[status] || { label: status, color: 'bg-gray-100 text-gray-800' };
+    const statusInfo = statusMap[status];
     return <Badge className={statusInfo.color}>{statusInfo.label}</Badge>;
   };
 
