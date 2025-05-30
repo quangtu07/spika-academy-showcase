@@ -51,42 +51,51 @@ const TeacherCourses = () => {
         return;
       }
 
-      // Get courses for the instructor
+      // Get classes for the instructor first
+      const { data: classesData, error: classesError } = await supabase
+        .from('classes')
+        .select('id, course_id')
+        .eq('instructor_id', currentUser.id);
+
+      if (classesError) throw classesError;
+
+      if (!classesData || classesData.length === 0) {
+        setCourses([]);
+        setIsLoading(false);
+        return;
+      }
+
+      // Get unique course IDs
+      const courseIds = [...new Set(classesData.map(c => c.course_id))];
+
+      // Get courses data
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
         .select('id, name, description, duration, price, image_url, status')
-        .eq('instructor_id', currentUser.id)
+        .in('id', courseIds)
         .order('updated_at', { ascending: false });
 
       if (coursesError) throw coursesError;
 
-      // Get enrollment counts separately
-      const courseIds = coursesData?.map(course => course.id) || [];
+      // Get enrollment counts
       let enrollmentCounts: { [key: string]: number } = {};
 
-      if (courseIds.length > 0) {
-        const { data: classesData } = await supabase
-          .from('classes')
-          .select('id, course_id')
-          .in('course_id', courseIds);
-
-        const classIds = classesData?.map(c => c.id) || [];
+      if (classesData.length > 0) {
+        const classIds = classesData.map(c => c.id);
         
-        if (classIds.length > 0) {
-          const { data: enrollmentsData } = await supabase
-            .from('enrollments')
-            .select('class_id')
-            .in('class_id', classIds);
+        const { data: enrollmentsData } = await supabase
+          .from('enrollments')
+          .select('class_id')
+          .in('class_id', classIds);
 
-          // Count enrollments per course
-          classesData?.forEach(classItem => {
-            const count = enrollmentsData?.filter(e => e.class_id === classItem.id).length || 0;
-            if (!enrollmentCounts[classItem.course_id]) {
-              enrollmentCounts[classItem.course_id] = 0;
-            }
-            enrollmentCounts[classItem.course_id] += count;
-          });
-        }
+        // Count enrollments per course
+        classesData.forEach(classItem => {
+          const count = enrollmentsData?.filter(e => e.class_id === classItem.id).length || 0;
+          if (!enrollmentCounts[classItem.course_id]) {
+            enrollmentCounts[classItem.course_id] = 0;
+          }
+          enrollmentCounts[classItem.course_id] += count;
+        });
       }
 
       const formattedCourses = coursesData?.map(course => ({
