@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Home, Users } from 'lucide-react';
+import { Home, Users, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
@@ -15,47 +15,83 @@ const TeacherDashboard = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!isLoading && userRole !== 'teacher') {
-      toast({
-        title: "Truy cập bị từ chối",
-        description: "Bạn không có quyền truy cập trang giảng viên",
-        variant: "destructive",
-      });
-      navigate('/');
+    // Kiểm tra quyền truy cập ngay khi component mount hoặc khi role thay đổi
+    if (!isLoading) {
+      if (!userRole || userRole !== 'teacher') {
+        toast({
+          title: "Truy cập bị từ chối",
+          description: "Bạn không có quyền truy cập trang giảng viên. Chỉ giảng viên mới có thể truy cập.",
+          variant: "destructive",
+        });
+        // Chuyển hướng về trang chủ sau 2 giây
+        setTimeout(() => {
+          navigate('/', { replace: true });
+        }, 2000);
+      }
     }
   }, [userRole, isLoading, navigate, toast]);
+
+  // Kiểm tra thêm khi user truy cập trực tiếp bằng URL
+  useEffect(() => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+      toast({
+        title: "Chưa đăng nhập",
+        description: "Vui lòng đăng nhập để truy cập trang giảng viên",
+        variant: "destructive",
+      });
+      navigate('/', { replace: true });
+      return;
+    }
+
+    const user = JSON.parse(currentUser);
+    if (!user.role || user.role !== 'teacher') {
+      toast({
+        title: "Truy cập bị từ chối",
+        description: "Tài khoản của bạn không có quyền truy cập trang giảng viên",
+        variant: "destructive",
+      });
+      navigate('/', { replace: true });
+    }
+  }, [navigate, toast]);
 
   const handleGoHome = () => {
     navigate('/');
   };
 
-  if (isLoading) {
+  // Show access denied if not teacher
+  if (!isLoading && (!userRole || userRole !== 'teacher')) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+            <CardTitle className="text-red-600">Truy cập bị từ chối</CardTitle>
+            <CardDescription>
+              Bạn không có quyền truy cập trang giảng viên. Chỉ giảng viên mới có thể truy cập.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center space-y-3">
+            <p className="text-sm text-gray-600">
+              Đang chuyển hướng về trang chủ...
+            </p>
+            <Button onClick={handleGoHome} className="w-full">
+              Về trang chủ ngay
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Chỉ render nội dung teacher khi đã xác nhận là teacher
+  if (isLoading || !userRole || userRole !== 'teacher') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Đang kiểm tra quyền truy cập...</p>
         </div>
-      </div>
-    );
-  }
-
-  if (userRole !== 'teacher') {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-red-600">Truy cập bị từ chối</CardTitle>
-            <CardDescription>
-              Bạn không có quyền truy cập trang giảng viên.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Button onClick={handleGoHome} className="w-full">
-              Về trang chủ
-            </Button>
-          </CardContent>
-        </Card>
       </div>
     );
   }
