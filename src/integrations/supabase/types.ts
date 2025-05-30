@@ -53,10 +53,9 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
-          instructor_id: string
           name: string
           schedule: string | null
-          status: Database["public"]["Enums"]["class_status"] | null
+          status: string | null
           updated_at: string
         }
         Insert: {
@@ -64,10 +63,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          instructor_id: string
           name: string
           schedule?: string | null
-          status?: Database["public"]["Enums"]["class_status"] | null
+          status?: string | null
           updated_at?: string
         }
         Update: {
@@ -75,10 +73,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          instructor_id?: string
           name?: string
           schedule?: string | null
-          status?: Database["public"]["Enums"]["class_status"] | null
+          status?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -89,50 +86,54 @@ export type Database = {
             referencedRelation: "courses"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      courses: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          duration: number | null
+          id: string
+          image_url: string | null
+          instructor_id: string
+          name: string
+          price: number | null
+          status: Database["public"]["Enums"]["course_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          duration?: number | null
+          id?: string
+          image_url?: string | null
+          instructor_id: string
+          name: string
+          price?: number | null
+          status?: Database["public"]["Enums"]["course_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          duration?: number | null
+          id?: string
+          image_url?: string | null
+          instructor_id?: string
+          name?: string
+          price?: number | null
+          status?: Database["public"]["Enums"]["course_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "classes_instuctor_id_fkey"
+            foreignKeyName: "courses_instructor_id_fkey"
             columns: ["instructor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
-      }
-      courses: {
-        Row: {
-          created_at: string
-          description: string | null
-          duration: number
-          id: string
-          image_url: string | null
-          name: string
-          price: number | null
-          status: Database["public"]["Enums"]["course_status"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          duration: number
-          id?: string
-          image_url?: string | null
-          name: string
-          price?: number | null
-          status: Database["public"]["Enums"]["course_status"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          duration?: number
-          id?: string
-          image_url?: string | null
-          name?: string
-          price?: number | null
-          status?: Database["public"]["Enums"]["course_status"]
-          updated_at?: string
-        }
-        Relationships: []
       }
       enrollments: {
         Row: {
@@ -223,6 +224,7 @@ export type Database = {
           class_id: string
           content: string | null
           created_at: string
+          description: string | null
           id: string
           lesson_number: number
           title: string
@@ -232,6 +234,7 @@ export type Database = {
           class_id: string
           content?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           lesson_number: number
           title: string
@@ -241,6 +244,7 @@ export type Database = {
           class_id?: string
           content?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           lesson_number?: number
           title?: string
@@ -252,6 +256,13 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lessons_course_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
             referencedColumns: ["id"]
           },
         ]
@@ -354,7 +365,6 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      class_status: "Đang hoạt động" | "Đã kết thúc"
       course_level: "basic" | "intermediate" | "advance"
       course_status: "Đang mở" | "Đang bắt đầu" | "Kết thúc"
       user_role: "student" | "teacher" | "admin"
@@ -473,7 +483,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      class_status: ["Đang hoạt động", "Đã kết thúc"],
       course_level: ["basic", "intermediate", "advance"],
       course_status: ["Đang mở", "Đang bắt đầu", "Kết thúc"],
       user_role: ["student", "teacher", "admin"],
