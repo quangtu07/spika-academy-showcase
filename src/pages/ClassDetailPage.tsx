@@ -7,6 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Users, BookOpen, UserPlus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, UserPlus, Trash2, Plus, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -103,6 +105,18 @@ const ClassDetailPage = () => {
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
   const [studentToRemove, setStudentToRemove] = useState<{id: string, name: string} | null>(null);
   const [isRemovingStudent, setIsRemovingStudent] = useState(false);
+  const [isAddLessonModalOpen, setIsAddLessonModalOpen] = useState(false);
+  const [lessonTitle, setLessonTitle] = useState('');
+  const [lessonContent, setLessonContent] = useState('');
+  const [isAddingLesson, setIsAddingLesson] = useState(false);
+  const [isEditLessonModalOpen, setIsEditLessonModalOpen] = useState(false);
+  const [editingLesson, setEditingLesson] = useState<{id: string, title: string, content: string | null, lesson_number: number} | null>(null);
+  const [editLessonTitle, setEditLessonTitle] = useState('');
+  const [editLessonContent, setEditLessonContent] = useState('');
+  const [isEditingLesson, setIsEditingLesson] = useState(false);
+  const [isDeleteLessonDialogOpen, setIsDeleteLessonDialogOpen] = useState(false);
+  const [lessonToDelete, setLessonToDelete] = useState<{id: string, title: string, lesson_number: number} | null>(null);
+  const [isDeletingLesson, setIsDeletingLesson] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -360,6 +374,184 @@ const ClassDetailPage = () => {
     setStudentToRemove(null);
   };
 
+  const getNextLessonNumber = () => {
+    if (!classData?.lessons || classData.lessons.length === 0) {
+      return 1;
+    }
+    const maxLessonNumber = Math.max(...classData.lessons.map(lesson => lesson.lesson_number));
+    return maxLessonNumber + 1;
+  };
+
+  const handleOpenAddLessonModal = () => {
+    setIsAddLessonModalOpen(true);
+  };
+
+  const handleCloseAddLessonModal = () => {
+    setIsAddLessonModalOpen(false);
+    setLessonTitle('');
+    setLessonContent('');
+  };
+
+  const handleAddLesson = async () => {
+    if (!lessonTitle.trim()) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng nhập tiêu đề buổi học",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAddingLesson(true);
+    try {
+      const nextLessonNumber = getNextLessonNumber();
+      
+      const { error } = await supabase
+        .from('lessons')
+        .insert([
+          {
+            class_id: classId,
+            title: lessonTitle.trim(),
+            content: lessonContent.trim() || null,
+            lesson_number: nextLessonNumber,
+            created_at: new Date().toISOString(),
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Thành công",
+        description: `Đã thêm buổi học ${nextLessonNumber}: ${lessonTitle}`,
+      });
+
+      // Đóng modal và reset form
+      handleCloseAddLessonModal();
+      
+      // Reload dữ liệu lớp học
+      await fetchClassDetails();
+    } catch (error: any) {
+      console.error('Error adding lesson:', error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể thêm buổi học",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingLesson(false);
+    }
+  };
+
+  const handleOpenEditLessonModal = (lesson: any) => {
+    setEditingLesson(lesson);
+    setEditLessonTitle(lesson.title);
+    setEditLessonContent(lesson.content || '');
+    setIsEditLessonModalOpen(true);
+  };
+
+  const handleCloseEditLessonModal = () => {
+    setIsEditLessonModalOpen(false);
+    setEditingLesson(null);
+    setEditLessonTitle('');
+    setEditLessonContent('');
+  };
+
+  const handleEditLesson = async () => {
+    if (!editLessonTitle.trim()) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng nhập tiêu đề buổi học",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!editingLesson) return;
+
+    setIsEditingLesson(true);
+    try {
+      const { error } = await supabase
+        .from('lessons')
+        .update({
+          title: editLessonTitle.trim(),
+          content: editLessonContent.trim() || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', editingLesson.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Thành công",
+        description: `Đã cập nhật buổi học ${editingLesson.lesson_number}: ${editLessonTitle}`,
+      });
+
+      // Đóng modal và reset form
+      handleCloseEditLessonModal();
+      
+      // Reload dữ liệu lớp học
+      await fetchClassDetails();
+    } catch (error: any) {
+      console.error('Error editing lesson:', error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể cập nhật buổi học",
+        variant: "destructive",
+      });
+    } finally {
+      setIsEditingLesson(false);
+    }
+  };
+
+  const handleDeleteLessonClick = (lesson: any) => {
+    setLessonToDelete({
+      id: lesson.id,
+      title: lesson.title,
+      lesson_number: lesson.lesson_number
+    });
+    setIsDeleteLessonDialogOpen(true);
+  };
+
+  const handleDeleteLesson = async () => {
+    if (!lessonToDelete) return;
+
+    setIsDeletingLesson(true);
+    try {
+      const { error } = await supabase
+        .from('lessons')
+        .delete()
+        .eq('id', lessonToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Thành công",
+        description: `Đã xóa buổi học ${lessonToDelete.lesson_number}: ${lessonToDelete.title}`,
+      });
+
+      // Đóng dialog và reset
+      setIsDeleteLessonDialogOpen(false);
+      setLessonToDelete(null);
+      
+      // Reload dữ liệu lớp học
+      await fetchClassDetails();
+    } catch (error: any) {
+      console.error('Error deleting lesson:', error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể xóa buổi học",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeletingLesson(false);
+    }
+  };
+
+  const handleCancelDeleteLesson = () => {
+    setIsDeleteLessonDialogOpen(false);
+    setLessonToDelete(null);
+  };
+
   const handleGoBack = () => {
     const tab = searchParams.get('tab');
     if (tab === 'classes') {
@@ -579,8 +771,16 @@ const ClassDetailPage = () => {
             <TabsContent value="lessons">
               <Card>
                 <CardHeader>
-                  <CardTitle>Danh sách buổi học ({classData.lessons?.length || 0})</CardTitle>
-                  <CardDescription>Tất cả buổi học trong lớp</CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Danh sách buổi học ({classData.lessons?.length || 0})</CardTitle>
+                      <CardDescription>Tất cả buổi học trong lớp</CardDescription>
+                    </div>
+                    <Button onClick={handleOpenAddLessonModal} className="flex items-center space-x-2">
+                      <Plus className="h-4 w-4" />
+                      <span>Thêm buổi học</span>
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {classData.lessons && classData.lessons.length > 0 ? (
@@ -592,6 +792,7 @@ const ClassDetailPage = () => {
                           <TableHead>Nội dung</TableHead>
                           <TableHead>Ngày tạo</TableHead>
                           <TableHead>Cập nhật lần cuối</TableHead>
+                          <TableHead className="text-center">Thao tác</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -603,6 +804,44 @@ const ClassDetailPage = () => {
                             <TableCell>{new Date(lesson.created_at).toLocaleString('vi-VN')}</TableCell>
                             <TableCell>
                               {lesson.updated_at ? new Date(lesson.updated_at).toLocaleString('vi-VN') : '-'}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <div className="flex items-center justify-center space-x-2">
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleOpenEditLessonModal(lesson)}
+                                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Chỉnh sửa buổi học</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleDeleteLessonClick(lesson)}
+                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Xóa buổi học</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -691,6 +930,128 @@ const ClassDetailPage = () => {
               className="bg-red-600 hover:bg-red-700"
             >
               {isRemovingStudent ? 'Đang xóa...' : 'Xóa'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Add Lesson Modal */}
+      <Dialog open={isAddLessonModalOpen} onOpenChange={handleCloseAddLessonModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Thêm buổi học</DialogTitle>
+            <DialogDescription>
+              Nhập thông tin cho buổi học mới (Buổi học số {getNextLessonNumber()})
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="lesson-title" className="text-right">
+                Tiêu đề
+              </Label>
+              <Input 
+                id="lesson-title" 
+                value={lessonTitle} 
+                onChange={(e) => setLessonTitle(e.target.value)}
+                className="col-span-3"
+                placeholder="Nhập tiêu đề buổi học"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="lesson-content" className="text-right">
+                Nội dung
+              </Label>
+              <Textarea 
+                id="lesson-content" 
+                value={lessonContent} 
+                onChange={(e) => setLessonContent(e.target.value)}
+                className="col-span-3"
+                placeholder="Nhập nội dung buổi học (tùy chọn)"
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              type="submit" 
+              onClick={handleAddLesson} 
+              disabled={isAddingLesson || !lessonTitle.trim()}
+            >
+              {isAddingLesson ? 'Đang thêm...' : 'Thêm buổi học'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Lesson Modal */}
+      <Dialog open={isEditLessonModalOpen} onOpenChange={handleCloseEditLessonModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Chỉnh sửa buổi học</DialogTitle>
+            <DialogDescription>
+              Nhập thông tin cho buổi học đã chọn
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-lesson-title" className="text-right">
+                Tiêu đề
+              </Label>
+              <Input 
+                id="edit-lesson-title" 
+                value={editLessonTitle} 
+                onChange={(e) => setEditLessonTitle(e.target.value)}
+                className="col-span-3"
+                placeholder="Nhập tiêu đề buổi học"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-lesson-content" className="text-right">
+                Nội dung
+              </Label>
+              <Textarea 
+                id="edit-lesson-content" 
+                value={editLessonContent} 
+                onChange={(e) => setEditLessonContent(e.target.value)}
+                className="col-span-3"
+                placeholder="Nhập nội dung buổi học"
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              type="submit" 
+              onClick={handleEditLesson} 
+              disabled={isEditingLesson || !editLessonTitle.trim()}
+            >
+              {isEditingLesson ? 'Đang cập nhật...' : 'Cập nhật buổi học'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Lesson Dialog */}
+      <AlertDialog open={isDeleteLessonDialogOpen} onOpenChange={handleCancelDeleteLesson}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa buổi học</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa buổi học <strong>{lessonToDelete?.title}</strong> khỏi lớp học này?
+              <br />
+              <span className="text-sm text-red-600 mt-2 block">
+                Thao tác này không thể hoàn tác.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeletingLesson}>Hủy</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteLesson}
+              disabled={isDeletingLesson}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeletingLesson ? 'Đang xóa...' : 'Xóa'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
