@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Users, Image } from 'lucide-react';
+import { ArrowLeft, Users, Image, Clock, DollarSign, Calendar, BookOpen, GraduationCap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -98,18 +99,31 @@ const CourseDetailPage = () => {
   };
 
   const getStatusBadge = (status?: string) => {
-    const statusColors = {
-      'Đang mở': 'bg-green-100 text-green-800',
-      'Đang bắt đầu': 'bg-blue-100 text-blue-800',
-      'Kết thúc': 'bg-gray-100 text-gray-800'
+    const statusConfig = {
+      'Đang mở': { 
+        variant: 'default' as const, 
+        className: 'bg-green-100 text-green-800 border-green-200 shadow-sm',
+        icon: '🟢'
+      },
+      'Đang bắt đầu': { 
+        variant: 'secondary' as const, 
+        className: 'bg-blue-100 text-blue-800 border-blue-200 shadow-sm',
+        icon: '🔵'
+      },
+      'Kết thúc': { 
+        variant: 'outline' as const, 
+        className: 'bg-gray-100 text-gray-800 border-gray-200 shadow-sm',
+        icon: '⚪'
+      }
     };
 
-    const colorClass = status ? statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800';
+    const config = status ? statusConfig[status as keyof typeof statusConfig] : statusConfig['Kết thúc'];
 
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${colorClass}`}>
+      <Badge variant={config.variant} className={config.className}>
+        <span className="mr-1">{config.icon}</span>
         {status || 'Không xác định'}
-      </span>
+      </Badge>
     );
   };
 
@@ -124,27 +138,33 @@ const CourseDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang tải thông tin khóa học...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardContent className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-6"></div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Đang tải thông tin</h3>
+            <p className="text-gray-600">Vui lòng chờ trong giây lát...</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   if (!courseData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-red-600">Không tìm thấy khóa học</CardTitle>
-            <CardDescription>
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center">
+        <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader className="text-center pb-4">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-8 h-8 text-red-600" />
+            </div>
+            <CardTitle className="text-red-600 text-xl">Không tìm thấy khóa học</CardTitle>
+            <CardDescription className="text-gray-600">
               Khóa học không tồn tại hoặc đã bị xóa.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center">
-            <Button onClick={() => navigate('/admin')} className="w-full">
+          <CardContent className="text-center pt-0">
+            <Button onClick={() => navigate('/admin')} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg">
               Quay lại trang quản lý
             </Button>
           </CardContent>
@@ -154,86 +174,171 @@ const CourseDetailPage = () => {
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-3">
-                <Button
-                  onClick={handleGoBack}
-                  variant="outline"
-                  className="flex items-center space-x-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>Quay lại</span>
-                </Button>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{courseData.name}</h1>
-                  <p className="text-sm text-gray-600">Chi tiết khóa học</p>
-                </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200/50 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-4">
+              <Button
+                onClick={handleGoBack}
+                variant="outline"
+                className="flex items-center space-x-2 hover:bg-blue-50 border-blue-200 text-blue-700 shadow-sm"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Quay lại</span>
+              </Button>
+              <div className="border-l border-gray-300 pl-4">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {courseData.name}
+                </h1>
+                <p className="text-sm text-gray-600 flex items-center">
+                  <BookOpen className="w-4 h-4 mr-1" />
+                  Chi tiết khóa học
+                </p>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Course Info Card */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Thông tin khóa học</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-8">
-                <div>
-                  <div className="space-y-4">
-                    {courseData.image_url ? (
-                      <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-                        <img
-                          src={courseData.image_url}
-                          alt={courseData.name}
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-full aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                        <Image className="w-16 h-16 text-gray-400" />
-                      </div>
-                    )}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Course Info Card */}
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 h-2"></div>
+          <CardHeader className="pb-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <GraduationCap className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl text-gray-900">Thông tin khóa học</CardTitle>
+                <CardDescription className="text-gray-600">Chi tiết và thông số của khóa học</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Image Section */}
+              <div className="space-y-4">
+                {courseData.image_url ? (
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                    <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg">
+                      <img
+                        src={courseData.image_url}
+                        alt={courseData.name}
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <div className="space-y-2 text-sm">
-                    <div><strong>Mô tả:</strong> {courseData.description || 'Không có'}</div>
-                    <div><strong>Thời lượng:</strong> {courseData.duration ? `${courseData.duration} buổi` : 'Chưa xác định'}</div>
-                    <div><strong>Học phí:</strong> {courseData.price ? `${courseData.price.toLocaleString('vi-VN')}đ` : 'Chưa xác định'}</div>
-                    <div><strong>Trạng thái:</strong> {getStatusBadge(courseData.status)}</div>
-                    <div><strong>Số học viên:</strong> {courseData.enrolled_count}</div>
-                    <div><strong>Ngày tạo:</strong> {formatDateTime(courseData.created_at)}</div>
-                    <div><strong>Lần cập nhật cuối:</strong> {courseData.updated_at ? formatDateTime(courseData.updated_at) : 'Chưa cập nhật'}</div>
+                ) : (
+                  <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center shadow-inner">
+                    <div className="text-center">
+                      <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500 text-sm">Chưa có hình ảnh</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Info Section */}
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-100">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <BookOpen className="w-5 h-5 text-blue-600" />
+                      <span className="font-semibold text-gray-900">Mô tả</span>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">{courseData.description || 'Chưa có mô tả'}</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <Clock className="w-4 h-4 text-orange-500" />
+                        <span className="text-sm font-medium text-gray-600">Thời lượng</span>
+                      </div>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {courseData.duration ? `${courseData.duration} buổi` : 'Chưa xác định'}
+                      </p>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <DollarSign className="w-4 h-4 text-green-500" />
+                        <span className="text-sm font-medium text-gray-600">Học phí</span>
+                      </div>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {courseData.price ? `${courseData.price.toLocaleString('vi-VN')}đ` : 'Miễn phí'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-sm font-medium text-gray-600">Trạng thái</span>
+                      </div>
+                      {getStatusBadge(courseData.status)}
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <Users className="w-4 h-4 text-blue-500" />
+                        <span className="text-sm font-medium text-gray-600">Học viên</span>
+                      </div>
+                      <p className="text-lg font-semibold text-gray-900">{courseData.enrolled_count}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4" />
+                      <span><strong>Ngày tạo:</strong> {formatDateTime(courseData.created_at)}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4" />
+                      <span><strong>Cập nhật cuối:</strong> {courseData.updated_at ? formatDateTime(courseData.updated_at) : 'Chưa cập nhật'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Classes List */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Danh sách lớp học ({courseData.classes?.length || 0})</CardTitle>
-              <CardDescription>Tất cả các lớp học thuộc khóa học này</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {courseData.classes && courseData.classes.length > 0 ? (
+        {/* Classes List */}
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-green-500 to-blue-500 h-2"></div>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-xl flex items-center justify-center">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl text-gray-900">
+                    Danh sách lớp học ({courseData.classes?.length || 0})
+                  </CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Tất cả các lớp học thuộc khóa học này
+                  </CardDescription>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {courseData.classes && courseData.classes.length > 0 ? (
+              <div className="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Tên lớp</TableHead>
-                      <TableHead>Lịch học</TableHead>
-                      <TableHead>Trạng thái</TableHead>
-                      <TableHead>
+                    <TableRow className="bg-gradient-to-r from-gray-50 to-blue-50">
+                      <TableHead className="font-semibold text-gray-900">Tên lớp</TableHead>
+                      <TableHead className="font-semibold text-gray-900">Lịch học</TableHead>
+                      <TableHead className="font-semibold text-gray-900">Trạng thái</TableHead>
+                      <TableHead className="font-semibold text-gray-900">
                         <div className="flex items-center space-x-1">
                           <Users className="h-4 w-4" />
                           <span>Học viên</span>
@@ -242,36 +347,54 @@ const CourseDetailPage = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {courseData.classes.map((classItem) => (
+                    {courseData.classes.map((classItem, index) => (
                       <TableRow 
                         key={classItem.id}
-                        className="cursor-pointer hover:bg-gray-50"
+                        className="cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 border-b border-gray-100"
                         onClick={() => navigate(`/admin/class/${classItem.id}?tab=courses`)}
                       >
-                        <TableCell className="font-medium">{classItem.name}</TableCell>
-                        <TableCell>{classItem.schedule || '-'}</TableCell>
-                        <TableCell>{getStatusBadge(classItem.status)}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-1">
-                            <span className="font-medium">{classItem.enrolled_count}</span>
-                            <span className="text-gray-500">học viên</span>
+                        <TableCell className="font-medium text-gray-900 py-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                              {index + 1}
+                            </div>
+                            <span>{classItem.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-gray-700 py-4">
+                          {classItem.schedule || <span className="text-gray-400 italic">Chưa có lịch</span>}
+                        </TableCell>
+                        <TableCell className="py-4">{getStatusBadge(classItem.status)}</TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                              <Users className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <div>
+                              <span className="font-semibold text-gray-900">{classItem.enrolled_count}</span>
+                              <span className="text-gray-500 text-sm ml-1">học viên</span>
+                            </div>
                           </div>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  Chưa có lớp học nào được tạo cho khóa học này
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-10 h-10 text-gray-400" />
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Chưa có lớp học</h3>
+                <p className="text-gray-500">Chưa có lớp học nào được tạo cho khóa học này</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 };
 
-export default CourseDetailPage; 
+export default CourseDetailPage;
