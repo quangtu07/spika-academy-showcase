@@ -112,7 +112,15 @@ const ClassDetailPage = () => {
         .single();
 
       if (error) throw error;
-      setClassData(data);
+      
+      // Transform the data to match the ClassDetail interface
+      const transformedData: ClassDetail = {
+        ...data,
+        course: data.courses, // Map courses to course (singular)
+        instructor: Array.isArray(data.instructor) ? data.instructor[0] : data.instructor, // Ensure single instructor object
+      };
+      
+      setClassData(transformedData);
     } catch (error) {
       console.error('Error fetching class details:', error);
       toast({
