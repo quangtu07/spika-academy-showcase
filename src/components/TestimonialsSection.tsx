@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { Quote, MessageCircle, Star } from 'lucide-react';
 
 const TestimonialsSection = () => {
   const testimonials = [
@@ -9,21 +10,24 @@ const TestimonialsSection = () => {
       role: "MC Freelancer",
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
       rating: 5,
-      comment: "Spika đã giúp tôi từ một người nhút nhát trở thành MC tự tin. Giảng viên rất tận tâm và phương pháp học rất hiệu quả."
+      comment: "Spika đã giúp tôi từ một người nhút nhát trở thành MC tự tin. Giảng viên rất tận tâm và phương pháp học rất hiệu quả.",
+      gradient: "from-purple-500 to-pink-500"
     },
     {
       name: "Trần Văn Hùng",
       role: "MC Sự kiện",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
       rating: 5,
-      comment: "Khóa học MC chuyên nghiệp tại đây thực sự chất lượng. Sau khi tốt nghiệp, tôi đã có thu nhập ổn định từ nghề MC."
+      comment: "Khóa học MC chuyên nghiệp tại đây thực sự chất lượng. Sau khi tốt nghiệp, tôi đã có thu nhập ổn định từ nghề MC.",
+      gradient: "from-blue-500 to-indigo-500"
     },
     {
       name: "Phạm Thị Lan",
       role: "MC Truyền hình",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
       rating: 5,
-      comment: "Môi trường học tập chuyên nghiệp, cơ sở vật chất hiện đại. Cảm ơn Spika đã giúp tôi theo đuổi đam mê MC."
+      comment: "Môi trường học tập chuyên nghiệp, cơ sở vật chất hiện đại. Cảm ơn Spika đã giúp tôi theo đuổi đam mê MC.",
+      gradient: "from-green-500 to-emerald-500"
     }
   ];
 
@@ -31,12 +35,24 @@ const TestimonialsSection = () => {
   const cardRefs = testimonials.map(() => useScrollReveal({ threshold: 0.2 }));
 
   return (
-    <section className="py-20 bg-gray-50 font-roboto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div ref={titleRef} className="text-center mb-16 reveal reveal-fade-up">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Học viên nói gì về Spika</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Những chia sẻ chân thực từ các học viên đã thành công
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+            <MessageCircle className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6 leading-tight">
+            Học viên nói gì về Spika
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Những chia sẻ chân thực từ các học viên đã thành công trong hành trình học tập
           </p>
         </div>
 
@@ -46,29 +62,54 @@ const TestimonialsSection = () => {
               key={index} 
               ref={cardRefs[index]} 
               className="reveal reveal-fade-up"
-              style={{ animationDelay: `${index * 200}ms` }}
+              style={{ animationDelay: `${(index + 1) * 200}ms` }}
             >
-              <Card className="hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <img
-                      src={testimonial.avatar}
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover mr-4"
-                    />
-                    <div>
-                      <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-600">{testimonial.role}</p>
+              <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border-0 shadow-xl relative overflow-hidden h-full">
+                {/* Top accent bar */}
+                <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${testimonial.gradient}`}></div>
+                
+                <CardContent className="p-8 flex flex-col h-full">
+                  {/* Quote icon */}
+                  <div className="flex justify-end mb-4">
+                    <div className={`w-10 h-10 bg-gradient-to-r ${testimonial.gradient} rounded-full flex items-center justify-center shadow-lg`}>
+                      <Quote className="h-5 w-5 text-white" />
                     </div>
                   </div>
-                  <div className="flex mb-4">
+
+                  {/* Rating stars */}
+                  <div className="flex mb-6 justify-center">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
+                      <div key={i} className={`w-6 h-6 bg-gradient-to-r ${testimonial.gradient} rounded-full flex items-center justify-center mr-1 shadow-sm`}>
+                        <Star className="w-4 h-4 text-white fill-current" />
+                      </div>
                     ))}
                   </div>
-                  <p className="text-gray-600 italic">"{testimonial.comment}"</p>
+
+                  {/* Comment */}
+                  <p className="text-gray-700 italic text-center leading-relaxed mb-6 text-lg flex-grow">
+                    "{testimonial.comment}"
+                  </p>
+
+                  {/* Profile */}
+                  <div className="flex items-center justify-center mt-auto">
+                    <div className="relative">
+                      <img
+                        src={testimonial.avatar}
+                        alt={testimonial.name}
+                        className="w-16 h-16 rounded-full object-cover shadow-lg ring-4 ring-white"
+                      />
+                      <div className={`absolute -inset-1 bg-gradient-to-r ${testimonial.gradient} rounded-full opacity-30 blur-sm`}></div>
+                    </div>
+                    <div className="ml-4 text-center">
+                      <h4 className="font-bold text-gray-900 text-lg group-hover:text-purple-600 transition-colors duration-300">
+                        {testimonial.name}
+                      </h4>
+                      <p className="text-sm text-gray-600 font-medium">{testimonial.role}</p>
+                    </div>
+                  </div>
+
+                  {/* Bottom accent line */}
+                  <div className={`w-full h-1 bg-gradient-to-r ${testimonial.gradient} rounded-full mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
                 </CardContent>
               </Card>
             </div>

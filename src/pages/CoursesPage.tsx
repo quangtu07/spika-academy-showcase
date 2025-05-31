@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, DollarSign, Star, Users, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -58,80 +57,133 @@ const CoursesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-lg text-gray-600">Đang tải khóa học...</p>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto flex items-center justify-center">
+        <div className="relative">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-purple-600 absolute top-0 left-0"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-roboto">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
-        <div className="mb-8">
-          {/* <Button
-            onClick={handleBackToHome}
-            variant="outline"
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Quay lại trang chủ
-          </Button> */}
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Tất cả khóa học</h1>
-          <p className="text-xl text-gray-600">
-            Khám phá các khóa học MC chất lượng cao
-          </p>
+      
+      <main className="pt-32 pb-16 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.map((course) => (
-            <Card key={course.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col">
-              <div className="relative overflow-hidden">
-                <img
-                  src={course.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
-                  alt={course.name}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <CardHeader className="flex-grow">
-                <CardTitle className="text-xl font-bold text-gray-900">{course.name}</CardTitle>
-                <CardDescription className="text-gray-600">
-                  {course.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="mt-auto">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-sm text-gray-500">
-                    Thời gian: {course.duration} buổi
-                  </span>
-                  {course.price && (
-                    <span className="text-lg font-bold text-primary-600">
-                      {course.price.toLocaleString('vi-VN')}đ
-                    </span>
-                  )}
-                </div>
-                <Button 
-                  className="w-full bg-primary-600 hover:bg-primary-700 text-white"
-                  onClick={() => setIsRegistrationModalOpen(true)}
-                >
-                  Liên hệ tư vấn
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {courses.length === 0 && (
-          <div className="text-center py-20">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Chưa có khóa học nào
-            </h3>
-            <p className="text-gray-600">
-              Các khóa học sẽ được cập nhật sớm nhất có thể.
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          {/* Enhanced Header Section */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+              <BookOpen className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6 leading-tight">
+              Tất cả khóa học
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Khám phá các khóa học MC chất lượng cao với phương pháp giảng dạy hiện đại
             </p>
           </div>
-        )}
-      </div>
+
+          {/* Enhanced Courses Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {courses.map((course, index) => (
+              <Card key={course.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border-2 border-white/60 hover:border-purple-300/50 shadow-xl relative h-full flex flex-col">
+                {/* Top accent bar */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"></div>
+                
+                <div className="relative overflow-hidden">
+                  <img
+                    src={course.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
+                    alt={course.name}
+                    className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  {/* Floating badge */}
+                  <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Star className="h-6 w-6 text-yellow-500 fill-current" />
+                  </div>
+                </div>
+                
+                <CardHeader className="flex-grow bg-gradient-to-br from-white to-gray-50/50 relative p-6">
+                  <CardTitle className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-300 mb-3">
+                    {course.name}
+                  </CardTitle>
+                  <CardDescription className="text-gray-600 leading-relaxed text-lg">
+                    {course.description}
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent className="mt-auto bg-white/80 backdrop-blur-sm p-6">
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="flex items-center space-x-2 text-gray-600">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                        <Clock className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500">Thời gian</div>
+                        <div className="font-semibold">{course.duration} buổi</div>
+                      </div>
+                    </div>
+                    
+                    {course.price && (
+                      <div className="flex items-center space-x-2 text-gray-600">
+                        <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                          <DollarSign className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-500">Học phí</div>
+                          <div className="font-bold text-green-600">
+                            {course.price.toLocaleString('vi-VN')}đ
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
+                    onClick={() => setIsRegistrationModalOpen(true)}
+                  >
+                    <span className="flex items-center justify-center space-x-2">
+                      <Users className="h-4 w-4" />
+                      <span>Liên hệ tư vấn</span>
+                      <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                    </span>
+                  </Button>
+
+                  {/* Bottom gradient line */}
+                  <div className="w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Enhanced Empty State */}
+          {courses.length === 0 && (
+            <div className="text-center py-20">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-gray-400 to-gray-500 rounded-2xl mb-6 shadow-xl">
+                <BookOpen className="h-10 w-10 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Chưa có khóa học nào
+              </h3>
+              <p className="text-lg text-gray-600 max-w-md mx-auto leading-relaxed">
+                Các khóa học sẽ được cập nhật sớm nhất có thể.
+              </p>
+            </div>
+          )}
+        </div>
+      </main>
+
       <Footer />
       <RegistrationModal 
         isOpen={isRegistrationModalOpen}

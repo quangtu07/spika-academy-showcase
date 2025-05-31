@@ -1,9 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { GraduationCap, Award, Star, MessageCircle, ArrowRight } from 'lucide-react';
+import RegistrationModal from '@/components/RegistrationModal';
 
 interface Teacher {
   id: string;
@@ -15,6 +17,7 @@ interface Teacher {
 const TeachersPage = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
 
   useEffect(() => {
     fetchTeachers();
@@ -41,67 +44,115 @@ const TeachersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto">
       <Navbar />
       
-      <main className="pt-20 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+      <main className="pt-32 pb-16 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          {/* Enhanced Header Section */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+              <GraduationCap className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6 leading-tight">
               Đội Ngũ Giảng Viên
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
               Gặp gỡ đội ngũ giảng viên giàu kinh nghiệm và tận tâm của chúng tôi
             </p>
+            
+            {/* Consultation Button */}
+            <Button 
+              onClick={() => setIsRegistrationModalOpen(true)}
+              className="group bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            >
+              <span className="flex items-center space-x-2">
+                <MessageCircle className="h-5 w-5" />
+                <span className="font-semibold">Liên hệ tư vấn miễn phí</span>
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+              </span>
+            </Button>
           </div>
 
-          {/* Teachers Grid */}
+          {/* Enhanced Teachers Grid */}
           {loading ? (
             <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-purple-600 absolute top-0 left-0"></div>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teachers.map((teacher) => (
-                <Card key={teacher.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                  <div className="aspect-w-1 aspect-h-1 bg-gray-200">
+              {teachers.map((teacher, index) => (
+                <Card key={teacher.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border-2 border-white/60 hover:border-purple-300/50 shadow-xl relative h-full flex flex-col">
+                  {/* Top accent bar */}
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"></div>
+                  
+                  <div className="relative overflow-hidden">
                     {teacher.avatar_url ? (
                       <img
                         src={teacher.avatar_url}
                         alt={teacher.fullname}
-                        className="w-full h-80 object-cover"
+                        className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
                       />
                     ) : (
-                      <div className="w-full h-80 bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-                        <div className="w-24 h-24 bg-primary-600 rounded-full flex items-center justify-center">
+                      <div className="w-full h-80 bg-gradient-to-br from-purple-100 via-indigo-100 to-blue-100 flex items-center justify-center relative overflow-hidden">
+                        {/* Background pattern */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10"></div>
+                        <div className="absolute top-4 right-4 w-16 h-16 bg-white/20 rounded-full blur-xl"></div>
+                        <div className="absolute bottom-4 left-4 w-12 h-12 bg-white/30 rounded-full blur-lg"></div>
+                        
+                        <div className="relative z-10 w-24 h-24 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
                           <span className="text-white text-2xl font-bold">
                             {teacher.fullname.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       </div>
                     )}
+                    
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    {/* Floating badge */}
+                    <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Award className="h-6 w-6 text-purple-600" />
+                    </div>
                   </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  
+                  <CardContent className="p-8 relative flex-grow flex flex-col">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors duration-300">
                       {teacher.fullname}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {teacher.info || 'Giảng viên giàu kinh nghiệm trong lĩnh vực giáo dục.'}
+                    <p className="text-gray-600 leading-relaxed text-lg flex-grow">
+                      {teacher.info || 'Giảng viên giàu kinh nghiệm trong lĩnh vực giáo dục với phương pháp giảng dạy hiện đại và hiệu quả.'}
                     </p>
+                    
+                    {/* Bottom gradient line */}
+                    <div className="w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 rounded-full mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </CardContent>
                 </Card>
               ))}
             </div>
           )}
 
-          {/* Empty State */}
+          {/* Enhanced Empty State */}
           {!loading && teachers.length === 0 && (
             <div className="text-center py-20">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-gray-400 to-gray-500 rounded-2xl mb-6 shadow-xl">
+                <GraduationCap className="h-10 w-10 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 Chưa có giảng viên nào
               </h3>
-              <p className="text-gray-600">
+              <p className="text-lg text-gray-600 max-w-md mx-auto leading-relaxed">
                 Thông tin giảng viên sẽ được cập nhật sớm nhất có thể.
               </p>
             </div>
@@ -110,6 +161,10 @@ const TeachersPage = () => {
       </main>
 
       <Footer />
+      <RegistrationModal 
+        isOpen={isRegistrationModalOpen}
+        onClose={() => setIsRegistrationModalOpen(false)}
+      />
     </div>
   );
 };

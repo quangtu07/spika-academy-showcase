@@ -122,8 +122,8 @@ const Navbar = () => {
     <>
       <nav className={`fixed w-full top-0 z-50 font-roboto transition-all duration-300 ${
         scrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100' 
-          : 'bg-white/90 backdrop-blur-sm shadow-md'
+          ? 'bg-white/95 backdrop-blur-xl shadow-xl border-b border-white/20' 
+          : 'bg-white/90 backdrop-blur-lg shadow-lg border-b border-white/10'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
@@ -133,13 +133,13 @@ const Navbar = () => {
               onClick={handleNavigateHome}
             >
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-500 via-primary-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105">
                   <span className="text-white font-bold text-xl tracking-wider">S</span>
                 </div>
-                <div className="absolute -inset-1 bg-gradient-to-br from-primary-400 to-purple-500 rounded-xl opacity-30 group-hover:opacity-50 blur transition-all duration-300"></div>
+                <div className="absolute -inset-1 bg-gradient-to-br from-purple-400 to-blue-500 rounded-2xl opacity-30 group-hover:opacity-50 blur transition-all duration-300"></div>
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-primary-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
                   Spika
                 </span>
                 <span className="text-xs text-gray-500 font-medium tracking-wide">
@@ -154,10 +154,10 @@ const Navbar = () => {
                 <button
                   key={item.name}
                   onClick={item.action}
-                  className="relative px-4 py-2 text-gray-700 hover:text-primary-600 font-medium transition-all duration-300 rounded-lg hover:bg-gradient-to-r hover:from-primary-50 hover:to-purple-50 group"
+                  className="relative px-4 py-2 text-gray-700 hover:text-purple-600 font-medium transition-all duration-300 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 group"
                 >
                   <span className="relative z-10">{item.name}</span>
-                  <div className="absolute inset-0 scale-0 group-hover:scale-100 bg-gradient-to-r from-primary-100 to-purple-100 rounded-lg transition-transform duration-300 opacity-50"></div>
+                  <div className="absolute inset-0 scale-0 group-hover:scale-100 bg-gradient-to-r from-purple-100/50 to-indigo-100/50 rounded-xl transition-transform duration-300"></div>
                 </button>
               ))}
               
@@ -166,10 +166,9 @@ const Navbar = () => {
                   {userRole && ['admin', 'teacher', 'student'].includes(userRole) && (
                     <Button 
                       onClick={handleDashboardAccess}
-                      variant="outline"
-                      className="relative overflow-hidden border-primary-200 text-primary-600 hover:text-white hover:border-primary-300 transition-all duration-300 group"
+                      className="relative overflow-hidden bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 group"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-purple-500 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                      <div className="absolute inset-0 bg-white/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
                       <span className="relative z-10">{getDashboardButtonText()}</span>
                     </Button>
                   )}
@@ -179,7 +178,7 @@ const Navbar = () => {
                 <div className="ml-6">
                   <Button 
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="relative overflow-hidden bg-gradient-to-r from-primary-600 via-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700 text-white px-6 py-2.5 shadow-lg hover:shadow-xl transition-all duration-300 group"
+                    className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-2.5 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 group border-0"
                   >
                     <div className="absolute inset-0 bg-white/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
                     <span className="relative z-10 font-medium">Đăng nhập</span>
@@ -192,12 +191,12 @@ const Navbar = () => {
             <div className="md:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="relative w-10 h-10 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 hover:from-primary-50 hover:to-purple-50 flex items-center justify-center transition-all duration-300 group"
+                className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 flex items-center justify-center transition-all duration-300 group shadow-lg"
               >
                 <div className="space-y-1.5">
-                  <div className={`w-5 h-0.5 bg-gray-600 group-hover:bg-primary-600 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></div>
-                  <div className={`w-5 h-0.5 bg-gray-600 group-hover:bg-primary-600 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></div>
-                  <div className={`w-5 h-0.5 bg-gray-600 group-hover:bg-primary-600 transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></div>
                 </div>
               </button>
             </div>
@@ -205,8 +204,8 @@ const Navbar = () => {
 
           {/* Enhanced Mobile Menu */}
           {isMenuOpen && (
-            <div className="md:hidden border-t border-gray-100">
-              <div className="px-2 pt-4 pb-6 space-y-2 bg-gradient-to-br from-white via-gray-50 to-primary-50/30">
+            <div className="md:hidden border-t border-white/20">
+              <div className="px-2 pt-4 pb-6 space-y-2 bg-gradient-to-br from-white/95 via-purple-50/50 to-indigo-50/50 backdrop-blur-xl rounded-b-2xl">
                 {menuItems.map((item, index) => (
                   <button
                     key={item.name}
@@ -214,15 +213,15 @@ const Navbar = () => {
                       item.action();
                       setIsMenuOpen(false);
                     }}
-                    className="flex w-full text-left px-4 py-3 text-gray-700 hover:text-primary-600 font-medium rounded-lg hover:bg-gradient-to-r hover:from-white hover:to-primary-50 transition-all duration-300"
+                    className="flex w-full text-left px-4 py-3 text-gray-700 hover:text-purple-600 font-medium rounded-xl hover:bg-gradient-to-r hover:from-white/80 hover:to-purple-50/80 transition-all duration-300"
                   >
                     {item.name}
                   </button>
                 ))}
-                <div className="pt-4 px-4 border-t border-gray-200">
+                <div className="pt-4 px-4 border-t border-white/30">
                   {currentUser ? (
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-gray-50 to-primary-50 rounded-lg">
+                      <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-white/80 to-purple-50/80 rounded-xl backdrop-blur-sm">
                         <UserAvatar user={currentUser} onLogout={handleLogout} />
                         <span className="text-sm font-medium text-gray-700">{currentUser.fullname}</span>
                       </div>
@@ -232,8 +231,7 @@ const Navbar = () => {
                             handleDashboardAccess();
                             setIsMenuOpen(false);
                           }}
-                          variant="outline"
-                          className="w-full border-primary-200 text-primary-600 hover:bg-gradient-to-r hover:from-primary-50 hover:to-purple-50"
+                          className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white border-0 shadow-lg"
                         >
                           {getDashboardButtonText()}
                         </Button>
@@ -245,7 +243,7 @@ const Navbar = () => {
                         setIsLoginModalOpen(true);
                         setIsMenuOpen(false);
                       }}
-                      className="w-full bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700 text-white shadow-lg"
+                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg border-0"
                     >
                       Đăng nhập
                     </Button>

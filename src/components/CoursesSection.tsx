@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { Star, Clock, DollarSign, BookOpen, Users, ArrowRight } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -67,9 +67,10 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gray-50 font-roboto" id="courses">
+      <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto" id="courses">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
             <p className="text-lg text-gray-600">Đang tải khóa học...</p>
           </div>
         </div>
@@ -78,16 +79,27 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
   }
 
   return (
-    <section className="py-20 bg-gray-50 font-roboto" id="courses">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto relative overflow-hidden" id="courses">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div ref={titleRef} className="text-center mb-16 reveal reveal-fade-up">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Khóa học nổi bật</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Chọn khóa học phù hợp với mục tiêu của bạn
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+            <BookOpen className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6">
+            Khóa học nổi bật
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Chọn khóa học phù hợp với mục tiêu của bạn và bắt đầu hành trình học tập đầy thú vị
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {courses.map((course, index) => (
             <div 
               key={course.id} 
@@ -95,36 +107,67 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
               className="reveal reveal-fade-up h-full"
               style={{ animationDelay: `${index * 200}ms` }}
             >
-              <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col">
+              <Card className="overflow-hidden hover:shadow-2xl transition-all duration-500 group h-full flex flex-col bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:transform hover:-translate-y-2">
                 <div className="relative overflow-hidden">
                   <img
                     src={course.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
                     alt={course.name}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute top-4 right-4">
+                    <div className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+                      <Star className="h-6 w-6 text-yellow-500 fill-current" />
+                    </div>
+                  </div>
                 </div>
-                <CardHeader className="flex-grow">
-                  <CardTitle className="text-xl font-bold text-gray-900">{course.name}</CardTitle>
-                  <CardDescription className="text-gray-600">
+                
+                <CardHeader className="flex-grow bg-gradient-to-br from-white to-gray-50/50 relative">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"></div>
+                  <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-300">
+                    {course.name}
+                  </CardTitle>
+                  <CardDescription className="text-gray-600 leading-relaxed">
                     {course.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="mt-auto">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-sm text-gray-500">
-                      Thời gian: {course.duration} buổi
-                    </span>
+                
+                <CardContent className="mt-auto bg-white/80 backdrop-blur-sm">
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="flex items-center space-x-2 text-gray-600">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                        <Clock className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500">Thời gian</div>
+                        <div className="font-semibold">{course.duration} buổi</div>
+                      </div>
+                    </div>
+                    
                     {course.price && (
-                      <span className="text-lg font-bold text-primary-600">
-                        {course.price.toLocaleString('vi-VN')}đ
-                      </span>
+                      <div className="flex items-center space-x-2 text-gray-600">
+                        <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                          <DollarSign className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-500">Học phí</div>
+                          <div className="font-bold text-green-600">
+                            {course.price.toLocaleString('vi-VN')}đ
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
+                  
                   <Button 
-                    className="w-full bg-primary-600 hover:bg-primary-700 text-white"
+                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
                     onClick={onOpenRegistrationModal}
                   >
-                    Liên hệ tư vấn
+                    <span className="flex items-center justify-center space-x-2">
+                      <Users className="h-4 w-4" />
+                      <span>Liên hệ tư vấn</span>
+                      <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                    </span>
                   </Button>
                 </CardContent>
               </Card>
@@ -132,12 +175,16 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
           ))}
         </div>
 
-        <div ref={buttonRef} className="text-center mt-12 reveal reveal-fade-up">
+        <div ref={buttonRef} className="text-center reveal reveal-fade-up">
           <Button 
             onClick={handleViewAllCourses}
-            className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg hover-lift"
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 group"
           >
-            Xem tất cả khóa học
+            <span className="flex items-center space-x-2">
+              <BookOpen className="h-5 w-5" />
+              <span>Xem tất cả khóa học</span>
+              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+            </span>
           </Button>
         </div>
       </div>

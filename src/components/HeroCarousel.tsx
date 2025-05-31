@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface HeroCarouselProps {
   onOpenRegistrationModal: () => void;
@@ -59,19 +60,34 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
             className="h-full bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${slide.image})` }}
           >
-            <div className="h-full bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="h-full bg-gradient-to-b from-black/40 via-black/50 to-black/60 flex items-center justify-center">
               <div className="text-center text-white max-w-4xl px-4">
-                <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+                {/* Enhanced Badge */}
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-6 animate-fade-in">
+                  <Star className="h-8 w-8 text-white" />
+                </div>
+                
+                <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in bg-gradient-to-r from-white via-white to-purple-200 bg-clip-text text-transparent leading-tight">
                   {slide.title}
                 </h1>
-                <p className="text-xl md:text-2xl mb-8 animate-fade-in animation-delay-200">
+                <p className="text-xl md:text-2xl mb-8 animate-fade-in animation-delay-200 text-gray-100 leading-relaxed">
                   {slide.subtitle}
                 </p>
+                
+                {/* Enhanced Gradient Button */}
                 <Button 
                   onClick={slide.action}
-                  className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg animate-fade-in animation-delay-400"
+                  className="group relative overflow-hidden bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white px-10 py-4 text-lg font-semibold shadow-2xl transition-all duration-300 hover:-translate-y-1 animate-fade-in animation-delay-400 border-0 rounded-2xl"
                 >
-                  {slide.cta}
+                  {/* Animated background overlay */}
+                  <div className="absolute inset-0 bg-white/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                  
+                  {/* Button content */}
+                  <span className="relative z-10 flex items-center space-x-3">
+                    <Star className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                    <span>{slide.cta}</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
                 </Button>
               </div>
             </div>
@@ -79,35 +95,37 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
         </div>
       ))}
 
-      {/* Indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      {/* Enhanced Indicators */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-50'
+            className={`relative transition-all duration-300 ${
+              index === currentSlide 
+                ? 'w-8 h-3 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-lg' 
+                : 'w-3 h-3 bg-white/50 hover:bg-white/70 rounded-full hover:scale-110'
             }`}
-          />
+          >
+            {index === currentSlide && (
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-sm opacity-60"></div>
+            )}
+          </button>
         ))}
       </div>
 
-      {/* Navigation arrows */}
+      {/* Enhanced Navigation arrows */}
       <button
         onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-primary-300 transition-colors"
+        className="absolute left-6 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-white hover:bg-gradient-to-r hover:from-purple-500/80 hover:to-indigo-500/80 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl group"
       >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
+        <ChevronLeft className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform duration-300" />
       </button>
       <button
         onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-primary-300 transition-colors"
+        className="absolute right-6 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-white hover:bg-gradient-to-r hover:from-purple-500/80 hover:to-indigo-500/80 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl group"
       >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
+        <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform duration-300" />
       </button>
     </div>
   );
