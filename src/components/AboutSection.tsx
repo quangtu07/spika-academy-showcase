@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -46,19 +47,21 @@ const AboutSection = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Text Content */}
-          <div ref={textRef} className="reveal reveal-fade-left space-y-8">
-            <div className="space-y-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
-                <Sparkles className="h-8 w-8 text-white" />
-              </div>
-              
-              <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent leading-tight">
-                Về trung tâm Spika
-              </h2>
-            </div>
+        {/* Title Section */}
+        <div ref={textRef} className="text-center mb-16 reveal reveal-fade-up">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+            <Sparkles className="h-8 w-8 text-white" />
+          </div>
+          
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent leading-tight mb-6">
+            Về trung tâm Spika
+          </h2>
+        </div>
 
+        {/* Main Content - Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mb-16">
+          {/* Text Content */}
+          <div className="space-y-8">
             <div className="space-y-6 text-gray-600 leading-relaxed">
               <p className="text-lg">
                 Spika là trung tâm đào tạo MC hàng đầu với hơn 10 năm kinh nghiệm trong lĩnh vực 
@@ -72,22 +75,6 @@ const AboutSection = () => {
               </p>
             </div>
             
-            {/* Stats Grid */}
-            <div ref={statsRef} className="grid grid-cols-2 gap-4 reveal reveal-fade-up">
-              {stats.map((stat, index) => (
-                <Card key={index} className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-white/80 backdrop-blur-sm shadow-xl">
-                  <CardContent className="p-6 text-center">
-                    <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-r ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <stat.icon className="w-7 h-7 text-white" />
-                    </div>
-                    <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300">{stat.number}</div>
-                    <div className="text-gray-600 text-sm font-medium">{stat.label}</div>
-                    <div className={`w-full h-1 bg-gradient-to-r ${stat.gradient} rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
             <div className="pt-4">
               <Button className="group bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <span className="flex items-center space-x-2">
@@ -107,13 +94,13 @@ const AboutSection = () => {
                 <img
                   src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Lớp học tại Spika"
-                  className="w-full h-96 object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
               </div>
 
               {/* Floating Card */}
-              <Card className="absolute -bottom-8 -left-8 bg-white/90 backdrop-blur-sm shadow-2xl border-0 max-w-xs group-hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
+              <Card className="absolute -bottom-6 -left-6 bg-white/90 backdrop-blur-sm shadow-2xl border-0 max-w-xs group-hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4 mb-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -136,6 +123,22 @@ const AboutSection = () => {
               <div className="absolute top-1/2 -left-6 w-16 h-16 bg-gradient-to-br from-indigo-400/30 to-blue-400/30 rounded-full blur-lg"></div>
             </div>
           </div>
+        </div>
+
+        {/* Stats Grid - Full Width */}
+        <div ref={statsRef} className="grid grid-cols-2 lg:grid-cols-4 gap-6 reveal reveal-fade-up">
+          {stats.map((stat, index) => (
+            <Card key={index} className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-white/80 backdrop-blur-sm shadow-xl">
+              <CardContent className="p-6 text-center">
+                <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-r ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <stat.icon className="w-7 h-7 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300">{stat.number}</div>
+                <div className="text-gray-600 text-sm font-medium">{stat.label}</div>
+                <div className={`w-full h-1 bg-gradient-to-r ${stat.gradient} rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>
