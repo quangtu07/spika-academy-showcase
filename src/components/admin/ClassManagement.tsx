@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, Edit, Trash2, Users, ArrowRight } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, ArrowRight, GraduationCap, BookOpen, Calendar, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ClassFormModal from './ClassFormModal';
@@ -220,14 +220,14 @@ const ClassManagement = () => {
 
   const getStatusBadge = (status?: string) => {
     const statusColors = {
-      'Đang hoạt động': 'bg-green-100 text-green-800',
-      'Đã kết thúc': 'bg-gray-100 text-gray-800'
+      'Đang hoạt động': 'bg-green-100 text-green-800 border-green-200',
+      'Đã kết thúc': 'bg-gray-100 text-gray-800 border-gray-200'
     };
 
-    const colorClass = status ? statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800';
+    const colorClass = status ? statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800 border-gray-200' : 'bg-gray-100 text-gray-800 border-gray-200';
 
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${colorClass}`}>
+      <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full border ${colorClass}`}>
         {status || 'Không xác định'}
       </span>
     );
@@ -235,15 +235,15 @@ const ClassManagement = () => {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Quản lý lớp học</CardTitle>
-          <CardDescription>Đang tải dữ liệu...</CardDescription>
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-t-lg">
+          <CardTitle className="text-xl">Quản lý lớp học</CardTitle>
+          <CardDescription className="text-green-100">Đang tải dữ liệu...</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-8">
           <div className="animate-pulse space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-12 bg-gray-200 rounded"></div>
+              <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
             ))}
           </div>
         </CardContent>
@@ -253,105 +253,171 @@ const ClassManagement = () => {
 
   return (
     <>
-      <Card>
-        <CardHeader>
+      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+        <CardHeader className="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-t-lg">
           <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Quản lý lớp học</CardTitle>
-              <CardDescription>
-                Quản lý tất cả lớp học trong hệ thống
-              </CardDescription>
+            <div className="flex items-center space-x-3">
+              <GraduationCap className="h-8 w-8" />
+              <div>
+                <CardTitle className="text-2xl">Quản lý lớp học</CardTitle>
+                <CardDescription className="text-green-100 mt-1">
+                  Quản lý tất cả lớp học trong hệ thống
+                </CardDescription>
+              </div>
             </div>
-            <Button onClick={handleAddClass} className="flex items-center space-x-2">
-              <Plus className="h-4 w-4" />
+            <Button 
+              onClick={handleAddClass} 
+              className="bg-white text-green-600 hover:bg-gray-100 border-0 shadow-lg"
+            >
+              <Plus className="h-4 w-4 mr-2" />
               <span>Thêm lớp học</span>
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tên lớp học</TableHead>
-                <TableHead>Khóa học</TableHead>
-                <TableHead>Giảng viên</TableHead>
-                <TableHead>Lịch học</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>
-                  <div className="flex items-center space-x-1">
-                    <Users className="h-4 w-4" />
-                    <span>Học viên</span>
+        <CardContent className="p-8">
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-6 border border-green-100">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
+                    <GraduationCap className="h-6 w-6 text-white" />
                   </div>
-                </TableHead>
-                <TableHead>Thao tác</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {classes.map((classItem) => (
-                <TableRow 
-                  key={classItem.id}
-                  className="cursor-pointer hover:bg-gray-50"
-                  onClick={() => handleViewClassDetail(classItem)}
-                >
-                  <TableCell className="font-medium">
-                    <div>
-                      <div className="font-semibold">{classItem.name}</div>
-                      {classItem.description && (
-                        <div className="text-sm text-gray-600 truncate max-w-xs">
-                          {classItem.description}
+                  <div className="text-2xl font-bold text-gray-800">{classes.length}</div>
+                  <div className="text-sm text-gray-600">Tổng lớp học</div>
+                </div>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="text-2xl font-bold text-gray-800">{classes.reduce((total, cls) => total + (cls.enrollments?.length || 0), 0)}</div>
+                  <div className="text-sm text-gray-600">Tổng học viên</div>
+                </div>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
+                    <TrendingUp className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="text-2xl font-bold text-gray-800">{classes.filter(cls => cls.status === 'Đang hoạt động').length}</div>
+                  <div className="text-sm text-gray-600">Đang hoạt động</div>
+                </div>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
+                    <BookOpen className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="text-2xl font-bold text-gray-800">{new Set(classes.map(cls => cls.course_id)).size}</div>
+                  <div className="text-sm text-gray-600">Khóa học liên kết</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="font-semibold text-gray-700">Tên lớp học</TableHead>
+                    <TableHead className="font-semibold text-gray-700">Khóa học</TableHead>
+                    <TableHead className="font-semibold text-gray-700">Giảng viên</TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>Lịch học</span>
+                      </div>
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">Trạng thái</TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      <div className="flex items-center space-x-1">
+                        <Users className="h-4 w-4" />
+                        <span>Học viên</span>
+                      </div>
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">Thao tác</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {classes.map((classItem, index) => (
+                    <TableRow 
+                      key={classItem.id}
+                      className={`cursor-pointer hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
+                      onClick={() => handleViewClassDetail(classItem)}
+                    >
+                      <TableCell className="font-medium">
+                        <div className="space-y-1">
+                          <div className="font-semibold text-gray-900">{classItem.name}</div>
+                          {classItem.description && (
+                            <div className="text-sm text-gray-600 line-clamp-2 max-w-xs">
+                              {classItem.description}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>{classItem.course?.name || 'Không xác định'}</TableCell>
-                  <TableCell>{classItem.instructor?.fullname || 'Không xác định'}</TableCell>
-                  <TableCell>{classItem.schedule || '-'}</TableCell>
-                  <TableCell>{getStatusBadge(classItem.status)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-1">
-                      <span className="font-medium">{classItem.enrollments?.length || 0}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditClass(classItem)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setDeletingClass(classItem)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleViewClassDetail(classItem)}
-                              className="text-blue-600 hover:text-blue-700"
-                            >
-                              <ArrowRight className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Xem chi tiết</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <BookOpen className="h-4 w-4 text-white" />
+                          </div>
+                          <span className="font-medium text-gray-900">{classItem.course?.name || 'Không xác định'}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+                            <GraduationCap className="h-4 w-4 text-white" />
+                          </div>
+                          <span className="font-medium text-gray-900">{classItem.instructor?.fullname || 'Không xác định'}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-gray-700">{classItem.schedule || '-'}</span>
+                      </TableCell>
+                      <TableCell>{getStatusBadge(classItem.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-1">
+                          <span className="font-medium text-blue-600">{classItem.enrollments?.length || 0}</span>
+                          <span className="text-gray-500 text-sm">học viên</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditClass(classItem)}
+                            className="hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setDeletingClass(classItem)}
+                            className="hover:bg-red-50 hover:border-red-200 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleViewClassDetail(classItem)}
+                                  className="hover:bg-green-50 hover:border-green-200 hover:text-green-700"
+                                >
+                                  <ArrowRight className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Xem chi tiết</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -377,19 +443,19 @@ const ClassManagement = () => {
       />
 
       <AlertDialog open={!!deletingClass} onOpenChange={(open) => !open && setDeletingClass(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="border-0 shadow-xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa lớp học</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-xl text-gray-800">Xác nhận xóa lớp học</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600">
               Bạn có chắc chắn muốn xóa lớp học "{deletingClass?.name}"? 
               Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogCancel className="hover:bg-gray-100">Hủy</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deletingClass && handleDeleteClass(deletingClass.id)}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0"
             >
               Xác nhận xóa
             </AlertDialogAction>

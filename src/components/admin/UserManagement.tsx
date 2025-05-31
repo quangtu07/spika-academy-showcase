@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, ArrowUpDown, Upload, GraduationCap, ArrowRight } from 'lucide-react';
+import { Plus, Edit, Trash2, ArrowUpDown, Upload, GraduationCap, ArrowRight, Users, UserCheck, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import UserFormModal from './UserFormModal';
@@ -180,12 +180,12 @@ const UserManagement = () => {
 
   const getRoleBadge = (role: string) => {
     const roleMap = {
-      'student': { label: 'Học viên', color: 'bg-blue-100 text-blue-800' },
-      'teacher': { label: 'Giáo viên', color: 'bg-green-100 text-green-800' },
-      'admin': { label: 'Quản trị', color: 'bg-purple-100 text-purple-800' }
+      'student': { label: 'Học viên', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+      'teacher': { label: 'Giáo viên', color: 'bg-green-100 text-green-800 border-green-200' },
+      'admin': { label: 'Quản trị', color: 'bg-purple-100 text-purple-800 border-purple-200' }
     };
-    const roleInfo = roleMap[role] || { label: 'Không xác định', color: 'bg-gray-100 text-gray-800' };
-    return <Badge className={roleInfo.color}>{roleInfo.label}</Badge>;
+    const roleInfo = roleMap[role] || { label: 'Không xác định', color: 'bg-gray-100 text-gray-800 border-gray-200' };
+    return <Badge className={`${roleInfo.color} border px-3 py-1 font-medium`}>{roleInfo.label}</Badge>;
   };
 
   const handleAvatarUpload = async (userId: string, file: File) => {
@@ -252,117 +252,165 @@ const UserManagement = () => {
     navigate(`/admin/user/${user.id}?tab=${roleTab}`);
   };
 
+  const getTabConfig = (role: string) => {
+    const configs = {
+      'student': {
+        icon: UserCheck,
+        gradient: 'from-blue-500 to-indigo-600',
+        bgGradient: 'from-blue-50 to-indigo-50'
+      },
+      'teacher': {
+        icon: GraduationCap,
+        gradient: 'from-green-500 to-emerald-600',
+        bgGradient: 'from-green-50 to-emerald-50'
+      },
+      'admin': {
+        icon: Shield,
+        gradient: 'from-purple-500 to-pink-600',
+        bgGradient: 'from-purple-50 to-pink-50'
+      }
+    };
+    return configs[role] || configs.student;
+  };
+
   const renderUserTable = (roleFilter: string) => {
     const sortedUsers = getSortedUsers(roleFilter);
+    const config = getTabConfig(roleFilter);
 
     return (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Ảnh đại diện</TableHead>
-            <TableHead>
-              <Button 
-                variant="ghost" 
-                onClick={() => handleSort('username')}
-                className="flex items-center space-x-1 p-0 h-auto font-medium"
-              >
-                <span>Tên đăng nhập</span>
-                <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button 
-                variant="ghost" 
-                onClick={() => handleSort('fullname')}
-                className="flex items-center space-x-1 p-0 h-auto font-medium"
-              >
-                <span>Họ tên</span>
-                <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button 
-                variant="ghost" 
-                onClick={() => handleSort('email')}
-                className="flex items-center space-x-1 p-0 h-auto font-medium"
-              >
-                <span>Email</span>
-                <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button 
-                variant="ghost" 
-                onClick={() => handleSort('phone_number')}
-                className="flex items-center space-x-1 p-0 h-auto font-medium"
-              >
-                <span>Điện thoại</span>
-                <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </TableHead>
-            <TableHead>Thao tác</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sortedUsers.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={user.avatar_url} alt={user.fullname} />
-                  <AvatarFallback className="bg-primary-600 text-white">
-                    {getInitials(user.fullname)}
-                  </AvatarFallback>
-                </Avatar>
-              </TableCell>
-              <TableCell className="font-medium">{user.username}</TableCell>
-              <TableCell>{user.fullname}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.phone_number || '-'}</TableCell>
-              <TableCell>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEditUser(user)}
+      <div className="space-y-6">
+        <div className={`bg-gradient-to-r ${config.bgGradient} rounded-2xl p-6 border border-gray-100`}>
+          <div className="flex items-center space-x-4">
+            <div className={`w-12 h-12 bg-gradient-to-r ${config.gradient} rounded-xl flex items-center justify-center shadow-lg`}>
+              <config.icon className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-800">
+                {roleFilter === 'student' ? 'Danh sách học viên' : 
+                 roleFilter === 'teacher' ? 'Danh sách giáo viên' : 'Danh sách quản trị viên'}
+              </h3>
+              <p className="text-gray-600">
+                Tổng cộng {sortedUsers.length} {roleFilter === 'student' ? 'học viên' : 
+                roleFilter === 'teacher' ? 'giáo viên' : 'quản trị viên'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+          <Table>
+            <TableHeader className="bg-gray-50">
+              <TableRow>
+                <TableHead className="font-semibold text-gray-700">Ảnh đại diện</TableHead>
+                <TableHead>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => handleSort('username')}
+                    className="flex items-center space-x-1 p-0 h-auto font-semibold text-gray-700 hover:text-gray-900"
                   >
-                    <Edit className="h-4 w-4" />
+                    <span>Tên đăng nhập</span>
+                    <ArrowUpDown className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setDeletingUser(user)}
-                    className="text-red-600 hover:text-red-700"
+                </TableHead>
+                <TableHead>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => handleSort('fullname')}
+                    className="flex items-center space-x-1 p-0 h-auto font-semibold text-gray-700 hover:text-gray-900"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <span>Họ tên</span>
+                    <ArrowUpDown className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleViewUserDetail(user)}
-                    className="text-blue-600 hover:text-blue-700"
+                </TableHead>
+                <TableHead>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => handleSort('email')}
+                    className="flex items-center space-x-1 p-0 h-auto font-semibold text-gray-700 hover:text-gray-900"
                   >
-                    <ArrowRight className="h-4 w-4" />
+                    <span>Email</span>
+                    <ArrowUpDown className="h-4 w-4" />
                   </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                </TableHead>
+                <TableHead>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => handleSort('phone_number')}
+                    className="flex items-center space-x-1 p-0 h-auto font-semibold text-gray-700 hover:text-gray-900"
+                  >
+                    <span>Điện thoại</span>
+                    <ArrowUpDown className="h-4 w-4" />
+                  </Button>
+                </TableHead>
+                <TableHead className="font-semibold text-gray-700">Thao tác</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sortedUsers.map((user, index) => (
+                <TableRow 
+                  key={user.id} 
+                  className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
+                >
+                  <TableCell>
+                    <Avatar className="h-12 w-12 shadow-md">
+                      <AvatarImage src={user.avatar_url} alt={user.fullname} />
+                      <AvatarFallback className={`bg-gradient-to-r ${config.gradient} text-white font-semibold`}>
+                        {getInitials(user.fullname)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </TableCell>
+                  <TableCell className="font-medium text-gray-900">{user.username}</TableCell>
+                  <TableCell className="font-medium text-gray-900">{user.fullname}</TableCell>
+                  <TableCell className="text-gray-600">{user.email}</TableCell>
+                  <TableCell className="text-gray-600">{user.phone_number || '-'}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditUser(user)}
+                        className="hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDeletingUser(user)}
+                        className="hover:bg-red-50 hover:border-red-200 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewUserDetail(user)}
+                        className="hover:bg-green-50 hover:border-green-200 hover:text-green-700"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     );
   };
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Quản lý người dùng</CardTitle>
-          <CardDescription>Đang tải dữ liệu...</CardDescription>
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
+          <CardTitle className="text-xl">Quản lý người dùng</CardTitle>
+          <CardDescription className="text-purple-100">Đang tải dữ liệu...</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-8">
           <div className="animate-pulse space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-12 bg-gray-200 rounded"></div>
+              <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
             ))}
           </div>
         </CardContent>
@@ -372,34 +420,50 @@ const UserManagement = () => {
 
   return (
     <>
-      <Card>
-        <CardHeader>
+      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+        <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
           <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Quản lý người dùng</CardTitle>
-              <CardDescription>
-                Quản lý tất cả tài khoản người dùng theo vai trò
-              </CardDescription>
-            </div>
             <div className="flex items-center space-x-3">
-              <Button onClick={handleAddUser} className="flex items-center space-x-2">
-                <Plus className="h-4 w-4" />
-                <span>Thêm người dùng</span>
-              </Button>
+              <Users className="h-8 w-8" />
+              <div>
+                <CardTitle className="text-2xl">Quản lý người dùng</CardTitle>
+                <CardDescription className="text-purple-100 mt-1">
+                  Quản lý tất cả tài khoản người dùng theo vai trò
+                </CardDescription>
+              </div>
             </div>
+            <Button 
+              onClick={handleAddUser} 
+              className="bg-white text-purple-600 hover:bg-gray-100 border-0 shadow-lg"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              <span>Thêm người dùng</span>
+            </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="student">
-                Học viên ({users.filter(u => u.role === 'student').length})
+        <CardContent className="p-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+            <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-purple-100 to-blue-100 p-1 rounded-xl shadow-inner">
+              <TabsTrigger 
+                value="student"
+                className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-700 rounded-lg transition-all duration-200"
+              >
+                <UserCheck className="h-4 w-4" />
+                <span className="font-medium">Học viên ({users.filter(u => u.role === 'student').length})</span>
               </TabsTrigger>
-              <TabsTrigger value="teacher">
-                Giáo viên ({users.filter(u => u.role === 'teacher').length})
+              <TabsTrigger 
+                value="teacher"
+                className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-green-700 rounded-lg transition-all duration-200"
+              >
+                <GraduationCap className="h-4 w-4" />
+                <span className="font-medium">Giáo viên ({users.filter(u => u.role === 'teacher').length})</span>
               </TabsTrigger>
-              <TabsTrigger value="admin">
-                Quản trị ({users.filter(u => u.role === 'admin').length})
+              <TabsTrigger 
+                value="admin"
+                className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-700 rounded-lg transition-all duration-200"
+              >
+                <Shield className="h-4 w-4" />
+                <span className="font-medium">Quản trị ({users.filter(u => u.role === 'admin').length})</span>
               </TabsTrigger>
             </TabsList>
 
@@ -432,19 +496,19 @@ const UserManagement = () => {
       />
 
       <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="border-0 shadow-xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa người dùng</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-xl text-gray-800">Xác nhận xóa người dùng</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600">
               Bạn có chắc chắn muốn xóa người dùng "{deletingUser?.fullname}"? 
               Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogCancel className="hover:bg-gray-100">Hủy</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deletingUser && handleDeleteUser(deletingUser.id)}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0"
             >
               Xác nhận xóa
             </AlertDialogAction>
