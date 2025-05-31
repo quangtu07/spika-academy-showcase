@@ -1,12 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ArrowLeft, User, Mail, Phone, Calendar, Shield, UserCheck, GraduationCap, BookOpen, Users, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface User {
   id: string;
@@ -17,50 +20,105 @@ interface User {
   age?: number;
   phone_number?: string;
   created_at: string;
-  updated_at?: string;
   avatar_url?: string;
 }
 
-const formatDateTime = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleString('vi-VN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  });
-};
+interface Enrollment {
+  id: string;
+  enrolled_at: string;
+  classes: {
+    id: string;
+    name: string;
+    courses: {
+      name: string;
+    };
+  };
+}
+
+interface TeacherClass {
+  id: string;
+  name: string;
+  description?: string;
+  schedule?: string;
+  courses: {
+    name: string;
+  };
+  enrollments: Array<{
+    student: {
+      fullname: string;
+    };
+  }>;
+}
 
 const UserDetailPage = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [userData, setUserData] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [teacherClasses, setTeacherClasses] = useState<TeacherClass[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (userId) {
-      fetchUserDetails();
+      fetchUserData();
     }
   }, [userId]);
 
-  const fetchUserDetails = async () => {
+  const fetchUserData = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: userData, error: userError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
+      if (userError) throw userError;
+      setUser(userData);
 
-      setUserData(data);
+      if (userData.role === 'student') {
+        const { data: enrollmentData } = await supabase
+          .from('enrollments')
+          .select(`
+            id,
+            enrolled_at,
+            classes (
+              id,
+              name,
+              courses (
+                name
+              )
+            )
+          `)
+          .eq('student_id', userId);
+
+        setEnrollments(enrollmentData || []);
+      }
+
+      if (userData.role === 'teacher') {
+        const { data: classData } = await supabase
+          .from('classes')
+          .select(`
+            id,
+            name,
+            description,
+            schedule,
+            courses (
+              name
+            ),
+            enrollments (
+              student:profiles (
+                fullname
+              )
+            )
+          `)
+          .eq('instructor_id', userId);
+
+        setTeacherClasses(classData || []);
+      }
     } catch (error) {
-      console.error('Error fetching user details:', error);
+      console.error('Error fetching user data:', error);
       toast({
         title: "Lỗi",
         description: "Không thể tải thông tin người dùng",
@@ -71,18 +129,33 @@ const UserDetailPage = () => {
     }
   };
 
+  const handleBack = () => {
+    const userRoleTab = user?.role === 'student' ? 'student' : 
+                       user?.role === 'teacher' ? 'teacher' : 'admin';
+    navigate('/admin', { 
+      state: { 
+        activeTab: 'users',
+        userRoleTab: userRoleTab
+      } 
+    });
+  };
+
   const getRoleBadge = (role: string) => {
-    const roleMap = {
-      'student': { label: 'Học viên', color: 'bg-blue-100 text-blue-800' },
-      'teacher': { label: 'Giáo viên', color: 'bg-green-100 text-green-800' },
-      'admin': { label: 'Quản trị', color: 'bg-purple-100 text-purple-800' }
+    const configs = {
+      'student': { label: 'Học viên', color: 'bg-blue-100 text-blue-800', icon: UserCheck },
+      'teacher': { label: 'Giáo viên', color: 'bg-green-100 text-green-800', icon: GraduationCap },
+      'admin': { label: 'Quản trị', color: 'bg-purple-100 text-purple-800', icon: Shield }
     };
-    const roleInfo = roleMap[role] || { label: 'Không xác định', color: 'bg-gray-100 text-gray-800' };
-    return <Badge className={roleInfo.color}>{roleInfo.label}</Badge>;
+    const config = configs[role] || configs.student;
+    return (
+      <Badge className={`${config.color} flex items-center space-x-1`}>
+        <config.icon className="h-3 w-3" />
+        <span>{config.label}</span>
+      </Badge>
+    );
   };
 
   const getInitials = (fullname: string) => {
-    if (!fullname) return 'U';
     return fullname
       .split(' ')
       .map(name => name.charAt(0))
@@ -91,42 +164,32 @@ const UserDetailPage = () => {
       .slice(0, 2);
   };
 
-  const handleGoBack = () => {
-    const roleTab = searchParams.get('tab');
-    navigate('/admin', {
-      replace: true,
-      state: { 
-        activeTab: 'users',
-        userRoleTab: roleTab || 'student'
-      }
-    });
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('vi-VN');
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang tải thông tin người dùng...</p>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-48 mb-6"></div>
+            <div className="h-64 bg-gray-200 rounded"></div>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!userData) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+        <Card className="max-w-md w-full">
           <CardHeader className="text-center">
             <CardTitle className="text-red-600">Không tìm thấy người dùng</CardTitle>
-            <CardDescription>
-              Người dùng không tồn tại hoặc đã bị xóa.
-            </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Button onClick={() => navigate('/admin')} className="w-full">
-              Quay lại trang quản lý
-            </Button>
+            <Button onClick={handleBack}>Quay lại</Button>
           </CardContent>
         </Card>
       </div>
@@ -134,67 +197,150 @@ const UserDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <Button
-                onClick={handleGoBack}
-                variant="outline"
-                className="flex items-center space-x-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Quay lại</span>
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{userData.fullname}</h1>
-                <p className="text-sm text-gray-600">Chi tiết người dùng</p>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center space-x-4">
+          <Button variant="outline" onClick={handleBack}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Quay lại
+          </Button>
+          <h1 className="text-2xl font-bold text-gray-900">Chi tiết người dùng</h1>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Thông tin người dùng</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src={userData.avatar_url} alt={userData.fullname} />
-                    <AvatarFallback className="bg-primary-600 text-white text-xl">
-                      {getInitials(userData.fullname)}
-                    </AvatarFallback>
-                  </Avatar>
+        {/* Profile Card */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-6">
+              <Avatar className="h-24 w-24">
+                <AvatarImage src={user.avatar_url} alt={user.fullname} />
+                <AvatarFallback className="bg-blue-500 text-white text-xl">
+                  {getInitials(user.fullname)}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="flex-1 space-y-4">
+                <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-semibold text-lg">{userData.fullname}</div>
-                    <div className="text-sm text-gray-500">{userData.username}</div>
-                    <div className="mt-2">{getRoleBadge(userData.role)}</div>
+                    <h2 className="text-2xl font-bold text-gray-900">{user.fullname}</h2>
+                    <p className="text-gray-600">@{user.username}</p>
                   </div>
+                  {getRoleBadge(user.role)}
                 </div>
-              </div>
-              <div>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Email:</strong> {userData.email}</div>
-                  <div><strong>Số điện thoại:</strong> {userData.phone_number || 'Chưa cập nhật'}</div>
-                  <div><strong>Tuổi:</strong> {userData.age || 'Chưa cập nhật'}</div>
-                  <div><strong>Ngày tạo:</strong> {formatDateTime(userData.created_at)}</div>
-                  <div><strong>Lần cập nhật cuối:</strong> {userData.updated_at ? formatDateTime(userData.updated_at) : 'Chưa cập nhật'}</div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <Mail className="h-4 w-4" />
+                    <span>{user.email}</span>
+                  </div>
+                  {user.phone_number && (
+                    <div className="flex items-center space-x-2 text-gray-600">
+                      <Phone className="h-4 w-4" />
+                      <span>{user.phone_number}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <Calendar className="h-4 w-4" />
+                    <span>Tham gia {formatDate(user.created_at)}</span>
+                  </div>
+                  {user.age && (
+                    <div className="flex items-center space-x-2 text-gray-600">
+                      <User className="h-4 w-4" />
+                      <span>{user.age} tuổi</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
+
+        {/* Activity Tabs */}
+        <Tabs defaultValue="activity">
+          <TabsList className="grid w-full grid-cols-1">
+            <TabsTrigger value="activity">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Hoạt động
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="activity" className="space-y-4">
+            {user.role === 'student' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Users className="h-5 w-5" />
+                    <span>Lớp học đã tham gia ({enrollments.length})</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {enrollments.length > 0 ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Tên lớp</TableHead>
+                          <TableHead>Khóa học</TableHead>
+                          <TableHead>Ngày tham gia</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {enrollments.map((enrollment) => (
+                          <TableRow key={enrollment.id}>
+                            <TableCell className="font-medium">{enrollment.classes.name}</TableCell>
+                            <TableCell>{enrollment.classes.courses.name}</TableCell>
+                            <TableCell>{formatDate(enrollment.enrolled_at)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">Chưa tham gia lớp học nào</p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {user.role === 'teacher' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <GraduationCap className="h-5 w-5" />
+                    <span>Lớp học đang giảng dạy ({teacherClasses.length})</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {teacherClasses.length > 0 ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Tên lớp</TableHead>
+                          <TableHead>Khóa học</TableHead>
+                          <TableHead>Lịch học</TableHead>
+                          <TableHead>Số học viên</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {teacherClasses.map((classItem) => (
+                          <TableRow key={classItem.id}>
+                            <TableCell className="font-medium">{classItem.name}</TableCell>
+                            <TableCell>{classItem.courses.name}</TableCell>
+                            <TableCell>{classItem.schedule || '-'}</TableCell>
+                            <TableCell>{classItem.enrollments.length}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">Chưa có lớp học nào</p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
 };
 
-export default UserDetailPage; 
+export default UserDetailPage;
