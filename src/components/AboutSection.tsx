@@ -1,11 +1,12 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Award, Users, GraduationCap, Star, ArrowRight, Sparkles } from 'lucide-react';
+import RegistrationModal from './RegistrationModal';
 
 const AboutSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const textRef = useScrollReveal({ threshold: 0.2 });
   const statsRef = useScrollReveal({ threshold: 0.2, rootMargin: '50px' });
   const imageRef = useScrollReveal({ threshold: 0.2 });
@@ -76,10 +77,13 @@ const AboutSection = () => {
             </div>
             
             <div className="pt-4">
-              <Button className="group bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <Button 
+                onClick={() => setIsModalOpen(true)}
+                className="group bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              >
                 <span className="flex items-center space-x-2">
                   <Sparkles className="h-5 w-5" />
-                  <span className="font-medium">Tìm hiểu thêm</span>
+                  <span className="font-medium">Đăng ký ngay</span>
                   <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </span>
               </Button>
@@ -141,6 +145,12 @@ const AboutSection = () => {
           ))}
         </div>
       </div>
+
+      {/* Registration Modal */}
+      <RegistrationModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </section>
   );
 };
