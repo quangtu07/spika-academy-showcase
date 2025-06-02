@@ -9,38 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      assignments: {
-        Row: {
-          content: string | null
-          created_at: string
-          id: string
-          lesson_id: string
-          updated_at: string
-        }
-        Insert: {
-          content?: string | null
-          created_at?: string
-          id?: string
-          lesson_id: string
-          updated_at?: string
-        }
-        Update: {
-          content?: string | null
-          created_at?: string
-          id?: string
-          lesson_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "assignments_lesson_id_fkey"
-            columns: ["lesson_id"]
-            isOneToOne: false
-            referencedRelation: "lessons"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       classes: {
         Row: {
           course_id: string
@@ -167,51 +135,6 @@ export type Database = {
           },
         ]
       }
-      feedbacks: {
-        Row: {
-          comment: string
-          created_at: string
-          id: string
-          score: number | null
-          submission_id: string
-          teacher_id: string
-          updated_at: string
-        }
-        Insert: {
-          comment: string
-          created_at?: string
-          id?: string
-          score?: number | null
-          submission_id: string
-          teacher_id: string
-          updated_at?: string
-        }
-        Update: {
-          comment?: string
-          created_at?: string
-          id?: string
-          score?: number | null
-          submission_id?: string
-          teacher_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "feedbacks_submission_id_fkey"
-            columns: ["submission_id"]
-            isOneToOne: false
-            referencedRelation: "submissions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "feedbacks_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       lessons: {
         Row: {
           class_id: string
@@ -294,51 +217,6 @@ export type Database = {
           username?: string
         }
         Relationships: []
-      }
-      submissions: {
-        Row: {
-          assignment_id: string
-          file_type: string
-          file_url: string
-          id: string
-          status: string | null
-          student_id: string
-          submitted_at: string
-        }
-        Insert: {
-          assignment_id: string
-          file_type: string
-          file_url: string
-          id?: string
-          status?: string | null
-          student_id: string
-          submitted_at?: string
-        }
-        Update: {
-          assignment_id?: string
-          file_type?: string
-          file_url?: string
-          id?: string
-          status?: string | null
-          student_id?: string
-          submitted_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "submissions_assignment_id_fkey"
-            columns: ["assignment_id"]
-            isOneToOne: false
-            referencedRelation: "assignments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "submissions_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {

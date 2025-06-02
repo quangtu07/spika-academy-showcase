@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, Clock, FileText, Award, Menu, X, Edit, ClipboardList } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, Clock, FileText, Award, Menu, X, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -222,14 +222,6 @@ const TeacherClassDetailPage = () => {
     setShowLessonEditModal(true);
   };
 
-  const handleAssignHomework = (lesson: Lesson) => {
-    // TODO: Implement assignment functionality
-    toast({
-      title: "Giao bài tập",
-      description: `Giao bài tập cho buổi học: ${lesson.title}`,
-    });
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -259,10 +251,10 @@ const TeacherClassDetailPage = () => {
           </CardHeader>
           <CardContent className="text-center pt-6">
             <Button 
-              onClick={() => navigate('/admin')} 
+              onClick={() => navigate('/teacher')} 
               className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg"
             >
-              Quay lại trang quản trị
+              Quay lại trang giảng viên
             </Button>
           </CardContent>
         </Card>
@@ -280,7 +272,7 @@ const TeacherClassDetailPage = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Button 
-                  onClick={() => navigate('/admin')}
+                  onClick={() => navigate('/teacher')}
                   variant="ghost"
                   size="sm"
                   className="p-2"
@@ -362,7 +354,7 @@ const TeacherClassDetailPage = () => {
                   </div>
                 </div>
                 
-                {/* Quick Stats - Remove ranking */}
+                {/* Quick Stats */}
                 <div className="grid grid-cols-3 gap-3 mt-4">
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
                     <div className="text-center">
@@ -549,25 +541,16 @@ const TeacherClassDetailPage = () => {
                             </div>
                           </div>
                           
-                          {/* Action buttons for mobile */}
-                          <div className="flex space-x-2 mt-3">
+                          {/* Action button for mobile */}
+                          <div className="flex mt-3">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleEditLesson(lesson)}
-                              className="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                              className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
                             >
                               <Edit className="w-3 h-3 mr-1" />
                               Chỉnh sửa
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleAssignHomework(lesson)}
-                              className="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 text-emerald-700 hover:from-emerald-100 hover:to-teal-100"
-                            >
-                              <ClipboardList className="w-3 h-3 mr-1" />
-                              Giao bài tập
                             </Button>
                           </div>
                         </CardHeader>
@@ -601,13 +584,13 @@ const TeacherClassDetailPage = () => {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-4">
               <Button 
-                onClick={() => navigate('/admin')}
+                onClick={() => navigate('/teacher')}
                 variant="outline"
                 size="sm"
                 className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại quản trị
+                Quay lại trang giảng viên
               </Button>
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -891,8 +874,8 @@ const TeacherClassDetailPage = () => {
                               </CardDescription>
                             </div>
                             
-                            {/* Action buttons for desktop */}
-                            <div className="flex space-x-3">
+                            {/* Action button for desktop */}
+                            <div className="flex">
                               <Button
                                 variant="outline"
                                 onClick={() => handleEditLesson(lesson)}
@@ -900,14 +883,6 @@ const TeacherClassDetailPage = () => {
                               >
                                 <Edit className="w-4 h-4 mr-2" />
                                 Chỉnh sửa
-                              </Button>
-                              <Button
-                                variant="outline"
-                                onClick={() => handleAssignHomework(lesson)}
-                                className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 text-emerald-700 hover:from-emerald-100 hover:to-teal-100"
-                              >
-                                <ClipboardList className="w-4 h-4 mr-2" />
-                                Giao bài tập
                               </Button>
                             </div>
                           </div>
