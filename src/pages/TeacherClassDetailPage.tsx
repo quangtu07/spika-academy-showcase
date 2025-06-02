@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarDays, Users, BookOpen, FileText, Plus, Eye, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,7 +13,6 @@ import LessonFormModal from '@/components/admin/LessonFormModal';
 import LessonEditModal from '@/components/admin/LessonEditModal';
 import AssignmentCreator from '@/components/teacher/AssignmentCreator';
 import AssignmentSubmissions from '@/components/teacher/AssignmentSubmissions';
-import { DialogDescription } from "@/components/ui/dialog"
 
 interface Enrollment {
   id: string;
@@ -110,7 +111,7 @@ const TeacherClassDetailPage = () => {
         course: data.course,
         instructor: data.instructor,
         enrollments_count: count || 0
-      } as any);
+      } as ClassDetail);
     } catch (error) {
       console.error('Error fetching class detail:', error);
       toast({
