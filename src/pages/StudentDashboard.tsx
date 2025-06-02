@@ -3,12 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Home, BookOpen, Upload, MessageSquare } from 'lucide-react';
+import { Home, BookOpen, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
 import StudentCourses from '@/components/student/StudentCourses';
-import StudentAssignments from '@/components/student/StudentAssignments';
 import StudentProfile from '@/components/student/StudentProfile';
 
 const StudentDashboard = () => {
@@ -91,14 +90,10 @@ const StudentDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="courses" className="flex items-center space-x-2">
               <BookOpen className="h-4 w-4" />
               <span>Khóa học</span>
-            </TabsTrigger>
-            <TabsTrigger value="assignments" className="flex items-center space-x-2">
-              <Upload className="h-4 w-4" />
-              <span>Bài tập</span>
             </TabsTrigger>
             <TabsTrigger value="profile" className="flex items-center space-x-2">
               <MessageSquare className="h-4 w-4" />
@@ -108,10 +103,6 @@ const StudentDashboard = () => {
 
           <TabsContent value="courses">
             <StudentCourses />
-          </TabsContent>
-
-          <TabsContent value="assignments">
-            <StudentAssignments />
           </TabsContent>
 
           <TabsContent value="profile">
