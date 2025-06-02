@@ -11,30 +11,24 @@ export type Database = {
     Tables: {
       assignments: {
         Row: {
+          content: string | null
           created_at: string
-          description: string | null
-          due_date: string | null
           id: string
           lesson_id: string
-          title: string
           updated_at: string
         }
         Insert: {
+          content?: string | null
           created_at?: string
-          description?: string | null
-          due_date?: string | null
           id?: string
           lesson_id: string
-          title: string
           updated_at?: string
         }
         Update: {
+          content?: string | null
           created_at?: string
-          description?: string | null
-          due_date?: string | null
           id?: string
           lesson_id?: string
-          title?: string
           updated_at?: string
         }
         Relationships: [

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, Clock, MapPin, FileText, Star, Award, Bell, Menu, X } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, Clock, FileText, Award, Menu, X, Edit, ClipboardList } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -208,6 +208,22 @@ const TeacherClassDetailPage = () => {
     setShowLessonModal(false);
   };
 
+  const handleEditLesson = (lesson: Lesson) => {
+    // TODO: Implement edit lesson functionality
+    toast({
+      title: "Chỉnh sửa buổi học",
+      description: `Chỉnh sửa buổi học: ${lesson.title}`,
+    });
+  };
+
+  const handleAssignHomework = (lesson: Lesson) => {
+    // TODO: Implement assignment functionality
+    toast({
+      title: "Giao bài tập",
+      description: `Giao bài tập cho buổi học: ${lesson.title}`,
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -340,7 +356,7 @@ const TeacherClassDetailPage = () => {
                   </div>
                 </div>
                 
-                {/* Quick Stats */}
+                {/* Quick Stats - Remove ranking */}
                 <div className="grid grid-cols-3 gap-3 mt-4">
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
                     <div className="text-center">
@@ -360,9 +376,9 @@ const TeacherClassDetailPage = () => {
                   
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
                     <div className="text-center">
-                      <Star className="w-5 h-5 text-pink-100 mx-auto mb-1" />
-                      <p className="text-white text-lg font-bold">A+</p>
-                      <p className="text-pink-100 text-xs">Xếp hạng</p>
+                      <Award className="w-5 h-5 text-pink-100 mx-auto mb-1" />
+                      <p className="text-white text-lg font-bold">85%</p>
+                      <p className="text-pink-100 text-xs">Hoàn thành</p>
                     </div>
                   </div>
                 </div>
@@ -526,6 +542,28 @@ const TeacherClassDetailPage = () => {
                               </CardDescription>
                             </div>
                           </div>
+                          
+                          {/* Action buttons for mobile */}
+                          <div className="flex space-x-2 mt-3">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEditLesson(lesson)}
+                              className="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                            >
+                              <Edit className="w-3 h-3 mr-1" />
+                              Chỉnh sửa
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleAssignHomework(lesson)}
+                              className="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 text-emerald-700 hover:from-emerald-100 hover:to-teal-100"
+                            >
+                              <ClipboardList className="w-3 h-3 mr-1" />
+                              Giao bài tập
+                            </Button>
+                          </div>
                         </CardHeader>
                         {lesson.content && (
                           <CardContent className="p-4">
@@ -614,8 +652,8 @@ const TeacherClassDetailPage = () => {
                   {classDetail && getStatusBadge(classDetail.status)}
                 </div>
                 
-                {/* Enhanced Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+                {/* Enhanced Quick Stats - Remove ranking */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                   <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -636,18 +674,6 @@ const TeacherClassDetailPage = () => {
                       <div>
                         <p className="text-purple-100 text-sm font-medium">Buổi học</p>
                         <p className="text-white text-2xl font-bold">{lessons.length}</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <Star className="w-6 h-6 text-pink-100" />
-                      </div>
-                      <div>
-                        <p className="text-pink-100 text-sm font-medium">Xếp hạng</p>
-                        <p className="text-white text-2xl font-bold">A+</p>
                       </div>
                     </div>
                   </div>
@@ -857,6 +883,26 @@ const TeacherClassDetailPage = () => {
                                 <Calendar className="w-5 h-5" />
                                 <span>Tạo ngày: {new Date(lesson.created_at).toLocaleDateString('vi-VN')}</span>
                               </CardDescription>
+                            </div>
+                            
+                            {/* Action buttons for desktop */}
+                            <div className="flex space-x-3">
+                              <Button
+                                variant="outline"
+                                onClick={() => handleEditLesson(lesson)}
+                                className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                              >
+                                <Edit className="w-4 h-4 mr-2" />
+                                Chỉnh sửa
+                              </Button>
+                              <Button
+                                variant="outline"
+                                onClick={() => handleAssignHomework(lesson)}
+                                className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 text-emerald-700 hover:from-emerald-100 hover:to-teal-100"
+                              >
+                                <ClipboardList className="w-4 h-4 mr-2" />
+                                Giao bài tập
+                              </Button>
                             </div>
                           </div>
                         </CardHeader>
