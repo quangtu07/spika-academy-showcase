@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Home, Users, BookOpen, BarChart3, AlertCircle, Settings } from 'lucide-react';
+import { Home, Users, BookOpen, BarChart3, AlertCircle, Settings, Menu, X } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import UserManagement from '@/components/admin/UserManagement';
 import CourseManagement from '@/components/admin/CourseManagement';
 import ClassManagement from '@/components/admin/ClassManagement';
@@ -16,8 +16,10 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('overview');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { userRole, isLoading } = useUserRole();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!isLoading) {
@@ -68,6 +70,35 @@ const AdminDashboard = () => {
     navigate('/');
   };
 
+  const tabItems = [
+    {
+      value: 'overview',
+      icon: BarChart3,
+      label: 'Tổng quan',
+      component: AdminOverview
+    },
+    {
+      value: 'users',
+      icon: Users,
+      label: 'Người dùng',
+      component: UserManagement
+    },
+    {
+      value: 'courses',
+      icon: BookOpen,
+      label: 'Khóa học',
+      component: CourseManagement
+    },
+    {
+      value: 'classes',
+      icon: Users,
+      label: 'Lớp học',
+      component: ClassManagement
+    }
+  ];
+
+  const ActiveComponent = tabItems.find(item => item.value === activeTab)?.component || AdminOverview;
+
   if (!isLoading && (!userRole || userRole !== 'admin')) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
@@ -98,6 +129,103 @@ const AdminDashboard = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg">Đang kiểm tra quyền truy cập...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
+        {/* Mobile Header */}
+        <div className="bg-white shadow-lg border-b sticky top-0 z-50">
+          <div className="px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                  <Settings className="text-white h-4 w-4" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    Admin
+                  </h1>
+                  <p className="text-xs text-gray-600">Quản lý hệ thống</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button 
+                  onClick={handleGoHome}
+                  variant="ghost"
+                  size="sm"
+                  className="p-2"
+                >
+                  <Home className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="p-2"
+                >
+                  {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div className="bg-white border-b shadow-lg">
+            <div className="px-4 py-3">
+              <div className="grid grid-cols-2 gap-2">
+                {tabItems.map((item) => (
+                  <Button
+                    key={item.value}
+                    variant={activeTab === item.value ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => {
+                      setActiveTab(item.value);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`flex flex-col items-center p-3 h-auto ${
+                      activeTab === item.value 
+                        ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white' 
+                        : 'hover:bg-purple-50'
+                    }`}
+                  >
+                    <item.icon className="h-5 w-5 mb-1" />
+                    <span className="text-xs font-medium">{item.label}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Content */}
+        <div className="p-4">
+          <div className="bg-white rounded-2xl shadow-xl border-0 overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-4">
+              <div className="flex items-center space-x-3">
+                {React.createElement(tabItems.find(item => item.value === activeTab)?.icon || BarChart3, { 
+                  className: "h-6 w-6 text-white" 
+                })}
+                <div>
+                  <h2 className="text-lg font-semibold text-white">
+                    {tabItems.find(item => item.value === activeTab)?.label}
+                  </h2>
+                  <p className="text-sm text-purple-100">
+                    Quản lý và điều khiển
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4">
+              <ActiveComponent />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -152,65 +280,28 @@ const AdminDashboard = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <div className="overflow-x-auto">
                 <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-purple-100 to-blue-100 p-1 rounded-xl shadow-inner min-w-[400px] sm:min-w-0">
-                  <TabsTrigger 
-                    value="overview" 
-                    className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-700 rounded-lg transition-all duration-200 px-2 py-2 text-xs sm:text-sm"
-                  >
-                    <BarChart3 className="h-4 w-4 flex-shrink-0" />
-                    <span className="font-medium hidden sm:inline">Tổng quan</span>
-                    <span className="font-medium sm:hidden text-xs">Tổng quan</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="users" 
-                    className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-700 rounded-lg transition-all duration-200 px-2 py-2 text-xs sm:text-sm"
-                  >
-                    <Users className="h-4 w-4 flex-shrink-0" />
-                    <span className="font-medium hidden sm:inline">Người dùng</span>
-                    <span className="font-medium sm:hidden text-xs">Users</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="courses" 
-                    className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-700 rounded-lg transition-all duration-200 px-2 py-2 text-xs sm:text-sm"
-                  >
-                    <BookOpen className="h-4 w-4 flex-shrink-0" />
-                    <span className="font-medium hidden sm:inline">Khóa học</span>
-                    <span className="font-medium sm:hidden text-xs">Courses</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="classes" 
-                    className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-700 rounded-lg transition-all duration-200 px-2 py-2 text-xs sm:text-sm"
-                  >
-                    <Users className="h-4 w-4 flex-shrink-0" />
-                    <span className="font-medium hidden sm:inline">Lớp học</span>
-                    <span className="font-medium sm:hidden text-xs">Classes</span>
-                  </TabsTrigger>
+                  {tabItems.map((item) => (
+                    <TabsTrigger 
+                      key={item.value}
+                      value={item.value}
+                      className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-700 rounded-lg transition-all duration-200 px-2 py-2 text-xs sm:text-sm"
+                    >
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="font-medium hidden sm:inline">{item.label}</span>
+                      <span className="font-medium sm:hidden text-xs">{item.label}</span>
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
               </div>
 
               <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                <TabsContent value="overview" className="m-0">
-                  <div className="p-4 sm:p-6">
-                    <AdminOverview />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="users" className="m-0">
-                  <div className="p-4 sm:p-6">
-                    <UserManagement />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="courses" className="m-0">
-                  <div className="p-4 sm:p-6">
-                    <CourseManagement />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="classes" className="m-0">
-                  <div className="p-4 sm:p-6">
-                    <ClassManagement />
-                  </div>
-                </TabsContent>
+                {tabItems.map((item) => (
+                  <TabsContent key={item.value} value={item.value} className="m-0">
+                    <div className="p-4 sm:p-6">
+                      <item.component />
+                    </div>
+                  </TabsContent>
+                ))}
               </div>
             </Tabs>
           </CardContent>
