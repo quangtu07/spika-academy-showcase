@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import EnrollmentFormModal from '@/components/admin/EnrollmentFormModal';
 import LessonFormModal from '@/components/admin/LessonFormModal';
+import LessonEditModal from '@/components/admin/LessonEditModal';
 
 interface ClassDetail {
   id: string;
@@ -55,6 +56,8 @@ const TeacherClassDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
   const [showLessonModal, setShowLessonModal] = useState(false);
+  const [showLessonEditModal, setShowLessonEditModal] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [activeTab, setActiveTab] = useState('students');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { toast } = useToast();
@@ -208,12 +211,15 @@ const TeacherClassDetailPage = () => {
     setShowLessonModal(false);
   };
 
+  const handleLessonEditSaved = () => {
+    fetchLessons();
+    setShowLessonEditModal(false);
+    setSelectedLesson(null);
+  };
+
   const handleEditLesson = (lesson: Lesson) => {
-    // TODO: Implement edit lesson functionality
-    toast({
-      title: "Chỉnh sửa buổi học",
-      description: `Chỉnh sửa buổi học: ${lesson.title}`,
-    });
+    setSelectedLesson(lesson);
+    setShowLessonEditModal(true);
   };
 
   const handleAssignHomework = (lesson: Lesson) => {
@@ -652,7 +658,7 @@ const TeacherClassDetailPage = () => {
                   {classDetail && getStatusBadge(classDetail.status)}
                 </div>
                 
-                {/* Enhanced Quick Stats - Remove ranking */}
+                {/* Enhanced Quick Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                   <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
                     <div className="flex items-center space-x-4">
@@ -939,6 +945,15 @@ const TeacherClassDetailPage = () => {
           onClose={() => setShowLessonModal(false)}
           classData={classDetail}
           onSaved={handleLessonSaved}
+        />
+      )}
+
+      {showLessonEditModal && selectedLesson && (
+        <LessonEditModal
+          isOpen={showLessonEditModal}
+          onClose={() => setShowLessonEditModal(false)}
+          lesson={selectedLesson}
+          onSaved={handleLessonEditSaved}
         />
       )}
     </div>
