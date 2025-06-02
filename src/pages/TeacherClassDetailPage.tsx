@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -109,7 +108,7 @@ const TeacherClassDetailPage = () => {
       setClassDetail({
         ...data,
         course: data.course,
-        instructor: data.instructor,
+        instructor: Array.isArray(data.instructor) ? data.instructor[0] : data.instructor,
         enrollments_count: count || 0
       } as ClassDetail);
     } catch (error) {
@@ -472,12 +471,12 @@ const TeacherClassDetailPage = () => {
       </div>
 
       {/* Modals */}
-      {showLessonModal && id && (
+      {showLessonModal && id && classDetail && (
         <LessonFormModal
           isOpen={showLessonModal}
           onClose={() => setShowLessonModal(false)}
-          classId={id}
-          onLessonAdded={handleLessonSaved}
+          classData={classDetail}
+          onSaved={handleLessonSaved}
         />
       )}
 
@@ -489,7 +488,7 @@ const TeacherClassDetailPage = () => {
             setSelectedLesson(null);
           }}
           lesson={selectedLesson}
-          onLessonUpdated={handleLessonUpdated}
+          onSaved={handleLessonUpdated}
         />
       )}
 
