@@ -10,11 +10,19 @@ import AssignmentUpload from './AssignmentUpload';
 
 interface Assignment {
   id: string;
-  title: string;
-  description: string;
-  due_date: string;
+  content: string | null;
+  instructions: string | null;
+  attachments: any;
+  max_score: number | null;
+  allow_late_submission: boolean | null;
+  submission_format: string[] | null;
+  lesson_id: string;
+  created_at: string;
+  updated_at: string;
   lesson: {
     title: string;
+    class_id: string;
+    lesson_number: number;
     course: {
       name: string;
     };
@@ -23,6 +31,8 @@ interface Assignment {
     id: string;
     file_url: string;
     file_type: string;
+    content: string | null;
+    attachments: any;
     submitted_at: string;
     status: string;
     feedback?: {
@@ -57,15 +67,20 @@ const StudentAssignments = () => {
         return;
       }
 
-      // Fetch assignments with simplified queries to avoid type issues
+      // Fetch assignments with all required fields
       const { data: assignmentsData, error: assignmentsError } = await supabase
         .from('assignments')
         .select(`
           id,
-          title,
-          description,
-          due_date,
-          lesson_id
+          content,
+          instructions,
+          attachments,
+          max_score,
+          allow_late_submission,
+          submission_format,
+          lesson_id,
+          created_at,
+          updated_at
         `);
 
       if (assignmentsError) throw assignmentsError;
@@ -79,7 +94,7 @@ const StudentAssignments = () => {
       const lessonIds = assignmentsData.map(a => a.lesson_id);
       const { data: lessonsData } = await supabase
         .from('lessons')
-        .select('id, title, class_id')
+        .select('id, title, class_id, lesson_number')
         .in('id', lessonIds);
 
       const classIds = lessonsData?.map(l => l.class_id) || [];
@@ -103,6 +118,8 @@ const StudentAssignments = () => {
           assignment_id,
           file_url,
           file_type,
+          content,
+          attachments,
           submitted_at,
           status
         `)
@@ -131,11 +148,19 @@ const StudentAssignments = () => {
 
         return {
           id: assignment.id,
-          title: assignment.title,
-          description: assignment.description || '',
-          due_date: assignment.due_date || '',
+          content: assignment.content,
+          instructions: assignment.instructions,
+          attachments: assignment.attachments,
+          max_score: assignment.max_score,
+          allow_late_submission: assignment.allow_late_submission,
+          submission_format: assignment.submission_format,
+          lesson_id: assignment.lesson_id,
+          created_at: assignment.created_at,
+          updated_at: assignment.updated_at,
           lesson: {
             title: lesson?.title || 'Không có tiêu đề',
+            class_id: lesson?.class_id || '',
+            lesson_number: lesson?.lesson_number || 0,
             course: {
               name: course?.name || 'Không có tên khóa học'
             }
@@ -144,6 +169,8 @@ const StudentAssignments = () => {
             id: submission.id,
             file_url: submission.file_url,
             file_type: submission.file_type,
+            content: submission.content,
+            attachments: submission.attachments,
             submitted_at: submission.submitted_at,
             status: submission.status || 'submitted',
             feedback: feedback ? {
@@ -186,14 +213,73 @@ const StudentAssignments = () => {
       return <Badge className="bg-yellow-100 text-yellow-800">Đã nộp</Badge>;
     }
     
-    const dueDate = new Date(assignment.due_date);
-    const now = new Date();
-    
-    if (dueDate < now) {
-      return <Badge className="bg-red-100 text-red-800">Quá hạn</Badge>;
-    }
-    
     return <Badge className="bg-green-100 text-green-800">Chưa nộp</Badge>;
+  };
+
+  const renderAssignmentContent = (assignment: Assignment) => {
+    const attachments = assignment.attachments || { files: [], links: [] };
+    
+    return (
+      <div className="space-y-4">
+        {assignment.content && (
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 mb-2">Nội dung bài tập:</h4>
+            <div className="text-gray-700 whitespace-pre-wrap">{assignment.content}</div>
+          </div>
+        )}
+        
+        {assignment.instructions && (
+          <div className="bg-blue-50 rounded-lg p-4">
+            <h4 className="font-medium text-blue-900 mb-2">Hướng dẫn:</h4>
+            <div className="text-blue-800 whitespace-pre-wrap">{assignment.instructions}</div>
+          </div>
+        )}
+
+        {attachments.files && attachments.files.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-900">File đính kèm:</h4>
+            {attachments.files.map((file: any, index: number) => (
+              <div key={index} className="flex items-center space-x-2">
+                {file.type === 'image' ? (
+                  <FileImage className="h-4 w-4 text-blue-600" />
+                ) : (
+                  <FileVideo className="h-4 w-4 text-purple-600" />
+                )}
+                <a 
+                  href={file.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  {file.name}
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {attachments.links && attachments.links.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-900">Liên kết tham khảo:</h4>
+            {attachments.links.map((link: any, index: number) => (
+              <div key={index} className="bg-gray-100 rounded p-2">
+                <a 
+                  href={link.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline font-medium"
+                >
+                  {link.title}
+                </a>
+                {link.description && (
+                  <p className="text-gray-600 text-sm mt-1">{link.description}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   if (isLoading) {
@@ -228,26 +314,22 @@ const StudentAssignments = () => {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
-                      <CardTitle className="line-clamp-2">{assignment.title}</CardTitle>
+                      <CardTitle className="line-clamp-2">
+                        Bài {assignment.lesson.lesson_number}: {assignment.lesson.title}
+                      </CardTitle>
                       <div className="flex items-center space-x-2">
                         <Badge variant="outline">{assignment.lesson.course.name}</Badge>
-                        <Badge variant="outline">{assignment.lesson.title}</Badge>
+                        {assignment.max_score && (
+                          <Badge variant="outline">Điểm tối đa: {assignment.max_score}</Badge>
+                        )}
                         {getStatusBadge(assignment)}
                       </div>
                     </div>
                   </div>
-                  <CardDescription className="line-clamp-3">
-                    {assignment.description}
-                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {assignment.due_date && (
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Calendar className="h-4 w-4" />
-                        <span>Hạn nộp: {new Date(assignment.due_date).toLocaleDateString('vi-VN')}</span>
-                      </div>
-                    )}
+                    {renderAssignmentContent(assignment)}
 
                     {assignment.submission ? (
                       <div className="space-y-3">
@@ -269,7 +351,7 @@ const StudentAssignments = () => {
                               <span className="font-medium text-blue-900">Nhận xét từ giảng viên</span>
                               {assignment.submission.feedback.score && (
                                 <Badge className="bg-blue-600 text-white">
-                                  {assignment.submission.feedback.score}/100
+                                  {assignment.submission.feedback.score}/{assignment.max_score || 100}
                                 </Badge>
                               )}
                             </div>
@@ -288,8 +370,7 @@ const StudentAssignments = () => {
                           setSelectedAssignment(assignment);
                           setShowUploadModal(true);
                         }}
-                        className="w-full bg-primary-600 hover:bg-primary-700"
-                        disabled={assignment.due_date && new Date(assignment.due_date) < new Date()}
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
                       >
                         <Upload className="h-4 w-4 mr-2" />
                         Nộp bài tập

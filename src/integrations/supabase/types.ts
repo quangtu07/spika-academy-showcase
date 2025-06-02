@@ -11,24 +11,39 @@ export type Database = {
     Tables: {
       assignments: {
         Row: {
+          allow_late_submission: boolean | null
+          attachments: Json | null
           content: string | null
           created_at: string
           id: string
+          instructions: string | null
           lesson_id: string
+          max_score: number | null
+          submission_format: string[] | null
           updated_at: string
         }
         Insert: {
+          allow_late_submission?: boolean | null
+          attachments?: Json | null
           content?: string | null
           created_at?: string
           id?: string
+          instructions?: string | null
           lesson_id: string
+          max_score?: number | null
+          submission_format?: string[] | null
           updated_at?: string
         }
         Update: {
+          allow_late_submission?: boolean | null
+          attachments?: Json | null
           content?: string | null
           created_at?: string
           id?: string
+          instructions?: string | null
           lesson_id?: string
+          max_score?: number | null
+          submission_format?: string[] | null
           updated_at?: string
         }
         Relationships: [
@@ -298,6 +313,8 @@ export type Database = {
       submissions: {
         Row: {
           assignment_id: string
+          attachments: Json | null
+          content: string | null
           file_type: string
           file_url: string
           id: string
@@ -307,6 +324,8 @@ export type Database = {
         }
         Insert: {
           assignment_id: string
+          attachments?: Json | null
+          content?: string | null
           file_type: string
           file_url: string
           id?: string
@@ -316,6 +335,8 @@ export type Database = {
         }
         Update: {
           assignment_id?: string
+          attachments?: Json | null
+          content?: string | null
           file_type?: string
           file_url?: string
           id?: string

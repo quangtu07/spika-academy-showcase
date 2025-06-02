@@ -12,6 +12,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import EnrollmentFormModal from '@/components/admin/EnrollmentFormModal';
 import LessonFormModal from '@/components/admin/LessonFormModal';
 import LessonEditModal from '@/components/admin/LessonEditModal';
+import AssignmentCreator from '@/components/teacher/AssignmentCreator';
+import AssignmentSubmissions from '@/components/teacher/AssignmentSubmissions';
 
 interface ClassDetail {
   id: string;
@@ -23,28 +25,25 @@ interface ClassDetail {
     name: string;
     description: string | null;
   };
-  instructor: {
-    fullname: string;
-    email: string;
-  };
+  enrollmentsCount: number;
 }
 
-interface Enrollment {
+interface Student {
   id: string;
-  enrolled_at: string;
-  status: string;
-  student: {
-    fullname: string;
-    email: string;
-  };
+  fullname: string;
+  email: string;
+  avatar_url: string | null;
+  enrollmentDate: string;
 }
 
 interface Lesson {
   id: string;
-  lesson_number: number;
   title: string;
   content: string | null;
+  lesson_number: number;
   created_at: string;
+  hasAssignment?: boolean;
+  assignmentId?: string;
 }
 
 const TeacherClassDetailPage = () => {
@@ -60,6 +59,10 @@ const TeacherClassDetailPage = () => {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [activeTab, setActiveTab] = useState('students');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showAssignmentCreator, setShowAssignmentCreator] = useState(false);
+  const [showAssignmentSubmissions, setShowAssignmentSubmissions] = useState(false);
+  const [selectedLessonForAssignment, setSelectedLessonForAssignment] = useState<Lesson | null>(null);
+  const [selectedAssignmentForSubmissions, setSelectedAssignmentForSubmissions] = useState<any>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -102,7 +105,8 @@ const TeacherClassDetailPage = () => {
         schedule: data.schedule,
         status: data.status,
         course: data.courses || { name: 'Không xác định', description: null },
-        instructor: data.instructor || { fullname: 'Không xác định', email: '' }
+        instructor: data.instructor || { fullname: 'Không xác định', email: '' },
+        enrollmentsCount: data.enrollments_count || 0
       });
     } catch (error) {
       console.error('Error fetching class detail:', error);
@@ -150,22 +154,33 @@ const TeacherClassDetailPage = () => {
   };
 
   const fetchLessons = async () => {
+    if (!classId) return;
+    
     try {
-      const { data, error } = await supabase
+      const { data: lessonsData, error: lessonsError } = await supabase
         .from('lessons')
-        .select(`
-          id,
-          lesson_number,
-          title,
-          content,
-          created_at
-        `)
+        .select('id, title, content, lesson_number, created_at')
         .eq('class_id', classId)
         .order('lesson_number', { ascending: true });
 
-      if (error) throw error;
+      if (lessonsError) throw lessonsError;
 
-      setLessons(data || []);
+      if (lessonsData) {
+        // Check for assignments for each lesson
+        const lessonIds = lessonsData.map(l => l.id);
+        const { data: assignmentsData } = await supabase
+          .from('assignments')
+          .select('id, lesson_id')
+          .in('lesson_id', lessonIds);
+
+        const lessonsWithAssignments = lessonsData.map(lesson => ({
+          ...lesson,
+          hasAssignment: assignmentsData?.some(a => a.lesson_id === lesson.id) || false,
+          assignmentId: assignmentsData?.find(a => a.lesson_id === lesson.id)?.id
+        }));
+
+        setLessons(lessonsWithAssignments);
+      }
     } catch (error) {
       console.error('Error fetching lessons:', error);
       toast({
@@ -173,8 +188,6 @@ const TeacherClassDetailPage = () => {
         description: "Không thể tải danh sách buổi học",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -223,10 +236,47 @@ const TeacherClassDetailPage = () => {
   };
 
   const handleAssignHomework = (lesson: Lesson) => {
-    // TODO: Implement assignment functionality
+    if (lesson.hasAssignment) {
+      // View submissions
+      handleViewSubmissions(lesson);
+    } else {
+      // Create new assignment
+      setSelectedLessonForAssignment(lesson);
+      setShowAssignmentCreator(true);
+    }
+  };
+
+  const handleViewSubmissions = async (lesson: Lesson) => {
+    if (!lesson.assignmentId) return;
+
+    try {
+      const { data: assignmentData, error } = await supabase
+        .from('assignments')
+        .select('id, content, instructions, max_score')
+        .eq('id', lesson.assignmentId)
+        .single();
+
+      if (error) throw error;
+
+      setSelectedAssignmentForSubmissions(assignmentData);
+      setShowAssignmentSubmissions(true);
+    } catch (error) {
+      console.error('Error fetching assignment:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải thông tin bài tập",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAssignmentCreated = () => {
+    setShowAssignmentCreator(false);
+    setSelectedLessonForAssignment(null);
+    fetchLessons(); // Refresh to show new assignment status
     toast({
-      title: "Giao bài tập",
-      description: `Giao bài tập cho buổi học: ${lesson.title}`,
+      title: "Thành công",
+      description: "Đã tạo bài tập thành công",
     });
   };
 
@@ -288,7 +338,7 @@ const TeacherClassDetailPage = () => {
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent truncate">
+                  <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     {classDetail.name}
                   </h1>
                   <p className="text-xs text-gray-500 truncate">{classDetail.course.name}</p>
@@ -875,51 +925,52 @@ const TeacherClassDetailPage = () => {
                 ) : (
                   <div className="space-y-6">
                     {lessons.map((lesson) => (
-                      <Card key={lesson.id} className="shadow-xl hover:shadow-2xl transition-shadow border-0 bg-gradient-to-r from-white to-purple-50 overflow-hidden">
-                        <CardHeader className="pb-4 bg-gradient-to-r from-violet-50 to-purple-50 border-b border-violet-100">
-                          <div className="flex items-start justify-between">
-                            <div className="space-y-3">
-                              <CardTitle className="text-2xl flex items-center space-x-4">
-                                <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
-                                  <span className="text-white text-lg font-bold">{lesson.lesson_number}</span>
-                                </div>
-                                <span>{lesson.title}</span>
-                              </CardTitle>
-                              <CardDescription className="flex items-center space-x-3 text-lg">
-                                <Calendar className="w-5 h-5" />
-                                <span>Tạo ngày: {new Date(lesson.created_at).toLocaleDateString('vi-VN')}</span>
-                              </CardDescription>
+                      <Card key={lesson.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
+                        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white relative overflow-hidden">
+                          <div className="flex items-start space-x-3">
+                            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
+                              <span className="text-white text-lg font-bold">{lesson.lesson_number}</span>
                             </div>
-                            
-                            {/* Action buttons for desktop */}
-                            <div className="flex space-x-3">
-                              <Button
-                                variant="outline"
-                                onClick={() => handleEditLesson(lesson)}
-                                className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
-                              >
-                                <Edit className="w-4 h-4 mr-2" />
-                                Chỉnh sửa
-                              </Button>
-                              <Button
-                                variant="outline"
-                                onClick={() => handleAssignHomework(lesson)}
-                                className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 text-emerald-700 hover:from-emerald-100 hover:to-teal-100"
-                              >
-                                <ClipboardList className="w-4 h-4 mr-2" />
-                                Giao bài tập
-                              </Button>
-                            </div>
+                            <span>{lesson.title}</span>
                           </div>
                         </CardHeader>
-                        {lesson.content && (
-                          <CardContent className="pt-6">
-                            <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-8 border border-violet-100 shadow-inner">
-                              <h5 className="font-bold text-gray-900 mb-4 text-xl">Nội dung buổi học</h5>
-                              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-lg">{lesson.content}</p>
+                        
+                        <CardContent className="p-6 bg-white">
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                              <div className="flex space-x-3">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleEditLesson(lesson)}
+                                  className="hover:bg-blue-50 hover:border-blue-300"
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Chỉnh sửa
+                                </Button>
+                                
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleAssignHomework(lesson)}
+                                  className={lesson.hasAssignment 
+                                    ? "hover:bg-green-50 hover:border-green-300 text-green-700 border-green-300"
+                                    : "hover:bg-purple-50 hover:border-purple-300"
+                                  }
+                                >
+                                  <BookOpen className="h-4 w-4 mr-2" />
+                                  {lesson.hasAssignment ? 'Xem bài nộp' : 'Giao bài tập'}
+                                </Button>
+                              </div>
+                              
+                              {lesson.hasAssignment && (
+                                <Badge className="bg-green-100 text-green-800">
+                                  Đã có bài tập
+                                </Badge>
+                              )}
                             </div>
-                          </CardContent>
-                        )}
+                          </div>
+                        </CardContent>
                       </Card>
                     ))}
                   </div>
@@ -954,6 +1005,25 @@ const TeacherClassDetailPage = () => {
           onClose={() => setShowLessonEditModal(false)}
           lesson={selectedLesson}
           onSaved={handleLessonEditSaved}
+        />
+      )}
+
+      {/* Assignment Creator Modal */}
+      {showAssignmentCreator && selectedLessonForAssignment && (
+        <AssignmentCreator
+          isOpen={showAssignmentCreator}
+          onClose={() => setShowAssignmentCreator(false)}
+          lesson={selectedLessonForAssignment}
+          onSaved={handleAssignmentCreated}
+        />
+      )}
+
+      {/* Assignment Submissions Modal */}
+      {showAssignmentSubmissions && selectedAssignmentForSubmissions && (
+        <AssignmentSubmissions
+          assignment={selectedAssignmentForSubmissions}
+          isOpen={showAssignmentSubmissions}
+          onClose={() => setShowAssignmentSubmissions(false)}
         />
       )}
     </div>
