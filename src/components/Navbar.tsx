@@ -10,6 +10,7 @@ const Navbar = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [logoutMessage, setLogoutMessage] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const { userRole } = useUserRole();
@@ -93,6 +94,16 @@ const Navbar = () => {
 
   const handleLogout = () => {
     setCurrentUser(null);
+    localStorage.removeItem('currentUser');
+    
+    // Thông báo đăng xuất thành công
+    setLogoutMessage('Đã đăng xuất thành công!');
+    
+    // Tự động ẩn message sau 3 giây
+    setTimeout(() => {
+      setLogoutMessage('');
+    }, 3000);
+    
     // If currently on dashboard pages, redirect to home
     if (['/admin', '/teacher', '/student'].includes(window.location.pathname)) {
       navigate('/');
@@ -120,6 +131,13 @@ const Navbar = () => {
 
   return (
     <>
+      {/* Thông báo đăng xuất */}
+      {logoutMessage && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-300">
+          {logoutMessage}
+        </div>
+      )}
+
       <nav className={`fixed w-full top-0 z-50 font-roboto transition-all duration-300 ${
         scrolled 
           ? 'bg-white/95 backdrop-blur-xl shadow-xl border-b border-white/20' 
@@ -236,6 +254,16 @@ const Navbar = () => {
                           {getDashboardButtonText()}
                         </Button>
                       )}
+                      <Button 
+                        onClick={() => {
+                          handleLogout();
+                          setIsMenuOpen(false);
+                        }}
+                        variant="outline"
+                        className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-300"
+                      >
+                        Đăng xuất
+                      </Button>
                     </div>
                   ) : (
                     <Button 

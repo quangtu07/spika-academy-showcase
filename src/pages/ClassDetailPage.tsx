@@ -632,22 +632,24 @@ const ClassDetailPage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50/50 via-blue-50/50 to-indigo-50/50">
         {/* Header */}
-        <div className="bg-white shadow-sm border-b">
+        <div className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-3">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center space-x-4">
                 <Button
                   onClick={handleGoBack}
                   variant="outline"
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 bg-white/50 backdrop-blur-xl hover:bg-white/80 transition-all duration-300"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   <span>Quay lại</span>
                 </Button>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{classData.name}</h1>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                    {classData.name}
+                  </h1>
                   <p className="text-sm text-gray-600">Chi tiết lớp học</p>
                 </div>
               </div>
@@ -658,31 +660,66 @@ const ClassDetailPage = () => {
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Class Info Card */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Thông tin lớp học</CardTitle>
+          <Card className="mb-6 border-0 shadow-xl bg-white/80 backdrop-blur-xl overflow-hidden">
+            <CardHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+              <CardTitle className="text-xl flex items-center space-x-2">
+                <BookOpen className="h-5 w-5" />
+                <span>Thông tin lớp học</span>
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="space-y-2 text-sm">
-                    <div><strong>Khóa học:</strong> {classData.course?.name || 'Không xác định'}</div>
-                    <div><strong>Giảng viên:</strong> {classData.instructor?.fullname || 'Không xác định'}</div>
-                    <div><strong>Email giảng viên:</strong> {classData.instructor?.email || 'Không xác định'}</div>
-                    <div><strong>Mô tả khóa học:</strong> {classData.course?.description || 'Không có'}</div>
-                    <div><strong>Mô tả lớp học:</strong> {classData.description || 'Không có'}</div>
-                    <div><strong>Lịch học:</strong> {classData.schedule || 'Chưa xác định'}</div>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4 p-4 bg-purple-50/50 rounded-xl border border-purple-100">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold text-purple-700 min-w-[140px]">Khóa học:</span>
+                      <span className="text-gray-700">{classData.course?.name || 'Không xác định'}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold text-purple-700 min-w-[140px]">Giảng viên:</span>
+                      <span className="text-gray-700">{classData.instructor?.fullname || 'Không xác định'}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold text-purple-700 min-w-[140px]">Email giảng viên:</span>
+                      <span className="text-gray-700">{classData.instructor?.email || 'Không xác định'}</span>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <span className="font-semibold text-purple-700 min-w-[140px]">Mô tả khóa học:</span>
+                      <span className="text-gray-700">{classData.course?.description || 'Không có'}</span>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <span className="font-semibold text-purple-700 min-w-[140px]">Mô tả lớp học:</span>
+                      <span className="text-gray-700">{classData.description || 'Không có'}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold text-purple-700 min-w-[140px]">Lịch học:</span>
+                      <span className="text-gray-700">{classData.schedule || 'Chưa xác định'}</span>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="space-y-2 text-sm">
-                    <div><strong>Trạng thái:</strong> {getStatusBadge(classData.status)}</div>
-                    <div><strong>Số học viên:</strong> {classData.enrollments?.length || 0}</div>
-                    <div><strong>Số buổi học:</strong> {classData.lessons?.length || 0}</div>
-                    <div><strong>Ngày tạo: </strong> {new Date(classData.created_at).toLocaleString('vi-VN')}</div>
-                    <div>
-                      <strong>Lần cập nhật cuối: </strong> 
-                      {classData.updated_at ? new Date(classData.updated_at).toLocaleString('vi-VN') : 'Chưa cập nhật'}
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold text-blue-700 min-w-[140px]">Trạng thái:</span>
+                      <span>{getStatusBadge(classData.status)}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold text-blue-700 min-w-[140px]">Số học viên:</span>
+                      <span className="text-gray-700">{classData.enrollments?.length || 0}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold text-blue-700 min-w-[140px]">Số buổi học:</span>
+                      <span className="text-gray-700">{classData.lessons?.length || 0}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold text-blue-700 min-w-[140px]">Ngày tạo:</span>
+                      <span className="text-gray-700">{new Date(classData.created_at).toLocaleString('vi-VN')}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold text-blue-700 min-w-[140px]">Lần cập nhật cuối:</span>
+                      <span className="text-gray-700">
+                        {classData.updated_at ? new Date(classData.updated_at).toLocaleString('vi-VN') : 'Chưa cập nhật'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -704,64 +741,88 @@ const ClassDetailPage = () => {
             </TabsList>
 
             <TabsContent value="students">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
+              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
+                <CardHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <CardTitle>Danh sách học viên ({classData.enrollments?.length || 0})</CardTitle>
-                      <CardDescription>Tất cả học viên đã đăng ký lớp học này</CardDescription>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Users className="h-5 w-5" />
+                        <span>Danh sách học viên ({classData.enrollments?.length || 0})</span>
+                      </CardTitle>
+                      <CardDescription className="text-purple-100">
+                        Tất cả học viên đã đăng ký lớp học này
+                      </CardDescription>
                     </div>
-                    <Button onClick={handleOpenAddStudentModal} className="flex items-center space-x-2">
+                    <Button 
+                      onClick={handleOpenAddStudentModal} 
+                      className="bg-white/20 hover:bg-white/30 text-white border-0 flex items-center space-x-2 w-full sm:w-auto justify-center"
+                    >
                       <UserPlus className="h-4 w-4" />
                       <span>Thêm học viên</span>
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0 sm:p-6">
                   {classData.enrollments && classData.enrollments.length > 0 ? (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>STT</TableHead>
-                          <TableHead>Họ tên</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Ngày đăng ký</TableHead>
-                          <TableHead className="text-center">Thao tác</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {classData.enrollments.map((enrollment, index) => (
-                          <TableRow key={enrollment.id}>
-                            <TableCell>{index + 1}</TableCell>
-                            <TableCell className="font-medium">{enrollment.student?.fullname || 'Không xác định'}</TableCell>
-                            <TableCell>{enrollment.student?.email || ''}</TableCell>
-                            <TableCell>{new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}</TableCell>
-                            <TableCell className="text-center">
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleRemoveStudentClick(enrollment.id, enrollment.student?.fullname || 'Học viên')}
-                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Xóa học viên khỏi lớp học</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                    <div className="rounded-xl overflow-hidden border border-gray-100">
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader className="bg-gray-50/50">
+                            <TableRow>
+                              <TableHead className="font-semibold">STT</TableHead>
+                              <TableHead className="font-semibold">Họ tên</TableHead>
+                              <TableHead className="font-semibold hidden sm:table-cell">Email</TableHead>
+                              <TableHead className="font-semibold hidden sm:table-cell">Ngày đăng ký</TableHead>
+                              <TableHead className="text-center font-semibold">Thao tác</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {classData.enrollments.map((enrollment, index) => (
+                              <TableRow key={enrollment.id} className="hover:bg-gray-50/50">
+                                <TableCell className="text-center sm:text-left">{index + 1}</TableCell>
+                                <TableCell>
+                                  <div>
+                                    <div className="font-medium">{enrollment.student?.fullname || 'Không xác định'}</div>
+                                    <div className="text-sm text-gray-500 sm:hidden">{enrollment.student?.email}</div>
+                                    <div className="text-xs text-gray-400 sm:hidden">
+                                      {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell">{enrollment.student?.email || ''}</TableCell>
+                                <TableCell className="hidden sm:table-cell">
+                                  {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => handleRemoveStudentClick(enrollment.id, enrollment.student?.fullname || 'Học viên')}
+                                          className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>Xóa học viên khỏi lớp học</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
                   ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      Chưa có học viên nào đăng ký lớp này
+                    <div className="text-center py-12">
+                      <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                      <p className="text-lg font-medium text-gray-900">Chưa có học viên</p>
+                      <p className="text-sm text-gray-600 mt-1">Chưa có học viên nào đăng ký lớp này</p>
                     </div>
                   )}
                 </CardContent>
@@ -769,87 +830,114 @@ const ClassDetailPage = () => {
             </TabsContent>
 
             <TabsContent value="lessons">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
+              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
+                <CardHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <CardTitle>Danh sách buổi học ({classData.lessons?.length || 0})</CardTitle>
-                      <CardDescription>Tất cả buổi học trong lớp</CardDescription>
+                      <CardTitle className="flex items-center space-x-2">
+                        <BookOpen className="h-5 w-5" />
+                        <span>Danh sách buổi học ({classData.lessons?.length || 0})</span>
+                      </CardTitle>
+                      <CardDescription className="text-purple-100">
+                        Tất cả buổi học trong lớp
+                      </CardDescription>
                     </div>
-                    <Button onClick={handleOpenAddLessonModal} className="flex items-center space-x-2">
+                    <Button 
+                      onClick={handleOpenAddLessonModal} 
+                      className="bg-white/20 hover:bg-white/30 text-white border-0 flex items-center space-x-2 w-full sm:w-auto justify-center"
+                    >
                       <Plus className="h-4 w-4" />
                       <span>Thêm buổi học</span>
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0 sm:p-6">
                   {classData.lessons && classData.lessons.length > 0 ? (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Buổi học</TableHead>
-                          <TableHead>Tiêu đề</TableHead>
-                          <TableHead>Nội dung</TableHead>
-                          <TableHead>Ngày tạo</TableHead>
-                          <TableHead>Cập nhật lần cuối</TableHead>
-                          <TableHead className="text-center">Thao tác</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {classData.lessons.map((lesson) => (
-                          <TableRow key={lesson.id}>
-                            <TableCell className="font-medium">Buổi {lesson.lesson_number}</TableCell>
-                            <TableCell>{lesson.title}</TableCell>
-                            <TableCell>{lesson.content || '-'}</TableCell>
-                            <TableCell>{new Date(lesson.created_at).toLocaleString('vi-VN')}</TableCell>
-                            <TableCell>
-                              {lesson.updated_at ? new Date(lesson.updated_at).toLocaleString('vi-VN') : '-'}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <div className="flex items-center justify-center space-x-2">
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleOpenEditLessonModal(lesson)}
-                                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                                      >
-                                        <Edit className="h-4 w-4" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Chỉnh sửa buổi học</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleDeleteLessonClick(lesson)}
-                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Xóa buổi học</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                    <div className="rounded-xl overflow-hidden border border-gray-100">
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader className="bg-gray-50/50">
+                            <TableRow>
+                              <TableHead className="font-semibold">Buổi học</TableHead>
+                              <TableHead className="font-semibold">Tiêu đề</TableHead>
+                              <TableHead className="font-semibold hidden sm:table-cell">Nội dung</TableHead>
+                              <TableHead className="font-semibold hidden sm:table-cell">Ngày tạo</TableHead>
+                              <TableHead className="font-semibold hidden sm:table-cell">Cập nhật lần cuối</TableHead>
+                              <TableHead className="text-center font-semibold">Thao tác</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {classData.lessons.map((lesson) => (
+                              <TableRow key={lesson.id} className="hover:bg-gray-50/50">
+                                <TableCell className="font-medium whitespace-nowrap">Buổi {lesson.lesson_number}</TableCell>
+                                <TableCell>
+                                  <div>
+                                    <div className="font-medium">{lesson.title}</div>
+                                    <div className="text-sm text-gray-500 sm:hidden line-clamp-2">{lesson.content || '-'}</div>
+                                    <div className="text-xs text-gray-400 sm:hidden">
+                                      Tạo: {new Date(lesson.created_at).toLocaleString('vi-VN')}
+                                      {lesson.updated_at && (
+                                        <><br />Cập nhật: {new Date(lesson.updated_at).toLocaleString('vi-VN')}</>
+                                      )}
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell">{lesson.content || '-'}</TableCell>
+                                <TableCell className="hidden sm:table-cell whitespace-nowrap">
+                                  {new Date(lesson.created_at).toLocaleString('vi-VN')}
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell whitespace-nowrap">
+                                  {lesson.updated_at ? new Date(lesson.updated_at).toLocaleString('vi-VN') : '-'}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <div className="flex items-center justify-center space-x-2">
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleOpenEditLessonModal(lesson)}
+                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                                          >
+                                            <Edit className="h-4 w-4" />
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Chỉnh sửa buổi học</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleDeleteLessonClick(lesson)}
+                                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Xóa buổi học</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
                   ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      Chưa có buổi học nào được tạo cho lớp này
+                    <div className="text-center py-12">
+                      <BookOpen className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                      <p className="text-lg font-medium text-gray-900">Chưa có buổi học</p>
+                      <p className="text-sm text-gray-600 mt-1">Chưa có buổi học nào được tạo cho lớp này</p>
                     </div>
                   )}
                 </CardContent>
@@ -861,47 +949,43 @@ const ClassDetailPage = () => {
 
       {/* Add Student Modal */}
       <Dialog open={isAddStudentModalOpen} onOpenChange={handleCloseAddStudentModal}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[400px] bg-white">
           <DialogHeader>
             <DialogTitle>Thêm học viên vào lớp học</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-500">
               Chọn học viên từ danh sách bên dưới để thêm vào lớp học
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="py-4">
             {availableStudents.length > 0 ? (
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="student-select" className="text-right">
-                  Học viên
-                </Label>
-                <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Chọn học viên" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableStudents.map((student) => (
-                      <SelectItem key={student.id} value={student.id}>
-                        {student.fullname} - {student.email}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="student-select">Học viên</Label>
+                  <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn học viên" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableStudents.map((student) => (
+                        <SelectItem key={student.id} value={student.id}>
+                          {student.fullname} - {student.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             ) : (
-              <div className="text-center py-8">
-                <div className="text-gray-500 mb-2">
-                  <Users className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                  <p className="text-lg font-medium">Không có học viên nào</p>
-                  <p className="text-sm">Tất cả học viên có trong hệ thống đã được đăng ký lớp học này</p>
-                </div>
+              <div className="text-center py-4">
+                <p className="text-gray-500">Không có học viên nào để thêm</p>
               </div>
             )}
           </div>
           <DialogFooter>
             <Button 
-              type="submit" 
               onClick={handleAddStudent} 
               disabled={isAddingStudent || availableStudents.length === 0 || !selectedStudentId}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
             >
               {isAddingStudent ? 'Đang thêm...' : 'Thêm học viên'}
             </Button>
@@ -911,23 +995,31 @@ const ClassDetailPage = () => {
 
       {/* Remove Student Dialog */}
       <AlertDialog open={isRemoveDialogOpen} onOpenChange={handleCancelRemove}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa học viên</AlertDialogTitle>
-            <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa học viên <strong>{studentToRemove?.name}</strong> khỏi lớp học này?
+        <AlertDialogContent className="bg-white/80 backdrop-blur-xl border-0 shadow-xl">
+          <AlertDialogHeader className="border-b bg-gradient-to-r from-red-500 to-pink-500 text-white p-6">
+            <AlertDialogTitle className="flex items-center space-x-2">
+              <Trash2 className="h-5 w-5" />
+              <span>Xác nhận xóa học viên</span>
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-red-100">
+              Bạn có chắc chắn muốn xóa học viên <strong className="text-white">{studentToRemove?.name}</strong> khỏi lớp học này?
               <br />
-              <span className="text-sm text-red-600 mt-2 block">
+              <span className="text-red-200 mt-2 block">
                 Thao tác này không thể hoàn tác.
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isRemovingStudent}>Hủy</AlertDialogCancel>
+          <AlertDialogFooter className="p-6">
+            <AlertDialogCancel 
+              disabled={isRemovingStudent}
+              className="bg-gray-100 hover:bg-gray-200 border-0"
+            >
+              Hủy
+            </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleRemoveStudent}
               disabled={isRemovingStudent}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white border-0"
             >
               {isRemovingStudent ? 'Đang xóa...' : 'Xóa'}
             </AlertDialogAction>
@@ -937,45 +1029,38 @@ const ClassDetailPage = () => {
 
       {/* Add Lesson Modal */}
       <Dialog open={isAddLessonModalOpen} onOpenChange={handleCloseAddLessonModal}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[400px] bg-white">
           <DialogHeader>
             <DialogTitle>Thêm buổi học</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-500">
               Nhập thông tin cho buổi học mới (Buổi học số {getNextLessonNumber()})
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="lesson-title" className="text-right">
-                Tiêu đề
-              </Label>
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="lesson-title">Tiêu đề</Label>
               <Input 
                 id="lesson-title" 
                 value={lessonTitle} 
                 onChange={(e) => setLessonTitle(e.target.value)}
-                className="col-span-3"
                 placeholder="Nhập tiêu đề buổi học"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="lesson-content" className="text-right">
-                Nội dung
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="lesson-content">Nội dung</Label>
               <Textarea 
                 id="lesson-content" 
                 value={lessonContent} 
                 onChange={(e) => setLessonContent(e.target.value)}
-                className="col-span-3"
                 placeholder="Nhập nội dung buổi học (tùy chọn)"
-                rows={4}
               />
             </div>
           </div>
           <DialogFooter>
             <Button 
-              type="submit" 
               onClick={handleAddLesson} 
               disabled={isAddingLesson || !lessonTitle.trim()}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
             >
               {isAddingLesson ? 'Đang thêm...' : 'Thêm buổi học'}
             </Button>
@@ -985,45 +1070,49 @@ const ClassDetailPage = () => {
 
       {/* Edit Lesson Modal */}
       <Dialog open={isEditLessonModalOpen} onOpenChange={handleCloseEditLessonModal}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Chỉnh sửa buổi học</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="sm:max-w-[425px] bg-white/80 backdrop-blur-xl border-0 shadow-xl">
+          <DialogHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white p-6">
+            <DialogTitle className="flex items-center space-x-2">
+              <Edit className="h-5 w-5" />
+              <span>Chỉnh sửa buổi học</span>
+            </DialogTitle>
+            <DialogDescription className="text-purple-100">
               Nhập thông tin cho buổi học đã chọn
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="edit-lesson-title" className="text-right">
-                Tiêu đề
-              </Label>
-              <Input 
-                id="edit-lesson-title" 
-                value={editLessonTitle} 
-                onChange={(e) => setEditLessonTitle(e.target.value)}
-                className="col-span-3"
-                placeholder="Nhập tiêu đề buổi học"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="edit-lesson-content" className="text-right">
-                Nội dung
-              </Label>
-              <Textarea 
-                id="edit-lesson-content" 
-                value={editLessonContent} 
-                onChange={(e) => setEditLessonContent(e.target.value)}
-                className="col-span-3"
-                placeholder="Nhập nội dung buổi học"
-                rows={4}
-              />
+          <div className="p-6 space-y-6">
+            <div className="space-y-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-lesson-title" className="text-right font-medium">
+                  Tiêu đề
+                </Label>
+                <Input 
+                  id="edit-lesson-title" 
+                  value={editLessonTitle} 
+                  onChange={(e) => setEditLessonTitle(e.target.value)}
+                  className="col-span-3"
+                  placeholder="Nhập tiêu đề buổi học"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="edit-lesson-content" className="text-right font-medium">
+                  Nội dung
+                </Label>
+                <Textarea 
+                  id="edit-lesson-content" 
+                  value={editLessonContent} 
+                  onChange={(e) => setEditLessonContent(e.target.value)}
+                  className="col-span-3 min-h-[100px]"
+                  placeholder="Nhập nội dung buổi học"
+                />
+              </div>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="px-6 py-4 bg-gray-50">
             <Button 
-              type="submit" 
               onClick={handleEditLesson} 
               disabled={isEditingLesson || !editLessonTitle.trim()}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
             >
               {isEditingLesson ? 'Đang cập nhật...' : 'Cập nhật buổi học'}
             </Button>
@@ -1033,23 +1122,31 @@ const ClassDetailPage = () => {
 
       {/* Delete Lesson Dialog */}
       <AlertDialog open={isDeleteLessonDialogOpen} onOpenChange={handleCancelDeleteLesson}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa buổi học</AlertDialogTitle>
-            <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa buổi học <strong>{lessonToDelete?.title}</strong> khỏi lớp học này?
+        <AlertDialogContent className="bg-white/80 backdrop-blur-xl border-0 shadow-xl">
+          <AlertDialogHeader className="border-b bg-gradient-to-r from-red-500 to-pink-500 text-white p-6">
+            <AlertDialogTitle className="flex items-center space-x-2">
+              <Trash2 className="h-5 w-5" />
+              <span>Xác nhận xóa buổi học</span>
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-red-100">
+              Bạn có chắc chắn muốn xóa buổi học <strong className="text-white">{lessonToDelete?.title}</strong> khỏi lớp học này?
               <br />
-              <span className="text-sm text-red-600 mt-2 block">
+              <span className="text-red-200 mt-2 block">
                 Thao tác này không thể hoàn tác.
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeletingLesson}>Hủy</AlertDialogCancel>
+          <AlertDialogFooter className="p-6">
+            <AlertDialogCancel 
+              disabled={isDeletingLesson}
+              className="bg-gray-100 hover:bg-gray-200 border-0"
+            >
+              Hủy
+            </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteLesson}
               disabled={isDeletingLesson}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white border-0"
             >
               {isDeletingLesson ? 'Đang xóa...' : 'Xóa'}
             </AlertDialogAction>
