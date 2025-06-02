@@ -1,39 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, Clock, FileText, Award, Menu, X, Edit, ClipboardList } from 'lucide-react';
+import { CalendarDays, Users, BookOpen, FileText, Plus, Eye, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile';
-import EnrollmentFormModal from '@/components/admin/EnrollmentFormModal';
 import LessonFormModal from '@/components/admin/LessonFormModal';
 import LessonEditModal from '@/components/admin/LessonEditModal';
 import AssignmentCreator from '@/components/teacher/AssignmentCreator';
 import AssignmentSubmissions from '@/components/teacher/AssignmentSubmissions';
+import { DialogDescription } from "@/components/ui/dialog"
+
+interface Enrollment {
+  id: string;
+  student_id: string;
+  enrolled_at: string;
+  status: string | null;
+  student: {
+    fullname: string;
+    email: string;
+    avatar_url: string | null;
+  };
+}
 
 interface ClassDetail {
   id: string;
   name: string;
   description: string | null;
   schedule: string | null;
-  status: string | null;
+  status: "Đang hoạt động" | "Đã kết thúc" | null;
   course: {
     name: string;
     description: string | null;
   };
-  enrollmentsCount: number;
-}
-
-interface Student {
-  id: string;
-  fullname: string;
-  email: string;
-  avatar_url: string | null;
-  enrollmentDate: string;
+  instructor: {
+    fullname: string;
+    email: string;
+  };
+  enrollments_count: number;
 }
 
 interface Lesson {
@@ -42,37 +48,38 @@ interface Lesson {
   content: string | null;
   lesson_number: number;
   created_at: string;
-  hasAssignment?: boolean;
-  assignmentId?: string;
+  assignments?: Assignment[];
+}
+
+interface Assignment {
+  id: string;
+  content: string;
+  instructions: string | null;
+  max_score: number | null;
 }
 
 const TeacherClassDetailPage = () => {
-  const { classId } = useParams();
-  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const [classDetail, setClassDetail] = useState<ClassDetail | null>(null);
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [showLessonModal, setShowLessonModal] = useState(false);
-  const [showLessonEditModal, setShowLessonEditModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [activeTab, setActiveTab] = useState('students');
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showAssignmentCreator, setShowAssignmentCreator] = useState(false);
-  const [showAssignmentSubmissions, setShowAssignmentSubmissions] = useState(false);
   const [selectedLessonForAssignment, setSelectedLessonForAssignment] = useState<Lesson | null>(null);
-  const [selectedAssignmentForSubmissions, setSelectedAssignmentForSubmissions] = useState<any>(null);
+  const [showSubmissions, setShowSubmissions] = useState(false);
+  const [selectedAssignmentForSubmissions, setSelectedAssignmentForSubmissions] = useState<Assignment | null>(null);
   const { toast } = useToast();
-  const isMobile = useIsMobile();
 
   useEffect(() => {
-    if (classId) {
+    if (id) {
       fetchClassDetail();
-      fetchEnrollments();
       fetchLessons();
+      fetchEnrollments();
     }
-  }, [classId]);
+  }, [id]);
 
   const fetchClassDetail = async () => {
     try {
@@ -84,30 +91,26 @@ const TeacherClassDetailPage = () => {
           description,
           schedule,
           status,
-          courses (
-            name,
-            description
-          ),
-          instructor:profiles (
-            fullname,
-            email
-          )
+          course:courses(name, description),
+          instructor:profiles!classes_instructor_id_fkey(fullname, email)
         `)
-        .eq('id', classId)
+        .eq('id', id)
         .single();
 
       if (error) throw error;
 
+      // Get enrollments count
+      const { count } = await supabase
+        .from('enrollments')
+        .select('*', { count: 'exact', head: true })
+        .eq('class_id', id);
+
       setClassDetail({
-        id: data.id,
-        name: data.name,
-        description: data.description,
-        schedule: data.schedule,
-        status: data.status,
-        course: data.courses || { name: 'Không xác định', description: null },
-        instructor: data.instructor || { fullname: 'Không xác định', email: '' },
-        enrollmentsCount: data.enrollments_count || 0
-      });
+        ...data,
+        course: data.course,
+        instructor: data.instructor,
+        enrollments_count: count || 0
+      } as any);
     } catch (error) {
       console.error('Error fetching class detail:', error);
       toast({
@@ -118,912 +121,401 @@ const TeacherClassDetailPage = () => {
     }
   };
 
+  const fetchLessons = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('lessons')
+        .select(`
+          id,
+          title,
+          content,
+          lesson_number,
+          created_at
+        `)
+        .eq('class_id', id)
+        .order('lesson_number', { ascending: true });
+
+      if (error) throw error;
+
+      setLessons(data || []);
+    } catch (error) {
+      console.error('Error fetching lessons:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải danh sách bài học",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchEnrollments = async () => {
+    setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('enrollments')
         .select(`
           id,
+          student_id,
           enrolled_at,
           status,
-          student:profiles (
-            fullname,
-            email
-          )
+          student:profiles!enrollments_student_id_fkey(fullname, email, avatar_url)
         `)
-        .eq('class_id', classId);
+        .eq('class_id', id);
 
       if (error) throw error;
 
-      const formattedEnrollments = data?.map(enrollment => ({
-        id: enrollment.id,
-        enrolled_at: enrollment.enrolled_at,
-        status: enrollment.status || 'active',
-        student: enrollment.student || { fullname: 'Không xác định', email: '' }
-      })) || [];
-
-      setEnrollments(formattedEnrollments);
+      setEnrollments(data as any || []);
     } catch (error) {
       console.error('Error fetching enrollments:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể tải danh sách học viên",
+        description: "Không thể tải danh sách học sinh",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const fetchLessons = async () => {
-    if (!classId) return;
-    
+  const fetchAssignments = async (lessonId: string) => {
     try {
-      const { data: lessonsData, error: lessonsError } = await supabase
-        .from('lessons')
-        .select('id, title, content, lesson_number, created_at')
-        .eq('class_id', classId)
-        .order('lesson_number', { ascending: true });
+      const { data: assignmentsData, error: assignmentsError } = await supabase
+        .from('assignments')
+        .select(`
+          id,
+          content,
+          instructions,
+          max_score
+        `)
+        .eq('lesson_id', lessonId);
 
-      if (lessonsError) throw lessonsError;
+      if (assignmentsError) throw assignmentsError;
 
-      if (lessonsData) {
-        // Check for assignments for each lesson
-        const lessonIds = lessonsData.map(l => l.id);
-        const { data: assignmentsData } = await supabase
-          .from('assignments')
-          .select('id, lesson_id')
-          .in('lesson_id', lessonIds);
-
-        const lessonsWithAssignments = lessonsData.map(lesson => ({
-          ...lesson,
-          hasAssignment: assignmentsData?.some(a => a.lesson_id === lesson.id) || false,
-          assignmentId: assignmentsData?.find(a => a.lesson_id === lesson.id)?.id
-        }));
-
-        setLessons(lessonsWithAssignments);
-      }
+      return assignmentsData || [];
     } catch (error) {
-      console.error('Error fetching lessons:', error);
+      console.error('Error fetching assignments:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể tải danh sách buổi học",
+        description: "Không thể tải danh sách bài tập",
         variant: "destructive",
       });
+      return [];
     }
-  };
-
-  const getStatusBadge = (status: string | null) => {
-    const statusMap = {
-      'đang hoạt động': { text: 'Đang hoạt động', class: 'bg-emerald-500/15 text-emerald-700 border-emerald-300 shadow-sm' },
-      'đã kết thúc': { text: 'Đã kết thúc', class: 'bg-gray-500/15 text-gray-700 border-gray-300 shadow-sm' },
-      'hoàn thành': { text: 'Hoàn thành', class: 'bg-blue-500/15 text-blue-700 border-blue-300 shadow-sm' },
-      'chờ bắt đầu': { text: 'Chờ bắt đầu', class: 'bg-amber-500/15 text-amber-700 border-amber-300 shadow-sm' },
-    };
-
-    const defaultStatus = { text: 'Không xác định', class: 'bg-gray-500/15 text-gray-700 border-gray-300 shadow-sm' };
-    const normalizedStatus = status?.toString().trim().toLowerCase();
-    
-    let statusInfo = defaultStatus;
-    if (normalizedStatus && statusMap[normalizedStatus as keyof typeof statusMap]) {
-      statusInfo = statusMap[normalizedStatus as keyof typeof statusMap];
-    }
-
-    return (
-      <Badge className={`${statusInfo.class} border font-medium px-3 py-1`}>
-        {statusInfo.text}
-      </Badge>
-    );
-  };
-
-  const handleEnrollmentSaved = () => {
-    fetchEnrollments();
-    setShowEnrollmentModal(false);
   };
 
   const handleLessonSaved = () => {
     fetchLessons();
-    setShowLessonModal(false);
   };
 
-  const handleLessonEditSaved = () => {
+  const handleLessonUpdated = () => {
     fetchLessons();
-    setShowLessonEditModal(false);
-    setSelectedLesson(null);
   };
 
-  const handleEditLesson = (lesson: Lesson) => {
-    setSelectedLesson(lesson);
-    setShowLessonEditModal(true);
+  const handleCreateAssignment = (lesson: Lesson) => {
+    setSelectedLessonForAssignment(lesson);
+    setShowAssignmentCreator(true);
   };
 
-  const handleAssignHomework = (lesson: Lesson) => {
-    if (lesson.hasAssignment) {
-      // View submissions
-      handleViewSubmissions(lesson);
-    } else {
-      // Create new assignment
-      setSelectedLessonForAssignment(lesson);
-      setShowAssignmentCreator(true);
-    }
+  const handleViewSubmissions = (assignment: Assignment) => {
+    setSelectedAssignmentForSubmissions(assignment);
+    setShowSubmissions(true);
   };
 
-  const handleViewSubmissions = async (lesson: Lesson) => {
-    if (!lesson.assignmentId) return;
-
-    try {
-      const { data: assignmentData, error } = await supabase
-        .from('assignments')
-        .select('id, content, instructions, max_score')
-        .eq('id', lesson.assignmentId)
-        .single();
-
-      if (error) throw error;
-
-      setSelectedAssignmentForSubmissions(assignmentData);
-      setShowAssignmentSubmissions(true);
-    } catch (error) {
-      console.error('Error fetching assignment:', error);
-      toast({
-        title: "Lỗi",
-        description: "Không thể tải thông tin bài tập",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleAssignmentCreated = () => {
-    setShowAssignmentCreator(false);
-    setSelectedLessonForAssignment(null);
-    fetchLessons(); // Refresh to show new assignment status
-    toast({
-      title: "Thành công",
-      description: "Đã tạo bài tập thành công",
-    });
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 animate-pulse shadow-lg">
-            <GraduationCap className="w-8 h-8 text-white" />
-          </div>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">Đang tải thông tin lớp học...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!classDetail) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md shadow-2xl border-0 overflow-hidden">
-          <CardHeader className="text-center bg-gradient-to-r from-red-500 to-pink-500 text-white">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileText className="w-8 h-8 text-white" />
-            </div>
-            <CardTitle className="text-xl">Không tìm thấy lớp học</CardTitle>
-            <CardDescription className="text-red-100">
-              Lớp học này có thể đã bị xóa hoặc bạn không có quyền truy cập.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center pt-6">
-            <Button 
-              onClick={() => navigate('/admin')} 
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg"
-            >
-              Quay lại trang quản trị
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Mobile Layout
-  if (isMobile) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        {/* Mobile Header */}
-        <div className="bg-white shadow-lg border-b sticky top-0 z-50">
-          <div className="px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Button 
-                  onClick={() => navigate('/admin')}
-                  variant="ghost"
-                  size="sm"
-                  className="p-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <div className="min-w-0 flex-1">
-                  <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    {classDetail.name}
-                  </h1>
-                  <p className="text-xs text-gray-500 truncate">{classDetail.course.name}</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
+        {classDetail && (
+          <Card className="overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold mb-2">{classDetail.name}</h1>
+                  <p className="text-blue-100 mb-2">{classDetail.course.name}</p>
+                  <div className="flex items-center space-x-4 text-sm">
+                    <div className="flex items-center space-x-1">
+                      <Users className="h-4 w-4" />
+                      <span>{classDetail.enrollments_count} học sinh</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <CalendarDays className="h-4 w-4" />
+                      <span>{classDetail.schedule || 'Chưa có lịch học'}</span>
+                    </div>
+                  </div>
                 </div>
+                <Badge 
+                  variant={classDetail.status === 'Đang hoạt động' ? 'default' : 'secondary'}
+                  className="bg-white/20 text-white"
+                >
+                  {classDetail.status || 'Không xác định'}
+                </Badge>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="p-2"
-              >
-                {showMobileMenu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-              </Button>
             </div>
-          </div>
-        </div>
 
-        {/* Mobile Actions Menu */}
-        {showMobileMenu && (
-          <div className="bg-white border-b shadow-lg">
-            <div className="px-4 py-3">
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  onClick={() => {
-                    setShowEnrollmentModal(true);
-                    setShowMobileMenu(false);
-                  }}
-                  size="sm"
-                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Thêm học viên
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowLessonModal(true);
-                    setShowMobileMenu(false);
-                  }}
-                  size="sm"
-                  className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Thêm buổi học
-                </Button>
-              </div>
-            </div>
-          </div>
+            {classDetail.description && (
+              <CardContent className="p-6">
+                <p className="text-gray-700">{classDetail.description}</p>
+              </CardContent>
+            )}
+          </Card>
         )}
 
-        {/* Mobile Class Info Card */}
-        <div className="p-4">
-          <Card className="shadow-xl border-0 overflow-hidden mb-6">
-            <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white relative">
-              <div className="absolute inset-0 bg-black/10"></div>
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full"></div>
-              <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full"></div>
-              
-              <div className="relative z-10">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-xl font-bold text-white mb-2">
-                      {classDetail.name}
-                    </CardTitle>
-                    <CardDescription className="text-indigo-100 flex items-center space-x-2">
-                      <BookOpen className="w-4 h-4 flex-shrink-0" />
-                      <span className="font-medium truncate">{classDetail.course.name}</span>
-                    </CardDescription>
-                  </div>
-                  <div className="ml-3">
-                    {getStatusBadge(classDetail.status)}
-                  </div>
-                </div>
-                
-                {/* Quick Stats - Remove ranking */}
-                <div className="grid grid-cols-3 gap-3 mt-4">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
-                    <div className="text-center">
-                      <Users className="w-5 h-5 text-indigo-100 mx-auto mb-1" />
-                      <p className="text-white text-lg font-bold">{enrollments.length}</p>
-                      <p className="text-indigo-100 text-xs">Học viên</p>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
-                    <div className="text-center">
-                      <BookOpen className="w-5 h-5 text-purple-100 mx-auto mb-1" />
-                      <p className="text-white text-lg font-bold">{lessons.length}</p>
-                      <p className="text-purple-100 text-xs">Buổi học</p>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
-                    <div className="text-center">
-                      <Award className="w-5 h-5 text-pink-100 mx-auto mb-1" />
-                      <p className="text-white text-lg font-bold">85%</p>
-                      <p className="text-pink-100 text-xs">Hoàn thành</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="p-4 space-y-4">
-              {/* Class Details */}
-              <div className="space-y-3">
-                {classDetail.description && (
-                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-100">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                      <FileText className="w-4 h-4 mr-2 text-indigo-500" />
-                      Mô tả
-                    </h4>
-                    <p className="text-gray-700 text-sm leading-relaxed">
-                      {classDetail.description}
-                    </p>
-                  </div>
-                )}
-                
-                {/* Teacher & Schedule */}
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                      <User className="w-4 h-4 mr-2 text-blue-500" />
-                      Giảng viên
-                    </h4>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-semibold text-sm">
-                          {classDetail.instructor.fullname.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{classDetail.instructor.fullname}</p>
-                        <p className="text-gray-600 text-sm flex items-center">
-                          <Mail className="w-3 h-3 mr-1" />
-                          {classDetail.instructor.email}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {classDetail.schedule && (
-                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
-                      <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                        <Clock className="w-4 h-4 mr-2 text-purple-500" />
-                        Lịch học
-                      </h4>
-                      <p className="text-gray-700 font-medium">{classDetail.schedule}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Content Tabs */}
+        <Tabs defaultValue="lessons" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="lessons">Bài học</TabsTrigger>
+            <TabsTrigger value="students">Học sinh</TabsTrigger>
+            <TabsTrigger value="info">Thông tin</TabsTrigger>
+          </TabsList>
 
-          {/* Mobile Tabs */}
-          <Card className="shadow-xl border-0">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <CardHeader className="pb-3">
-                <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-indigo-100 to-purple-100 p-1 rounded-xl">
-                  <TabsTrigger 
-                    value="students" 
-                    className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg"
-                  >
-                    <Users className="w-4 h-4" />
-                    <span className="font-medium">Học viên ({enrollments.length})</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="lessons"
-                    className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg"
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    <span className="font-medium">Buổi học ({lessons.length})</span>
-                  </TabsTrigger>
-                </TabsList>
-              </CardHeader>
-
-              <TabsContent value="students" className="p-4 pt-0">
-                {enrollments.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Users className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <h4 className="text-lg font-medium text-gray-900 mb-2">Chưa có học viên</h4>
-                    <p className="text-gray-500 mb-4">Lớp học này chưa có học viên nào đăng ký.</p>
-                    <Button 
-                      onClick={() => setShowEnrollmentModal(true)}
-                      className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Thêm học viên
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {enrollments.map((enrollment) => (
-                      <div key={enrollment.id} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white font-semibold text-sm">
-                              {enrollment.student.fullname.charAt(0)}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 truncate">{enrollment.student.fullname}</p>
-                            <p className="text-gray-600 text-sm truncate">{enrollment.student.email}</p>
-                            <div className="flex items-center justify-between mt-2">
-                              <p className="text-gray-500 text-xs">
-                                {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}
-                              </p>
-                              <Badge className={enrollment.status === 'active' 
-                                ? 'bg-emerald-500/15 text-emerald-700 border-emerald-300' 
-                                : 'bg-gray-500/15 text-gray-700 border-gray-300'
-                              }>
-                                {enrollment.status === 'active' ? 'Đang học' : 'Không hoạt động'}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-
-              <TabsContent value="lessons" className="p-4 pt-0">
-                {lessons.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <BookOpen className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <h4 className="text-lg font-medium text-gray-900 mb-2">Chưa có buổi học</h4>
-                    <p className="text-gray-500 mb-4">Chưa có buổi học nào được tạo cho lớp này.</p>
-                    <Button 
-                      onClick={() => setShowLessonModal(true)}
-                      className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Tạo buổi học
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {lessons.map((lesson) => (
-                      <Card key={lesson.id} className="shadow-md border-0 overflow-hidden">
-                        <CardHeader className="bg-gradient-to-r from-violet-50 to-purple-50 border-b border-violet-100">
-                          <div className="flex items-start space-x-3">
-                            <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                              <span className="text-white text-sm font-bold">{lesson.lesson_number}</span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <CardTitle className="text-lg text-gray-900">{lesson.title}</CardTitle>
-                              <CardDescription className="flex items-center space-x-2 mt-1">
-                                <Calendar className="w-3 h-3" />
-                                <span className="text-xs">
-                                  {new Date(lesson.created_at).toLocaleDateString('vi-VN')}
-                                </span>
-                              </CardDescription>
-                            </div>
-                          </div>
-                          
-                          {/* Action buttons for mobile */}
-                          <div className="flex space-x-2 mt-3">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleEditLesson(lesson)}
-                              className="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
-                            >
-                              <Edit className="w-3 h-3 mr-1" />
-                              Chỉnh sửa
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleAssignHomework(lesson)}
-                              className="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 text-emerald-700 hover:from-emerald-100 hover:to-teal-100"
-                            >
-                              <ClipboardList className="w-3 h-3 mr-1" />
-                              Giao bài tập
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        {lesson.content && (
-                          <CardContent className="p-4">
-                            <div className="bg-gradient-to-r from-gray-50 to-violet-50 rounded-lg p-3 border border-gray-100">
-                              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
-                                {lesson.content}
-                              </p>
-                            </div>
-                          </CardContent>
-                        )}
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // Desktop Layout
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      {/* Enhanced Header */}
-      <div className="bg-white shadow-lg border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate('/admin')}
-                variant="outline"
-                size="sm"
-                className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại quản trị
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Chi tiết lớp học
-                </h1>
-                <p className="text-gray-600 mt-1">{classDetail?.name}</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={() => setShowEnrollmentModal(true)}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Thêm học viên
-              </Button>
+          {/* Lessons Tab */}
+          <TabsContent value="lessons" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Danh sách bài học</h2>
               <Button 
                 onClick={() => setShowLessonModal(true)}
-                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white shadow-lg"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Thêm buổi học
+                <Plus className="h-4 w-4 mr-2" />
+                Thêm bài học
               </Button>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
-          {/* Enhanced Class Information */}
-          <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white relative">
-              <div className="absolute inset-0 bg-black/10"></div>
-              <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/10 rounded-full"></div>
-              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/5 rounded-full"></div>
-              
-              <div className="relative z-10">
-                <div className="flex items-start justify-between mb-6">
-                  <div className="space-y-3">
-                    <CardTitle className="text-4xl font-bold">{classDetail?.name}</CardTitle>
-                    <CardDescription className="text-indigo-100 flex items-center space-x-3 text-xl">
-                      <BookOpen className="w-7 h-7" />
-                      <span className="font-semibold">{classDetail?.course.name}</span>
-                    </CardDescription>
-                  </div>
-                  {classDetail && getStatusBadge(classDetail.status)}
-                </div>
-                
-                {/* Enhanced Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <Users className="w-6 h-6 text-indigo-100" />
+            {lessons.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <BookOpen className="h-12 w-12 text-gray-400 mb-4" />
+                  <p className="text-gray-500 text-center">
+                    Chưa có bài học nào. Hãy tạo bài học đầu tiên!
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {lessons.map(lesson => {
+                  return (
+                    <Card key={lesson.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-1">
+                            <CardTitle className="line-clamp-2">
+                              Bài {lesson.lesson_number}: {lesson.title}
+                            </CardTitle>
+                            <CardDescription>
+                              Tạo ngày: {new Date(lesson.created_at).toLocaleDateString('vi-VN')}
+                            </CardDescription>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleCreateAssignment(lesson)}
+                              className="whitespace-nowrap"
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Giao bài tập
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedLesson(lesson);
+                                setShowEditModal(true);
+                              }}
+                            >
+                              Chỉnh sửa
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+
+                      {lesson.content && (
+                        <CardContent>
+                          <p className="text-gray-700 line-clamp-3">{lesson.content}</p>
+                        </CardContent>
+                      )}
+
+                      {lesson.assignments && lesson.assignments.length > 0 && (
+                        <CardContent className="pt-0">
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-gray-900">Bài tập:</h4>
+                            {lesson.assignments.map(assignment => (
+                              <div key={assignment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium line-clamp-2">{assignment.content}</p>
+                                  {assignment.max_score && (
+                                    <Badge variant="outline" className="mt-1">
+                                      Điểm tối đa: {assignment.max_score}
+                                    </Badge>
+                                  )}
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleViewSubmissions(assignment)}
+                                  className="ml-2"
+                                >
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  Xem bài nộp
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      )}
+                    </Card>
+                  )
+                })}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Students Tab */}
+          <TabsContent value="students" className="space-y-4">
+            <h2 className="text-xl font-semibold">Danh sách học sinh ({enrollments.length})</h2>
+            
+            {enrollments.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <Users className="h-12 w-12 text-gray-400 mb-4" />
+                  <p className="text-gray-500 text-center">
+                    Chưa có học sinh nào đăng ký lớp này.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {enrollments.map(enrollment => (
+                  <Card key={enrollment.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
+                          {enrollment.student.fullname.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{enrollment.student.fullname}</p>
+                          <p className="text-sm text-gray-500 truncate">{enrollment.student.email}</p>
+                          <p className="text-xs text-gray-400">
+                            Đăng ký: {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-indigo-100 text-sm font-medium">Học viên</p>
-                        <p className="text-white text-2xl font-bold">{enrollments.length}</p>
-                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Info Tab */}
+          <TabsContent value="info">
+            {classDetail && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Thông tin chi tiết</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Tên lớp</Label>
+                      <p className="mt-1">{classDetail.name}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Khóa học</Label>
+                      <p className="mt-1">{classDetail.course.name}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Giảng viên</Label>
+                      <p className="mt-1">{classDetail.instructor.fullname}</p>
+                      <p className="text-sm text-gray-500">{classDetail.instructor.email}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Trạng thái</Label>
+                      <p className="mt-1">
+                        <Badge variant={classDetail.status === 'Đang hoạt động' ? 'default' : 'secondary'}>
+                          {classDetail.status || 'Không xác định'}
+                        </Badge>
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Lịch học</Label>
+                      <p className="mt-1">{classDetail.schedule || 'Chưa có lịch học'}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Số học sinh</Label>
+                      <p className="mt-1">{classDetail.enrollments_count} học sinh</p>
                     </div>
                   </div>
                   
-                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <BookOpen className="w-6 h-6 text-purple-100" />
-                      </div>
-                      <div>
-                        <p className="text-purple-100 text-sm font-medium">Buổi học</p>
-                        <p className="text-white text-2xl font-bold">{lessons.length}</p>
-                      </div>
+                  {classDetail.description && (
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Mô tả</Label>
+                      <p className="mt-1 whitespace-pre-wrap">{classDetail.description}</p>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <Award className="w-6 h-6 text-yellow-100" />
-                      </div>
-                      <div>
-                        <p className="text-yellow-100 text-sm font-medium">Hoàn thành</p>
-                        <p className="text-white text-2xl font-bold">85%</p>
-                      </div>
+                  {classDetail.course.description && (
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Mô tả khóa học</Label>
+                      <p className="mt-1 whitespace-pre-wrap">{classDetail.course.description}</p>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="p-10 space-y-10">
-              {/* Enhanced Class Description */}
-              {classDetail?.description && (
-                <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-3xl p-10 border border-indigo-100 shadow-inner">
-                  <div className="flex items-start space-x-6">
-                    <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-xl">
-                      <FileText className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-3xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                        Mô tả lớp học
-                      </h4>
-                      <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                        <p className="text-gray-700 leading-relaxed text-xl whitespace-pre-wrap">
-                          {classDetail.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Enhanced Teacher and Schedule Info */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                {/* Teacher Info */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl p-10 border border-blue-200 shadow-xl">
-                  <div className="flex items-start space-x-6">
-                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-3xl flex items-center justify-center shadow-xl">
-                      <User className="w-10 h-10 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-2xl font-bold text-gray-900 mb-6">Giảng viên</h4>
-                      <div className="bg-white rounded-2xl p-8 shadow-lg border border-blue-100">
-                        <div className="flex items-center space-x-6">
-                          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
-                            <span className="text-white font-bold text-xl">
-                              {classDetail?.instructor.fullname.charAt(0)}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="font-bold text-gray-900 text-2xl">{classDetail?.instructor.fullname}</p>
-                            <div className="flex items-center space-x-3 mt-2">
-                              <Mail className="w-5 h-5 text-blue-500" />
-                              <p className="text-gray-600 text-lg">{classDetail?.instructor.email}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Schedule Info */}
-                {classDetail?.schedule && (
-                  <div className="bg-gradient-to-br from-purple-50 to-pink-100 rounded-3xl p-10 border border-purple-200 shadow-xl">
-                    <div className="flex items-start space-x-6">
-                      <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl flex items-center justify-center shadow-xl">
-                        <Calendar className="w-10 h-10 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-2xl font-bold text-gray-900 mb-6">Lịch học</h4>
-                        <div className="bg-white rounded-2xl p-8 shadow-lg border border-purple-100">
-                          <div className="flex items-center space-x-4">
-                            <Clock className="w-6 h-6 text-purple-500" />
-                            <p className="text-gray-700 font-semibold text-xl">{classDetail.schedule}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Enhanced Tabs Section */}
-          <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-            <Tabs defaultValue="students" className="w-full">
-              <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-indigo-50">
-                <TabsList className="grid w-full grid-cols-2 h-16 bg-gradient-to-r from-indigo-100 to-purple-100 p-2 rounded-2xl">
-                  <TabsTrigger 
-                    value="students" 
-                    className="flex items-center space-x-3 text-lg data-[state=active]:bg-white data-[state=active]:shadow-lg rounded-xl"
-                  >
-                    <Users className="w-6 h-6" />
-                    <span className="font-semibold">Học viên ({enrollments.length})</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="lessons" 
-                    className="flex items-center space-x-3 text-lg data-[state=active]:bg-white data-[state=active]:shadow-lg rounded-xl"
-                  >
-                    <BookOpen className="w-6 h-6" />
-                    <span className="font-semibold">Buổi học ({lessons.length})</span>
-                  </TabsTrigger>
-                </TabsList>
-              </CardHeader>
-
-              <TabsContent value="students" className="space-y-8 p-8">
-                {enrollments.length === 0 ? (
-                  <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-3xl border border-gray-100">
-                    <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <GraduationCap className="w-12 h-12 text-gray-500" />
-                    </div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có học viên nào</h4>
-                    <p className="text-gray-500 mb-8 text-lg">Lớp học này chưa có học viên nào đăng ký.</p>
-                    <Button 
-                      onClick={() => setShowEnrollmentModal(true)}
-                      className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg text-lg px-8 py-3"
-                    >
-                      <Plus className="w-5 h-5 mr-3" />
-                      Thêm học viên đầu tiên
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                    <Table>
-                      <TableHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
-                        <TableRow>
-                          <TableHead className="font-bold text-lg py-6">Họ và tên</TableHead>
-                          <TableHead className="font-bold text-lg">Email</TableHead>
-                          <TableHead className="font-bold text-lg">Ngày đăng ký</TableHead>
-                          <TableHead className="font-bold text-lg">Trạng thái</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {enrollments.map((enrollment) => (
-                          <TableRow key={enrollment.id} className="hover:bg-indigo-50/50 transition-colors">
-                            <TableCell className="font-medium py-6">
-                              <div className="flex items-center space-x-4">
-                                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
-                                  <span className="text-white text-lg font-bold">
-                                    {enrollment.student.fullname.charAt(0)}
-                                  </span>
-                                </div>
-                                <span className="text-lg">{enrollment.student.fullname}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-lg">{enrollment.student.email}</TableCell>
-                            <TableCell className="text-lg">
-                              {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}
-                            </TableCell>
-                            <TableCell>
-                              <Badge className={enrollment.status === 'active' 
-                                ? 'bg-emerald-500/15 text-emerald-700 border-emerald-300 text-sm px-4 py-2' 
-                                : 'bg-gray-500/15 text-gray-700 border-gray-300 text-sm px-4 py-2'
-                              }>
-                                {enrollment.status === 'active' ? 'Đang học' : 'Không hoạt động'}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </TabsContent>
-
-              <TabsContent value="lessons" className="space-y-8 p-8">
-                {lessons.length === 0 ? (
-                  <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl border border-gray-100">
-                    <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-purple-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <BookOpen className="w-12 h-12 text-gray-500" />
-                    </div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có buổi học nào</h4>
-                    <p className="text-gray-500 mb-8 text-lg">Chưa có buổi học nào được tạo cho lớp này.</p>
-                    <Button 
-                      onClick={() => setShowLessonModal(true)}
-                      className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg text-lg px-8 py-3"
-                    >
-                      <Plus className="w-5 h-5 mr-3" />
-                      Tạo buổi học đầu tiên
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {lessons.map((lesson) => (
-                      <Card key={lesson.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
-                        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white relative overflow-hidden">
-                          <div className="flex items-start space-x-3">
-                            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
-                              <span className="text-white text-lg font-bold">{lesson.lesson_number}</span>
-                            </div>
-                            <span>{lesson.title}</span>
-                          </div>
-                        </CardHeader>
-                        
-                        <CardContent className="p-6 bg-white">
-                          <div className="space-y-4">
-                            <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                              <div className="flex space-x-3">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleEditLesson(lesson)}
-                                  className="hover:bg-blue-50 hover:border-blue-300"
-                                >
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  Chỉnh sửa
-                                </Button>
-                                
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleAssignHomework(lesson)}
-                                  className={lesson.hasAssignment 
-                                    ? "hover:bg-green-50 hover:border-green-300 text-green-700 border-green-300"
-                                    : "hover:bg-purple-50 hover:border-purple-300"
-                                  }
-                                >
-                                  <BookOpen className="h-4 w-4 mr-2" />
-                                  {lesson.hasAssignment ? 'Xem bài nộp' : 'Giao bài tập'}
-                                </Button>
-                              </div>
-                              
-                              {lesson.hasAssignment && (
-                                <Badge className="bg-green-100 text-green-800">
-                                  Đã có bài tập
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          </Card>
-        </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Modals */}
-      {showEnrollmentModal && (
-        <EnrollmentFormModal
-          isOpen={showEnrollmentModal}
-          onClose={() => setShowEnrollmentModal(false)}
-          onSaved={handleEnrollmentSaved}
-        />
-      )}
-
-      {showLessonModal && classDetail && (
+      {showLessonModal && id && (
         <LessonFormModal
           isOpen={showLessonModal}
           onClose={() => setShowLessonModal(false)}
-          classData={classDetail}
-          onSaved={handleLessonSaved}
+          classId={id}
+          onLessonAdded={handleLessonSaved}
         />
       )}
 
-      {showLessonEditModal && selectedLesson && (
+      {showEditModal && selectedLesson && (
         <LessonEditModal
-          isOpen={showLessonEditModal}
-          onClose={() => setShowLessonEditModal(false)}
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedLesson(null);
+          }}
           lesson={selectedLesson}
-          onSaved={handleLessonEditSaved}
+          onLessonUpdated={handleLessonUpdated}
         />
       )}
 
-      {/* Assignment Creator Modal */}
       {showAssignmentCreator && selectedLessonForAssignment && (
         <AssignmentCreator
           isOpen={showAssignmentCreator}
-          onClose={() => setShowAssignmentCreator(false)}
+          onClose={() => {
+            setShowAssignmentCreator(false);
+            setSelectedLessonForAssignment(null);
+          }}
           lesson={selectedLessonForAssignment}
-          onSaved={handleAssignmentCreated}
+          onSaved={() => {
+            setShowAssignmentCreator(false);
+            setSelectedLessonForAssignment(null);
+            fetchLessons();
+          }}
         />
       )}
 
-      {/* Assignment Submissions Modal */}
-      {showAssignmentSubmissions && selectedAssignmentForSubmissions && (
+      {showSubmissions && selectedAssignmentForSubmissions && (
         <AssignmentSubmissions
           assignment={selectedAssignmentForSubmissions}
-          isOpen={showAssignmentSubmissions}
-          onClose={() => setShowAssignmentSubmissions(false)}
+          isOpen={showSubmissions}
+          onClose={() => {
+            setShowSubmissions(false);
+            setSelectedAssignmentForSubmissions(null);
+          }}
         />
       )}
     </div>

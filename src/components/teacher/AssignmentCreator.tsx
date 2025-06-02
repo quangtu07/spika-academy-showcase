@@ -27,7 +27,7 @@ interface AssignmentCreatorProps {
 interface AttachmentFile {
   id: string;
   name: string;
-  type: 'image' | 'video' | 'document';
+  type: string;
   url: string;
   size: number;
 }
@@ -157,7 +157,7 @@ const AssignmentCreator = ({ isOpen, onClose, lesson, onSaved }: AssignmentCreat
           lesson_id: lesson.id,
           content: content.trim(),
           instructions: instructions.trim() || null,
-          attachments,
+          attachments: attachments as any,
           max_score: maxScore,
           allow_late_submission: allowLateSubmission,
           submission_format: submissionFormat
