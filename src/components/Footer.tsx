@@ -52,7 +52,7 @@ const Footer = () => {
             <div className="space-y-4">
               <div>
                 <h4 className="font-semibold text-gray-300">Địa chỉ</h4>
-                <p className="text-gray-400">123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh</p>
+                <p className="text-gray-400">SN 20, Ngõ 16, Trần Nhật Duật, Lê Hồng Phong, Phủ Lý, Hà Nam</p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-300">Điện thoại / Zalo</h4>
