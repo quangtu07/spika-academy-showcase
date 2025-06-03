@@ -145,16 +145,17 @@ const Navbar = () => {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            {/* Enhanced Logo */}
+            {/* Updated Logo with uploaded image */}
             <div 
               className="flex items-center space-x-4 cursor-pointer group" 
               onClick={handleNavigateHome}
             >
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105">
-                  <span className="text-white font-bold text-xl tracking-wider">S</span>
-                </div>
-                <div className="absolute -inset-1 bg-gradient-to-br from-purple-400 to-blue-500 rounded-2xl opacity-30 group-hover:opacity-50 blur transition-all duration-300"></div>
+                <img 
+                  src="/lovable-uploads/e9798e42-6afa-4ce1-8f7e-76aa37add20f.png" 
+                  alt="Future Wings Academy Logo" 
+                  className="w-16 h-16 object-contain group-hover:scale-105 transition-all duration-300"
+                />
               </div>
               <div className="flex flex-col">
                 <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
