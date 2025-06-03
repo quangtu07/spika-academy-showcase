@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { Sparkles, Shield, Clock, Star } from 'lucide-react';
@@ -16,39 +15,39 @@ const CommitmentsSection = () => {
       icon: Sparkles,
       title: "Chất lượng đào tạo",
       description: "Cam kết đào tạo chất lượng với giáo trình chuẩn quốc tế và đội ngũ giảng viên giàu kinh nghiệm",
-      gradient: "from-orange-400 to-red-400",
-      bgGradient: "from-orange-50 to-red-50"
+      gradient: "from-purple-500 to-pink-500",
+      bgGradient: "from-purple-50 to-pink-50"
     },
     {
       icon: Shield,
       title: "Bảo đảm việc làm",
       description: "Hỗ trợ tư vấn và giới thiệu việc làm cho học viên sau khi hoàn thành khóa học",
-      gradient: "from-pink-400 to-rose-400",
-      bgGradient: "from-pink-50 to-rose-50"
+      gradient: "from-blue-500 to-indigo-500",
+      bgGradient: "from-blue-50 to-indigo-50"
     },
     {
       icon: Clock,
       title: "Thời gian linh hoạt",
       description: "Lịch học linh hoạt, phù hợp với nhiều đối tượng học viên khác nhau",
-      gradient: "from-amber-400 to-orange-400",
-      bgGradient: "from-amber-50 to-orange-50"
+      gradient: "from-green-500 to-emerald-500",
+      bgGradient: "from-green-50 to-emerald-50"
     }
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-orange-50 via-pink-50 to-rose-50 font-roboto relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-300/20 to-pink-300/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-gradient-to-br from-red-300/20 to-rose-300/20 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div ref={titleRef} className="text-center mb-16 reveal reveal-fade-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl mb-6 shadow-xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
             <Star className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-orange-600 via-red-500 to-pink-600 bg-clip-text text-transparent mb-6">
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6">
             Cam kết của Spika
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -74,7 +73,7 @@ const CommitmentsSection = () => {
                   
                   {/* Content */}
                   <div className="space-y-4">
-                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors duration-300">
+                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-300">
                       {commitment.title}
                     </h3>
                     <p className="text-gray-600 leading-relaxed">
