@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { Camera, Award, Users, ArrowRight } from 'lucide-react';
@@ -16,39 +17,39 @@ const ActivitiesSection = () => {
       title: "Workshop MC Chuyên Nghiệp",
       description: "Học hỏi kỹ năng dẫn chương trình từ các chuyên gia hàng đầu",
       icon: Award,
-      gradient: "from-purple-500 to-pink-500"
+      gradient: "from-orange-400 to-red-400"
     },
     {
       image: "https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       title: "Cuộc Thi MC Tài Năng",
       description: "Sân chơi để học viên thể hiện tài năng và kỹ năng",
       icon: Users,
-      gradient: "from-blue-500 to-indigo-500"
+      gradient: "from-pink-400 to-rose-400"
     },
     {
       image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       title: "Thực Hành Tại Sự Kiện",
       description: "Cơ hội thực hành tại các sự kiện thực tế",
       icon: Camera,
-      gradient: "from-green-500 to-emerald-500"
+      gradient: "from-amber-400 to-orange-400"
     }
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto relative overflow-hidden" id="activities">
+    <section className="py-20 bg-gradient-to-br from-orange-50 via-pink-50 to-rose-50 font-roboto relative overflow-hidden" id="activities">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-br from-green-400/15 to-emerald-400/15 rounded-full blur-2xl"></div>
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-300/20 to-pink-300/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-gradient-to-br from-red-300/20 to-rose-300/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-br from-yellow-300/15 to-orange-300/15 rounded-full blur-2xl"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div ref={titleRef} className="text-center mb-16 reveal reveal-fade-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl mb-6 shadow-xl">
             <Camera className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6">
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-orange-600 via-red-500 to-pink-600 bg-clip-text text-transparent mb-6">
             Hoạt động nổi bật
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -86,7 +87,7 @@ const ActivitiesSection = () => {
 
                 {/* Content */}
                 <div className="p-6">
-                  <h3 className="font-bold text-xl text-gray-900 mb-3 group-hover:text-purple-600 transition-colors duration-300">
+                  <h3 className="font-bold text-xl text-gray-900 mb-3 group-hover:text-orange-600 transition-colors duration-300">
                     {activity.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed mb-4">

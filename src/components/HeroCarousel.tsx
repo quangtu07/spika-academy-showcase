@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -67,7 +68,7 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
                   <Star className="h-8 w-8 text-white" />
                 </div>
                 
-                <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in bg-gradient-to-r from-white via-white to-purple-200 bg-clip-text text-transparent leading-tight">
+                <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in bg-gradient-to-r from-white via-white to-orange-200 bg-clip-text text-transparent leading-tight">
                   {slide.title}
                 </h1>
                 <p className="text-xl md:text-2xl mb-8 animate-fade-in animation-delay-200 text-gray-100 leading-relaxed">
@@ -77,7 +78,7 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
                 {/* Enhanced Gradient Button */}
                 <Button 
                   onClick={slide.action}
-                  className="group relative overflow-hidden bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white px-10 py-4 text-lg font-semibold shadow-2xl transition-all duration-300 hover:-translate-y-1 animate-fade-in animation-delay-400 border-0 rounded-2xl"
+                  className="group relative overflow-hidden bg-gradient-to-r from-orange-400 via-red-400 to-pink-400 hover:from-orange-500 hover:via-red-500 hover:to-pink-500 text-white px-10 py-4 text-lg font-semibold shadow-2xl transition-all duration-300 hover:-translate-y-1 animate-fade-in animation-delay-400 border-0 rounded-2xl"
                 >
                   {/* Animated background overlay */}
                   <div className="absolute inset-0 bg-white/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
@@ -103,12 +104,12 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
             onClick={() => setCurrentSlide(index)}
             className={`relative transition-all duration-300 ${
               index === currentSlide 
-                ? 'w-8 h-3 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-lg' 
+                ? 'w-8 h-3 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full shadow-lg' 
                 : 'w-3 h-3 bg-white/50 hover:bg-white/70 rounded-full hover:scale-110'
             }`}
           >
             {index === currentSlide && (
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-sm opacity-60"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-300 to-pink-300 rounded-full blur-sm opacity-60"></div>
             )}
           </button>
         ))}
@@ -117,13 +118,13 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
       {/* Enhanced Navigation arrows */}
       <button
         onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
-        className="absolute left-6 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-white hover:bg-gradient-to-r hover:from-purple-500/80 hover:to-indigo-500/80 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl group"
+        className="absolute left-6 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-white hover:bg-gradient-to-r hover:from-orange-400/80 hover:to-pink-400/80 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl group"
       >
         <ChevronLeft className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform duration-300" />
       </button>
       <button
         onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
-        className="absolute right-6 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-white hover:bg-gradient-to-r hover:from-purple-500/80 hover:to-indigo-500/80 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl group"
+        className="absolute right-6 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-white hover:bg-gradient-to-r hover:from-orange-400/80 hover:to-pink-400/80 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl group"
       >
         <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform duration-300" />
       </button>
