@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, Clock, FileText, Award, Menu, X, Edit } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, Clock, FileText, Award, Menu, X, Edit, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -53,6 +53,7 @@ const TeacherClassDetailPage = () => {
   const [classDetail, setClassDetail] = useState<ClassDetail | null>(null);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [lessonAssignments, setLessonAssignments] = useState<{[key: string]: boolean}>({});
   const [loading, setLoading] = useState(true);
   const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
   const [showLessonModal, setShowLessonModal] = useState(false);
@@ -70,6 +71,24 @@ const TeacherClassDetailPage = () => {
       fetchLessons();
     }
   }, [classId]);
+
+  useEffect(() => {
+    if (lessons.length > 0) {
+      fetchLessonAssignments();
+    }
+  }, [lessons]);
+
+  // Refresh assignments when coming back to this page
+  useEffect(() => {
+    const handleFocus = () => {
+      if (lessons.length > 0) {
+        fetchLessonAssignments();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [lessons]);
 
   const fetchClassDetail = async () => {
     try {
@@ -178,6 +197,29 @@ const TeacherClassDetailPage = () => {
     }
   };
 
+  const fetchLessonAssignments = async () => {
+    try {
+      const lessonIds = lessons.map(lesson => lesson.id);
+      
+      const { data, error } = await (supabase as any)
+        .from('assignments')
+        .select('lesson_id')
+        .in('lesson_id', lessonIds);
+
+      if (error) throw error;
+
+      // Create a map of lesson_id -> hasAssignment
+      const assignmentMap: {[key: string]: boolean} = {};
+      lessonIds.forEach(id => {
+        assignmentMap[id] = data?.some((assignment: any) => assignment.lesson_id === id) || false;
+      });
+
+      setLessonAssignments(assignmentMap);
+    } catch (error) {
+      console.error('Error fetching lesson assignments:', error);
+    }
+  };
+
   const getStatusBadge = (status: string | null) => {
     const statusMap = {
       'đang hoạt động': { text: 'Đang hoạt động', class: 'bg-emerald-500/15 text-emerald-700 border-emerald-300 shadow-sm' },
@@ -220,6 +262,14 @@ const TeacherClassDetailPage = () => {
   const handleEditLesson = (lesson: Lesson) => {
     setSelectedLesson(lesson);
     setShowLessonEditModal(true);
+  };
+
+  const handleAssignmentForLesson = (lesson: Lesson) => {
+    navigate(`/teacher/lesson/${lesson.id}/create-assignment`);
+  };
+
+  const handleViewAssignments = (lesson: Lesson) => {
+    navigate(`/teacher/lesson/${lesson.id}/assignments`);
   };
 
   if (loading) {
@@ -542,16 +592,39 @@ const TeacherClassDetailPage = () => {
                           </div>
                           
                           {/* Action button for mobile */}
-                          <div className="flex mt-3">
+                          <div className="flex mt-3 space-x-2">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleEditLesson(lesson)}
-                              className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                              className="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
                             >
                               <Edit className="w-3 h-3 mr-1" />
-                              Chỉnh sửa
+                              Sửa
                             </Button>
+                            
+                            {/* Conditional assignment buttons */}
+                            {lessonAssignments[lesson.id] ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleViewAssignments(lesson)}
+                                className="flex-1 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700 hover:from-green-100 hover:to-emerald-100"
+                              >
+                                <Eye className="w-3 h-3 mr-1" />
+                                Xem bài tập
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleAssignmentForLesson(lesson)}
+                                className="flex-1 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200 text-orange-700 hover:from-orange-100 hover:to-red-100"
+                              >
+                                <FileText className="w-3 h-3 mr-1" />
+                                Giao bài tập
+                              </Button>
+                            )}
                           </div>
                         </CardHeader>
                         {lesson.content && (
@@ -875,7 +948,7 @@ const TeacherClassDetailPage = () => {
                             </div>
                             
                             {/* Action button for desktop */}
-                            <div className="flex">
+                            <div className="flex space-x-2">
                               <Button
                                 variant="outline"
                                 onClick={() => handleEditLesson(lesson)}
@@ -884,6 +957,27 @@ const TeacherClassDetailPage = () => {
                                 <Edit className="w-4 h-4 mr-2" />
                                 Chỉnh sửa
                               </Button>
+                              
+                              {/* Conditional assignment buttons */}
+                              {lessonAssignments[lesson.id] ? (
+                                <Button
+                                  variant="outline"
+                                  onClick={() => handleViewAssignments(lesson)}
+                                  className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700 hover:from-green-100 hover:to-emerald-100"
+                                >
+                                  <Eye className="w-4 h-4 mr-2" />
+                                  Xem bài tập
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  onClick={() => handleAssignmentForLesson(lesson)}
+                                  className="bg-gradient-to-r from-orange-50 to-red-50 border-orange-200 text-orange-700 hover:from-orange-100 hover:to-red-100"
+                                >
+                                  <FileText className="w-4 h-4 mr-2" />
+                                  Giao bài tập
+                                </Button>
+                              )}
                             </div>
                           </div>
                         </CardHeader>

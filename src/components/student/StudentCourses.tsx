@@ -1,11 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Clock, User } from 'lucide-react';
+import { BookOpen, Clock, User, GraduationCap, Calendar, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from 'react-router-dom';
 
 interface EnrollmentWithDetails {
   id: string;
@@ -33,6 +34,8 @@ const StudentCourses = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkUserAndFetchEnrollments();
@@ -181,90 +184,229 @@ const StudentCourses = () => {
     }
   };
 
+  const getStatusBadge = (status: string) => {
+    const statusMap = {
+      'active': { 
+        text: 'Đang học', 
+        class: 'bg-emerald-500/15 text-emerald-700 border-emerald-300' 
+      },
+      'completed': { 
+        text: 'Hoàn thành', 
+        class: 'bg-blue-500/15 text-blue-700 border-blue-300' 
+      },
+      'inactive': { 
+        text: 'Đã dừng', 
+        class: 'bg-gray-500/15 text-gray-700 border-gray-300' 
+      }
+    };
+
+    const statusInfo = statusMap[status as keyof typeof statusMap] || statusMap.inactive;
+
+    return (
+      <Badge className={`${statusInfo.class} border font-medium px-3 py-1`}>
+        {statusInfo.text}
+      </Badge>
+    );
+  };
+
+  const handleViewClassDetail = (classId: string) => {
+    navigate(`/student/class/${classId}`);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-        <p className="ml-2 text-gray-600">Đang tải đăng ký...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg font-medium">Đang tải lớp học...</p>
+        </div>
       </div>
     );
   }
 
+  // Mobile Layout
+  if (isMobile) {
+    return (
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Lớp học của bạn
+          </h2>
+          <p className="text-gray-600 text-sm mt-1">Danh sách các lớp học bạn đã đăng ký</p>
+        </div>
+
+        {enrollments.length === 0 ? (
+          <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <div className="w-16 h-16 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mb-4">
+                <BookOpen className="h-8 w-8 text-indigo-500" />
+              </div>
+              <p className="text-gray-600 text-center font-medium mb-2">
+                Chưa có lớp học nào
+              </p>
+              <p className="text-xs text-gray-500 text-center px-4">
+                Vui lòng liên hệ quản trị viên để đăng ký lớp học.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {enrollments.map((enrollment) => (
+              <Card key={enrollment.id} className="shadow-xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden">
+                {/* Course Image */}
+                <div className="relative">
+                  <img
+                    src={enrollment.classes.courses.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
+                    alt={enrollment.classes.courses.name}
+                    className="w-full h-32 object-cover"
+                  />
+                  <div className="absolute top-2 right-2">
+                    {getStatusBadge(enrollment.status)}
+                  </div>
+                </div>
+
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    {/* Course Title */}
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-lg leading-tight line-clamp-2">
+                        {enrollment.classes.name}
+                      </h3>
+                      <p className="text-sm text-indigo-600 font-medium mt-1">
+                        {enrollment.classes.courses.name}
+                      </p>
+                    </div>
+
+                    {/* Course Info */}
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <User className="h-4 w-4 text-indigo-500" />
+                        <span className="truncate">GV: {enrollment.classes.courses.instructor_name}</span>
+                      </div>
+                      
+                      {enrollment.classes.courses.duration && (
+                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <Clock className="h-4 w-4 text-indigo-500" />
+                          <span>{enrollment.classes.courses.duration} buổi</span>
+                        </div>
+                      )}
+
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <Calendar className="h-4 w-4 text-indigo-500" />
+                        <span>Đăng ký: {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}</span>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {enrollment.classes.description || enrollment.classes.courses.description}
+                    </p>
+
+                    {/* Action Button */}
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleViewClassDetail(enrollment.class_id)}
+                      className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Xem chi tiết
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Desktop Layout
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Đăng ký lớp học</h2>
-        <p className="text-gray-600">Danh sách các lớp học bạn đã đăng ký</p>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          Lớp học của bạn
+        </h2>
+        <p className="text-gray-600 mt-2 text-lg">Danh sách các lớp học bạn đã đăng ký</p>
       </div>
 
       {enrollments.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <BookOpen className="h-12 w-12 text-gray-400 mb-4" />
-            <p className="text-gray-500 text-center">
-              Bạn chưa đăng ký lớp học nào.
+        <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <div className="w-24 h-24 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mb-6">
+              <BookOpen className="h-12 w-12 text-indigo-500" />
+            </div>
+            <p className="text-gray-600 text-center text-xl font-medium mb-4">
+              Chưa có lớp học nào
             </p>
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-gray-500 text-center">
               Vui lòng liên hệ quản trị viên để đăng ký lớp học.
             </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {enrollments.map((enrollment) => (
-            <Card key={enrollment.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+            <Card key={enrollment.id} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm overflow-hidden hover:scale-105">
+              {/* Course Image */}
               <div className="relative">
                 <img
                   src={enrollment.classes.courses.image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"}
                   alt={enrollment.classes.courses.name}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute top-3 right-3">
+                  {getStatusBadge(enrollment.status)}
+                </div>
               </div>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2">
-                      {enrollment.classes.name}
-                    </CardTitle>
-                    <p className="text-sm text-gray-600">
-                      Khóa: {enrollment.classes.courses.name}
-                    </p>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <User className="h-4 w-4" />
-                      <span>GV: {enrollment.classes.courses.instructor_name}</span>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <Badge variant="outline" className={
-                        enrollment.status === 'active' 
-                          ? 'border-green-500 text-green-700 bg-green-50' 
-                          : enrollment.status === 'completed'
-                          ? 'border-blue-500 text-blue-700 bg-blue-50'
-                          : 'border-gray-500 text-gray-700 bg-gray-50'
-                      }>
-                        {enrollment.status === 'active' ? 'Đang học' : 
-                         enrollment.status === 'completed' ? 'Hoàn thành' : 'Đã dừng'}
-                      </Badge>
-                      {enrollment.classes.courses.duration && (
-                        <div className="flex items-center space-x-1 text-sm text-gray-500">
-                          <Clock className="h-4 w-4" />
-                          <span>{enrollment.classes.courses.duration} buổi</span>
-                        </div>
-                      )}
-                    </div>
+
+              <CardHeader className="pb-3">
+                <div className="space-y-2">
+                  <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                    {enrollment.classes.name}
+                  </CardTitle>
+                  <p className="text-sm text-indigo-600 font-semibold">
+                    {enrollment.classes.courses.name}
+                  </p>
+                  
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <User className="h-4 w-4 text-indigo-500" />
+                    <span className="truncate">GV: {enrollment.classes.courses.instructor_name}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    {enrollment.classes.courses.duration && (
+                      <div className="flex items-center space-x-1 text-sm text-gray-500">
+                        <Clock className="h-4 w-4" />
+                        <span>{enrollment.classes.courses.duration} buổi</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardHeader>
+
               <CardContent>
                 <div className="space-y-4">
-                  <p className="text-sm text-gray-600 line-clamp-2">
+                  <p className="text-sm text-gray-600 line-clamp-3">
                     {enrollment.classes.description || enrollment.classes.courses.description}
                   </p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-gray-500">
-                      Đăng ký: {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}
-                    </p>
-                    <Button size="sm" className="bg-primary-600 hover:bg-primary-700">
-                      Xem chi tiết
+                  
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                    <div className="flex items-center space-x-1 text-xs text-gray-500">
+                      <Calendar className="h-3 w-3" />
+                      <span>Đăng ký: {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}</span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleViewClassDetail(enrollment.class_id)}
+                      className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      Chi tiết
                     </Button>
                   </div>
                 </div>

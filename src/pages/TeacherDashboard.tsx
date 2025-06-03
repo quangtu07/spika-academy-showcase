@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -57,16 +56,16 @@ const TeacherDashboard = () => {
 
   if (!isLoading && (!userRole || userRole !== 'teacher')) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-xl border-0">
-          <CardHeader className="text-center bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-t-lg">
-            <AlertCircle className="h-16 w-16 mx-auto mb-4" />
-            <CardTitle className="text-xl">Truy cập bị từ chối</CardTitle>
-            <CardDescription className="text-red-100">
+          <CardHeader className="text-center bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-t-lg p-4 sm:p-6">
+            <AlertCircle className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4" />
+            <CardTitle className="text-lg sm:text-xl">Truy cập bị từ chối</CardTitle>
+            <CardDescription className="text-red-100 text-sm sm:text-base">
               Bạn không có quyền truy cập trang giảng viên. Chỉ giảng viên mới có thể truy cập.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center space-y-3 pt-6">
+          <CardContent className="text-center space-y-3 pt-4 sm:pt-6 p-4 sm:p-6">
             <p className="text-sm text-gray-600">
               Đang chuyển hướng về trang chủ...
             </p>
@@ -81,10 +80,10 @@ const TeacherDashboard = () => {
 
   if (isLoading || !userRole || userRole !== 'teacher') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Đang kiểm tra quyền truy cập...</p>
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-base sm:text-lg">Đang kiểm tra quyền truy cập...</p>
         </div>
       </div>
     );
@@ -95,46 +94,48 @@ const TeacherDashboard = () => {
       {/* Header */}
       <div className="bg-white shadow-lg border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <GraduationCap className="text-white h-6 w-6" />
+          <div className="flex justify-between items-center h-16 sm:h-20">
+            <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                <GraduationCap className="text-white h-5 w-5 sm:h-6 sm:w-6" />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="min-w-0 flex-1 hidden lg:block">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
                   Bảng điều khiển giảng viên
                 </h1>
-                <p className="text-gray-600 mt-1">Quản lý lớp học của bạn</p>
+                <p className="text-gray-600 mt-1 text-sm sm:text-base">Quản lý lớp học của bạn</p>
               </div>
             </div>
             <Button 
               onClick={handleGoHome}
               variant="outline"
-              className="flex items-center space-x-2 hover:bg-blue-50 border-blue-200 text-blue-700"
+              size="sm"
+              className="flex items-center space-x-1 sm:space-x-2 hover:bg-blue-50 border-blue-200 text-blue-700 text-sm sm:text-base px-2 sm:px-4"
             >
               <Home className="h-4 w-4" />
-              <span>Về trang chủ</span>
+              <span className="hidden sm:inline">Về trang chủ</span>
+              <span className="sm:hidden">Trang chủ</span>
             </Button>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="border-b bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-t-lg">
+          <CardHeader className="border-b bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-t-lg p-4 sm:p-6">
             <div className="flex items-center space-x-3">
-              <Users className="h-8 w-8" />
-              <div>
-                <CardTitle className="text-2xl">Lớp học của tôi</CardTitle>
-                <CardDescription className="text-blue-100 mt-1">
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0" />
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-lg sm:text-xl lg:text-2xl">Lớp học của tôi</CardTitle>
+                <CardDescription className="text-blue-100 mt-1 text-sm sm:text-base">
                   Quản lý và theo dõi các lớp học bạn đang giảng dạy
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
 
-          <CardContent className="p-8">
+          <CardContent className="p-4 sm:p-6 lg:p-8">
             <TeacherClasses />
           </CardContent>
         </Card>

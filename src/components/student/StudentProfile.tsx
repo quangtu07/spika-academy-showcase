@@ -1,25 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Mail, Phone, Calendar, Edit, Save, X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { User, Mail, Phone, Calendar, GraduationCap } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const StudentProfile = () => {
   const [profile, setProfile] = useState<any>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({
-    fullname: '',
-    phone_number: '',
-    age: ''
-  });
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     loadProfile();
@@ -29,64 +17,8 @@ const StudentProfile = () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     if (currentUser) {
       setProfile(currentUser);
-      setEditForm({
-        fullname: currentUser.fullname || '',
-        phone_number: currentUser.phone_number || '',
-        age: currentUser.age?.toString() || ''
-      });
     }
     setIsLoading(false);
-  };
-
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setEditForm({
-      fullname: profile.fullname || '',
-      phone_number: profile.phone_number || '',
-      age: profile.age?.toString() || ''
-    });
-  };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      const updateData = {
-        fullname: editForm.fullname,
-        phone_number: editForm.phone_number || null,
-        age: editForm.age ? parseInt(editForm.age) : null
-      };
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', profile.id);
-
-      if (error) throw error;
-
-      // Update local storage
-      const updatedProfile = { ...profile, ...updateData };
-      localStorage.setItem('currentUser', JSON.stringify(updatedProfile));
-      setProfile(updatedProfile);
-      setIsEditing(false);
-
-      toast({
-        title: "Thành công",
-        description: "Đã cập nhật thông tin cá nhân",
-      });
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật thông tin. Vui lòng thử lại.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
   };
 
   const getInitials = (fullname: string) => {
@@ -102,128 +34,140 @@ const StudentProfile = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
       </div>
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Thông tin cá nhân</h2>
-        <p className="text-gray-600">Quản lý thông tin tài khoản của bạn</p>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+  // Mobile Layout
+  if (isMobile) {
+    return (
+      <div className="space-y-4">
+        {/* Profile Header Card */}
+        <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
             <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16">
+              <Avatar className="h-16 w-16 border-4 border-white/20">
                 <AvatarImage src={profile?.avatar_url} alt={profile?.fullname} />
-                <AvatarFallback className="bg-primary-600 text-white text-lg">
+                <AvatarFallback className="bg-white/20 text-white text-lg font-bold">
                   {getInitials(profile?.fullname || profile?.username)}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <CardTitle>{profile?.fullname || profile?.username}</CardTitle>
-                <CardDescription>{profile?.email}</CardDescription>
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-lg truncate">{profile?.fullname || profile?.username}</CardTitle>
+                <CardDescription className="text-white/80 text-sm truncate">{profile?.email}</CardDescription>
               </div>
             </div>
-            {!isEditing ? (
-              <Button onClick={handleEdit} variant="outline">
-                <Edit className="h-4 w-4 mr-2" />
-                Chỉnh sửa
-              </Button>
-            ) : (
-              <div className="space-x-2">
-                <Button 
-                  onClick={handleSave} 
-                  size="sm"
-                  disabled={isSaving}
-                  className="bg-primary-600 hover:bg-primary-700"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {isSaving ? 'Đang lưu...' : 'Lưu'}
-                </Button>
-                <Button onClick={handleCancel} variant="outline" size="sm">
-                  <X className="h-4 w-4 mr-2" />
-                  Hủy
-                </Button>
-              </div>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <Label htmlFor="fullname" className="text-sm font-medium text-gray-700">
-                  Họ và tên
-                </Label>
-                {isEditing ? (
-                  <Input
-                    id="fullname"
-                    value={editForm.fullname}
-                    onChange={(e) => setEditForm({ ...editForm, fullname: e.target.value })}
-                    className="mt-1"
-                  />
-                ) : (
-                  <div className="mt-1 flex items-center space-x-2">
-                    <User className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-900">{profile?.fullname || 'Chưa cập nhật'}</span>
-                  </div>
-                )}
-              </div>
+          </CardHeader>
+        </Card>
 
-              <div>
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  Email
-                </Label>
-                <div className="mt-1 flex items-center space-x-2">
-                  <Mail className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-900">{profile?.email}</span>
+        {/* Profile Details */}
+        <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center space-x-2">
+              <GraduationCap className="w-5 h-5 text-indigo-500" />
+              <span>Thông tin cá nhân</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
+                <User className="h-5 w-5 text-indigo-500 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-gray-600">Họ và tên</p>
+                  <p className="text-gray-900 truncate">{profile?.fullname || 'Chưa cập nhật'}</p>
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                  Số điện thoại
-                </Label>
-                {isEditing ? (
-                  <Input
-                    id="phone"
-                    value={editForm.phone_number}
-                    onChange={(e) => setEditForm({ ...editForm, phone_number: e.target.value })}
-                    placeholder="Nhập số điện thoại"
-                    className="mt-1"
-                  />
-                ) : (
-                  <div className="mt-1 flex items-center space-x-2">
-                    <Phone className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-900">{profile?.phone_number || 'Chưa cập nhật'}</span>
-                  </div>
-                )}
+              <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
+                <Mail className="h-5 w-5 text-indigo-500 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-gray-600">Email</p>
+                  <p className="text-gray-900 truncate">{profile?.email}</p>
+                </div>
               </div>
 
-              <div>
-                <Label htmlFor="age" className="text-sm font-medium text-gray-700">
-                  Tuổi
-                </Label>
-                {isEditing ? (
-                  <Input
-                    id="age"
-                    type="number"
-                    value={editForm.age}
-                    onChange={(e) => setEditForm({ ...editForm, age: e.target.value })}
-                    placeholder="Nhập tuổi"
-                    className="mt-1"
-                  />
-                ) : (
-                  <div className="mt-1 flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-900">{profile?.age || 'Chưa cập nhật'}</span>
-                  </div>
-                )}
+              <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
+                <Phone className="h-5 w-5 text-indigo-500 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-gray-600">Số điện thoại</p>
+                  <p className="text-gray-900 truncate">{profile?.phone_number || 'Chưa cập nhật'}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
+                <Calendar className="h-5 w-5 text-indigo-500 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-gray-600">Tuổi</p>
+                  <p className="text-gray-900">{profile?.age || 'Chưa cập nhật'}</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Desktop Layout
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Thông tin cá nhân</h2>
+        <p className="text-gray-600 mt-2 text-lg">Thông tin tài khoản của bạn</p>
+      </div>
+
+      <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+        <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+          <div className="flex items-center space-x-6">
+            <Avatar className="h-20 w-20 border-4 border-white/20">
+              <AvatarImage src={profile?.avatar_url} alt={profile?.fullname} />
+              <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
+                {getInitials(profile?.fullname || profile?.username)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle className="text-2xl">{profile?.fullname || profile?.username}</CardTitle>
+              <CardDescription className="text-white/80 text-lg mt-1">{profile?.email}</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="p-8">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-6">
+              <div className="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+                <div className="flex items-center space-x-3 mb-3">
+                  <User className="h-6 w-6 text-indigo-500" />
+                  <h3 className="text-lg font-semibold text-gray-900">Họ và tên</h3>
+                </div>
+                <p className="text-xl text-gray-700">{profile?.fullname || 'Chưa cập nhật'}</p>
+              </div>
+
+              <div className="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+                <div className="flex items-center space-x-3 mb-3">
+                  <Phone className="h-6 w-6 text-indigo-500" />
+                  <h3 className="text-lg font-semibold text-gray-900">Số điện thoại</h3>
+                </div>
+                <p className="text-xl text-gray-700">{profile?.phone_number || 'Chưa cập nhật'}</p>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+                <div className="flex items-center space-x-3 mb-3">
+                  <Mail className="h-6 w-6 text-indigo-500" />
+                  <h3 className="text-lg font-semibold text-gray-900">Email</h3>
+                </div>
+                <p className="text-xl text-gray-700">{profile?.email}</p>
+              </div>
+
+              <div className="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+                <div className="flex items-center space-x-3 mb-3">
+                  <Calendar className="h-6 w-6 text-indigo-500" />
+                  <h3 className="text-lg font-semibold text-gray-900">Tuổi</h3>
+                </div>
+                <p className="text-xl text-gray-700">{profile?.age || 'Chưa cập nhật'}</p>
               </div>
             </div>
           </div>

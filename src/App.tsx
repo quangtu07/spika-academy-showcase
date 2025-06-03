@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,8 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import AdminDashboard from "./pages/AdminDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
+import StudentClassDetailPage from "./pages/StudentClassDetailPage";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import TeacherClassDetailPage from "./pages/TeacherClassDetailPage";
+import LessonAssignmentsPage from "./pages/LessonAssignmentsPage";
+import CreateAssignmentPage from "./pages/CreateAssignmentPage";
+import AssignmentSubmissionsPage from "./pages/AssignmentSubmissionsPage";
 import CoursesPage from "./pages/CoursesPage";
 import TeachersPage from "./pages/TeachersPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -33,8 +36,12 @@ const App = () => (
           <Route path="/admin/course/:courseId" element={<CourseDetailPage />} />
           <Route path="/admin/user/:userId" element={<UserDetailPage />} />
           <Route path="/student" element={<StudentDashboard />} />
+          <Route path="/student/class/:classId" element={<StudentClassDetailPage />} />
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher/class/:classId" element={<TeacherClassDetailPage />} />
+          <Route path="/teacher/lesson/:lessonId/assignments" element={<LessonAssignmentsPage />} />
+          <Route path="/teacher/lesson/:lessonId/create-assignment" element={<CreateAssignmentPage />} />
+          <Route path="/teacher/assignment/:assignmentId/submissions/:status" element={<AssignmentSubmissionsPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/teachers" element={<TeachersPage />} />
           <Route path="/profile" element={<ProfilePage />} />
