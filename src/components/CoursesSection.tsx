@@ -67,10 +67,10 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 font-roboto" id="courses">
+      <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto" id="courses">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
             <p className="text-lg text-gray-600">Đang tải khóa học...</p>
           </div>
         </div>
@@ -79,19 +79,19 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 font-roboto relative overflow-hidden" id="courses">
+    <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto relative overflow-hidden" id="courses">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-400/20 to-red-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-red-400/20 to-yellow-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div ref={titleRef} className="text-center mb-16 reveal reveal-fade-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl mb-6 shadow-xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
             <BookOpen className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-yellow-600 bg-clip-text text-transparent mb-6">
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6">
             Khóa học nổi bật
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -123,8 +123,8 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
                 </div>
                 
                 <CardHeader className="flex-grow bg-gradient-to-br from-white to-gray-50/50 relative">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500"></div>
-                  <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors duration-300">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"></div>
+                  <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-300">
                     {course.name}
                   </CardTitle>
                   <CardDescription className="text-gray-600 leading-relaxed">
@@ -160,7 +160,7 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
                   </div>
                   
                   <Button 
-                    className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
+                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
                     onClick={onOpenRegistrationModal}
                   >
                     <span className="flex items-center justify-center space-x-2">
@@ -178,7 +178,7 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
         <div ref={buttonRef} className="text-center reveal reveal-fade-up">
           <Button 
             onClick={handleViewAllCourses}
-            className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 group"
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 group"
           >
             <span className="flex items-center space-x-2">
               <BookOpen className="h-5 w-5" />

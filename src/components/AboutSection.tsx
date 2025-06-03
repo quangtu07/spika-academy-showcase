@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -29,7 +28,7 @@ const AboutSection = () => {
       icon: Users,
       number: "50+",
       label: "Giảng viên chuyên nghiệp",
-      gradient: "from-orange-500 to-red-600"
+      gradient: "from-purple-500 to-pink-600"
     },
     {
       icon: Star,
@@ -40,22 +39,22 @@ const AboutSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 font-roboto relative overflow-hidden" id="about">
+    <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto relative overflow-hidden" id="about">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-400/20 to-red-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-red-400/20 to-yellow-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 right-1/4 w-60 h-60 bg-gradient-to-br from-yellow-400/15 to-orange-400/15 rounded-full blur-2xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 right-1/4 w-60 h-60 bg-gradient-to-br from-blue-400/15 to-purple-400/15 rounded-full blur-2xl"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Title Section */}
         <div ref={textRef} className="text-center mb-16 reveal reveal-fade-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl mb-6 shadow-xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
             <Sparkles className="h-8 w-8 text-white" />
           </div>
           
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-yellow-600 bg-clip-text text-transparent leading-tight mb-6">
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent leading-tight mb-6">
             Về trung tâm Spika
           </h2>
         </div>
@@ -80,7 +79,7 @@ const AboutSection = () => {
             <div className="pt-4">
               <Button 
                 onClick={() => setIsModalOpen(true)}
-                className="group bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="group bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
                 <span className="flex items-center space-x-2">
                   <Sparkles className="h-5 w-5" />
@@ -124,8 +123,8 @@ const AboutSection = () => {
               </Card>
 
               {/* Decorative Elements */}
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-orange-400/30 to-red-400/30 rounded-full blur-xl"></div>
-              <div className="absolute top-1/2 -left-6 w-16 h-16 bg-gradient-to-br from-red-400/30 to-yellow-400/30 rounded-full blur-lg"></div>
+              <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-xl"></div>
+              <div className="absolute top-1/2 -left-6 w-16 h-16 bg-gradient-to-br from-indigo-400/30 to-blue-400/30 rounded-full blur-lg"></div>
             </div>
           </div>
         </div>
@@ -138,7 +137,7 @@ const AboutSection = () => {
                 <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-r ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                   <stat.icon className="w-7 h-7 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">{stat.number}</div>
+                <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300">{stat.number}</div>
                 <div className="text-gray-600 text-sm font-medium">{stat.label}</div>
                 <div className={`w-full h-1 bg-gradient-to-r ${stat.gradient} rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
               </CardContent>
