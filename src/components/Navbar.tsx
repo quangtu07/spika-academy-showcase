@@ -147,23 +147,22 @@ const Navbar = () => {
           <div className="flex justify-between items-center h-20">
             {/* Enhanced Logo */}
             <div 
-              className="flex items-center space-x-4 cursor-pointer group" 
+              className="flex items-center cursor-pointer group relative" 
               onClick={handleNavigateHome}
             >
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105">
-                  <span className="text-white font-bold text-xl tracking-wider">S</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-indigo-500/20 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-500 scale-75"></div>
+              <div className="relative w-32 h-32 -my-8">
+                <img 
+                  src="/images/logo3.png" 
+                  alt="Future Wings Academy Logo" 
+                  className="w-full h-full object-contain group-hover:scale-105 transition-all duration-300 drop-shadow-2xl"
+                />
+              </div>
+              {/* <div className="flex flex-col">
+                <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Future Wings
                 </div>
-                <div className="absolute -inset-1 bg-gradient-to-br from-purple-400 to-blue-500 rounded-2xl opacity-30 group-hover:opacity-50 blur transition-all duration-300"></div>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
-                  Spika
-                </span>
-                <span className="text-xs text-gray-500 font-medium tracking-wide">
-                  MC Academy
-                </span>
-              </div>
+              </div> */}
             </div>
 
             {/* Enhanced Desktop Menu */}

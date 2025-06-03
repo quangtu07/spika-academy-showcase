@@ -55,7 +55,7 @@ const AboutSection = () => {
           </div>
           
           <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent leading-tight mb-6">
-            Về trung tâm Spika
+            Về trung tâm Future Wings
           </h2>
         </div>
 
@@ -65,7 +65,7 @@ const AboutSection = () => {
           <div className="space-y-8">
             <div className="space-y-6 text-gray-600 leading-relaxed">
               <p className="text-lg">
-                Spika là trung tâm đào tạo MC hàng đầu với hơn 10 năm kinh nghiệm trong lĩnh vực 
+                Future Wings Academy là trung tâm đào tạo MC hàng đầu với hơn 10 năm kinh nghiệm trong lĩnh vực 
                 đào tạo nghệ thuật dẫn chương trình. Chúng tôi tự hào là nơi ươm mầm và phát triển 
                 tài năng cho hàng nghìn học viên trên khắp cả nước.
               </p>

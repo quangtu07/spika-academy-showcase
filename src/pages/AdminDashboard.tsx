@@ -119,8 +119,13 @@ const AdminDashboard = () => {
       <>
         {/* Thông báo đăng xuất */}
         {logoutMessage && (
-          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-300">
-            {logoutMessage}
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg border border-white/20 backdrop-blur-xl flex items-center space-x-2">
+              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>{logoutMessage}</span>
+            </div>
           </div>
         )}
         
@@ -163,8 +168,13 @@ const AdminDashboard = () => {
       <>
         {/* Thông báo đăng xuất */}
         {logoutMessage && (
-          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-300">
-            {logoutMessage}
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg border border-white/20 backdrop-blur-xl flex items-center space-x-2">
+              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>{logoutMessage}</span>
+            </div>
           </div>
         )}
         
@@ -276,8 +286,13 @@ const AdminDashboard = () => {
     <>
       {/* Thông báo đăng xuất */}
       {logoutMessage && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-300">
-          {logoutMessage}
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg border border-white/20 backdrop-blur-xl flex items-center space-x-2">
+            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>{logoutMessage}</span>
+          </div>
         </div>
       )}
       

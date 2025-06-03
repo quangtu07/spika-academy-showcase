@@ -6,14 +6,17 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="col-span-1">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">S</span>
+            <div className="flex items-center mb-4">
+              <div className="w-24 h-24">
+                <img 
+                  src="/images/logo2.png" 
+                  alt="Future Wings Academy Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <span className="text-2xl font-bold">Spika</span>
             </div>
             <p className="text-gray-400 mb-4">
-              Trung tâm đào tạo MC hàng đầu, nơi ươm mầm và phát triển tài năng dẫn chương trình chuyên nghiệp.
+              Future Wings Academy - Nơi ươm mầm và phát triển tài năng, định hướng tương lai cho thế hệ trẻ.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -57,7 +60,7 @@ const Footer = () => {
               </div>
               <div>
                 <h4 className="font-semibold text-gray-300">Email</h4>
-                <p className="text-gray-400">info@spika.edu.vn</p>
+                <p className="text-gray-400">contact@futurewings.edu.vn</p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-300">Thời gian làm việc</h4>
@@ -68,7 +71,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Trung tâm MC Spika. Tất cả quyền được bảo lưu.</p>
+          <p>&copy; 2024 Future Wings Academy. Tất cả quyền được bảo lưu.</p>
         </div>
       </div>
     </footer>
