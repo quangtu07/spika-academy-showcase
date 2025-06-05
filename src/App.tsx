@@ -7,11 +7,14 @@ import Index from "./pages/Index";
 import AdminDashboard from "./pages/AdminDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentClassDetailPage from "./pages/StudentClassDetailPage";
+import StudentLessonAssignmentsPage from "./pages/StudentLessonAssignmentsPage";
+import StudentSubmissionDetailPage from "./pages/StudentSubmissionDetailPage";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import TeacherClassDetailPage from "./pages/TeacherClassDetailPage";
 import LessonAssignmentsPage from "./pages/LessonAssignmentsPage";
 import CreateAssignmentPage from "./pages/CreateAssignmentPage";
 import AssignmentSubmissionsPage from "./pages/AssignmentSubmissionsPage";
+import TeacherSubmissionDetailPage from "./pages/TeacherSubmissionDetailPage";
 import CoursesPage from "./pages/CoursesPage";
 import TeachersPage from "./pages/TeachersPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -37,11 +40,14 @@ const App = () => (
           <Route path="/admin/user/:userId" element={<UserDetailPage />} />
           <Route path="/student" element={<StudentDashboard />} />
           <Route path="/student/class/:classId" element={<StudentClassDetailPage />} />
+          <Route path="/student/lesson/:lessonId/assignments" element={<StudentLessonAssignmentsPage />} />
+          <Route path="/student/submission/:submissionId" element={<StudentSubmissionDetailPage />} />
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher/class/:classId" element={<TeacherClassDetailPage />} />
           <Route path="/teacher/lesson/:lessonId/assignments" element={<LessonAssignmentsPage />} />
           <Route path="/teacher/lesson/:lessonId/create-assignment" element={<CreateAssignmentPage />} />
           <Route path="/teacher/assignment/:assignmentId/submissions/:status" element={<AssignmentSubmissionsPage />} />
+          <Route path="/teacher/submission/:submissionId" element={<TeacherSubmissionDetailPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/teachers" element={<TeachersPage />} />
           <Route path="/profile" element={<ProfilePage />} />

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, FileText, Calendar, User, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { ArrowLeft, FileText, Calendar, User, CheckCircle, Clock, AlertCircle, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -282,6 +282,20 @@ const AssignmentSubmissionsPage = () => {
                           )}
                           {getStatusBadge(submission.status)}
                         </div>
+                        
+                        {/* Action Button for Mobile */}
+                        {submission.submitted_at && (
+                          <div className="mt-3 pt-3 border-t border-gray-100">
+                            <Button 
+                              size="sm"
+                              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                              onClick={() => navigate(`/teacher/submission/${submission.id}`)}
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              Xem bài nộp
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -373,6 +387,7 @@ const AssignmentSubmissionsPage = () => {
                         <TableHead className="font-bold text-lg">Email</TableHead>
                         <TableHead className="font-bold text-lg">Ngày nộp</TableHead>
                         <TableHead className="font-bold text-lg">Trạng thái</TableHead>
+                        <TableHead className="font-bold text-lg text-center">Hành động</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -399,6 +414,20 @@ const AssignmentSubmissionsPage = () => {
                           </TableCell>
                           <TableCell>
                             {getStatusBadge(submission.status)}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {submission.submitted_at ? (
+                              <Button 
+                                size="sm"
+                                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                                onClick={() => navigate(`/teacher/submission/${submission.id}`)}
+                              >
+                                <Eye className="w-4 h-4 mr-2" />
+                                Xem bài nộp
+                              </Button>
+                            ) : (
+                              <span className="text-gray-400 text-sm">Chưa có bài nộp</span>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
