@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -417,7 +418,7 @@ const TeacherClassDetailPage = () => {
                       Thêm học viên
                     </Button>
                   </div>
-                </CardContent>
+                </CardHeader>
                 <CardContent className="space-y-4 p-4">
                   {students.length === 0 ? (
                     <div className="text-center py-8">
@@ -475,7 +476,7 @@ const TeacherClassDetailPage = () => {
                       Thêm buổi học
                     </Button>
                   </div>
-                </CardContent>
+                </CardHeader>
                 <CardContent className="space-y-4 p-4">
                   {lessons.length === 0 ? (
                     <div className="text-center py-8">
