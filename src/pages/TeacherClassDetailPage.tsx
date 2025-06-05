@@ -9,8 +9,6 @@ import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, 
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import EnrollmentFormModal from '@/components/admin/EnrollmentFormModal';
-import LessonFormModal from '@/components/admin/LessonFormModal';
 import LessonEditModal from '@/components/admin/LessonEditModal';
 
 interface ClassDetail {
@@ -55,8 +53,6 @@ const TeacherClassDetailPage = () => {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [lessonAssignments, setLessonAssignments] = useState<{[key: string]: boolean}>({});
   const [loading, setLoading] = useState(true);
-  const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
-  const [showLessonModal, setShowLessonModal] = useState(false);
   const [showLessonEditModal, setShowLessonEditModal] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [activeTab, setActiveTab] = useState('students');
@@ -243,14 +239,12 @@ const TeacherClassDetailPage = () => {
     );
   };
 
-  const handleEnrollmentSaved = () => {
-    fetchEnrollments();
-    setShowEnrollmentModal(false);
+  const handleCreateEnrollment = () => {
+    navigate(`/teacher/class/${classId}/create-enrollment`);
   };
 
-  const handleLessonSaved = () => {
-    fetchLessons();
-    setShowLessonModal(false);
+  const handleCreateLesson = () => {
+    navigate(`/teacher/class/${classId}/create-lesson`);
   };
 
   const handleLessonEditSaved = () => {
@@ -336,14 +330,14 @@ const TeacherClassDetailPage = () => {
                   <p className="text-xs text-gray-500 truncate">{classDetail.course.name}</p>
                 </div>
               </div>
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
                 className="p-2"
               >
                 {showMobileMenu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
@@ -352,30 +346,9 @@ const TeacherClassDetailPage = () => {
         {showMobileMenu && (
           <div className="bg-white border-b shadow-lg">
             <div className="px-4 py-3">
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  onClick={() => {
-                    setShowEnrollmentModal(true);
-                    setShowMobileMenu(false);
-                  }}
-                  size="sm"
-                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Thêm học viên
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowLessonModal(true);
-                    setShowMobileMenu(false);
-                  }}
-                  size="sm"
-                  className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Thêm buổi học
-                </Button>
-              </div>
+              {/* <div className="text-center">
+                <p className="text-gray-600 text-sm">Các chức năng đã được di chuyển xuống từng tab tương ứng</p>
+              </div> */}
             </div>
           </div>
         )}
@@ -508,6 +481,17 @@ const TeacherClassDetailPage = () => {
               </CardHeader>
 
               <TabsContent value="students" className="p-4 pt-0">
+                {/* Add Student Button for Mobile */}
+                {/* <div className="mb-4">
+                  <Button 
+                    onClick={handleCreateEnrollment}
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Thêm học viên
+                  </Button>
+                </div> */}
+                
                 {enrollments.length === 0 ? (
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -515,13 +499,6 @@ const TeacherClassDetailPage = () => {
                     </div>
                     <h4 className="text-lg font-medium text-gray-900 mb-2">Chưa có học viên</h4>
                     <p className="text-gray-500 mb-4">Lớp học này chưa có học viên nào đăng ký.</p>
-                    <Button 
-                      onClick={() => setShowEnrollmentModal(true)}
-                      className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Thêm học viên
-                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -556,6 +533,17 @@ const TeacherClassDetailPage = () => {
               </TabsContent>
 
               <TabsContent value="lessons" className="p-4 pt-0">
+                {/* Add Lesson Button for Mobile */}
+                <div className="mb-4">
+                  <Button 
+                    onClick={handleCreateLesson}
+                    className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Thêm buổi học
+                  </Button>
+                </div>
+                
                 {lessons.length === 0 ? (
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -563,13 +551,6 @@ const TeacherClassDetailPage = () => {
                     </div>
                     <h4 className="text-lg font-medium text-gray-900 mb-2">Chưa có buổi học</h4>
                     <p className="text-gray-500 mb-4">Chưa có buổi học nào được tạo cho lớp này.</p>
-                    <Button 
-                      onClick={() => setShowLessonModal(true)}
-                      className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Tạo buổi học
-                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -672,22 +653,9 @@ const TeacherClassDetailPage = () => {
                 <p className="text-gray-600 mt-1">{classDetail?.name}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={() => setShowEnrollmentModal(true)}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Thêm học viên
-              </Button>
-              <Button 
-                onClick={() => setShowLessonModal(true)}
-                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white shadow-lg"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Thêm buổi học
-              </Button>
-            </div>
+            {/* <div className="text-center">
+              <p className="text-gray-600 text-sm">Các chức năng đã được di chuyển xuống từng tab tương ứng</p>
+            </div> */}
           </div>
         </div>
       </div>
@@ -853,23 +821,28 @@ const TeacherClassDetailPage = () => {
               </CardHeader>
 
               <TabsContent value="students" className="space-y-8 p-8">
-                {enrollments.length === 0 ? (
-                  <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-3xl border border-gray-100">
-                    <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <GraduationCap className="w-12 h-12 text-gray-500" />
-                    </div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có học viên nào</h4>
-                    <p className="text-gray-500 mb-8 text-lg">Lớp học này chưa có học viên nào đăng ký.</p>
+                <div>
+                  {/* Add Student Button for Desktop */}
+                  {/* <div className="mb-6 flex justify-end">
                     <Button 
-                      onClick={() => setShowEnrollmentModal(true)}
-                      className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg text-lg px-8 py-3"
+                      onClick={handleCreateEnrollment}
+                      className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg text-lg px-6 py-3"
                     >
-                      <Plus className="w-5 h-5 mr-3" />
-                      Thêm học viên đầu tiên
+                      <Plus className="w-5 h-5 mr-2" />
+                      Thêm học viên
                     </Button>
-                  </div>
-                ) : (
-                  <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                  </div> */}
+                  
+                  {enrollments.length === 0 ? (
+                    <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-3xl border border-gray-100">
+                      <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <GraduationCap className="w-12 h-12 text-gray-500" />
+                      </div>
+                      <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có học viên nào</h4>
+                      <p className="text-gray-500 mb-8 text-lg">Lớp học này chưa có học viên nào đăng ký.</p>
+                    </div>
+                  ) : (
+                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                     <Table>
                       <TableHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
                         <TableRow>
@@ -908,28 +881,34 @@ const TeacherClassDetailPage = () => {
                         ))}
                       </TableBody>
                     </Table>
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
               </TabsContent>
 
               <TabsContent value="lessons" className="space-y-8 p-8">
-                {lessons.length === 0 ? (
-                  <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl border border-gray-100">
-                    <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-purple-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <BookOpen className="w-12 h-12 text-gray-500" />
-                    </div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có buổi học nào</h4>
-                    <p className="text-gray-500 mb-8 text-lg">Chưa có buổi học nào được tạo cho lớp này.</p>
+                <div>
+                  {/* Add Lesson Button for Desktop */}
+                  <div className="mb-6 flex justify-end">
                     <Button 
-                      onClick={() => setShowLessonModal(true)}
-                      className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg text-lg px-8 py-3"
+                      onClick={handleCreateLesson}
+                      className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg text-lg px-6 py-3"
                     >
-                      <Plus className="w-5 h-5 mr-3" />
-                      Tạo buổi học đầu tiên
+                      <Plus className="w-5 h-5 mr-2" />
+                      Thêm buổi học
                     </Button>
                   </div>
-                ) : (
-                  <div className="space-y-6">
+                  
+                  {lessons.length === 0 ? (
+                    <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl border border-gray-100">
+                      <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-purple-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <BookOpen className="w-12 h-12 text-gray-500" />
+                      </div>
+                      <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có buổi học nào</h4>
+                      <p className="text-gray-500 mb-8 text-lg">Chưa có buổi học nào được tạo cho lớp này.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
                     {lessons.map((lesson) => (
                       <Card key={lesson.id} className="shadow-xl hover:shadow-2xl transition-shadow border-0 bg-gradient-to-r from-white to-purple-50 overflow-hidden">
                         <CardHeader className="pb-4 bg-gradient-to-r from-violet-50 to-purple-50 border-b border-violet-100">
@@ -991,8 +970,9 @@ const TeacherClassDetailPage = () => {
                         )}
                       </Card>
                     ))}
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
               </TabsContent>
             </Tabs>
           </Card>
@@ -1000,23 +980,6 @@ const TeacherClassDetailPage = () => {
       </div>
 
       {/* Modals */}
-      {showEnrollmentModal && (
-        <EnrollmentFormModal
-          isOpen={showEnrollmentModal}
-          onClose={() => setShowEnrollmentModal(false)}
-          onSaved={handleEnrollmentSaved}
-        />
-      )}
-
-      {showLessonModal && classDetail && (
-        <LessonFormModal
-          isOpen={showLessonModal}
-          onClose={() => setShowLessonModal(false)}
-          classData={classDetail}
-          onSaved={handleLessonSaved}
-        />
-      )}
-
       {showLessonEditModal && selectedLesson && (
         <LessonEditModal
           isOpen={showLessonEditModal}

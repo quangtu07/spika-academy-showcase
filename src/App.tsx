@@ -11,6 +11,8 @@ import StudentLessonAssignmentsPage from "./pages/StudentLessonAssignmentsPage";
 import StudentSubmissionDetailPage from "./pages/StudentSubmissionDetailPage";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import TeacherClassDetailPage from "./pages/TeacherClassDetailPage";
+import CreateEnrollmentPage from "./pages/CreateEnrollmentPage";
+import CreateLessonPage from "./pages/CreateLessonPage";
 import LessonAssignmentsPage from "./pages/LessonAssignmentsPage";
 import CreateAssignmentPage from "./pages/CreateAssignmentPage";
 import AssignmentSubmissionsPage from "./pages/AssignmentSubmissionsPage";
@@ -44,6 +46,8 @@ const App = () => (
           <Route path="/student/submission/:submissionId" element={<StudentSubmissionDetailPage />} />
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher/class/:classId" element={<TeacherClassDetailPage />} />
+          <Route path="/teacher/class/:classId/create-enrollment" element={<CreateEnrollmentPage />} />
+          <Route path="/teacher/class/:classId/create-lesson" element={<CreateLessonPage />} />
           <Route path="/teacher/lesson/:lessonId/assignments" element={<LessonAssignmentsPage />} />
           <Route path="/teacher/lesson/:lessonId/create-assignment" element={<CreateAssignmentPage />} />
           <Route path="/teacher/assignment/:assignmentId/submissions/:status" element={<AssignmentSubmissionsPage />} />
