@@ -117,7 +117,6 @@ const ClassDetailPage = () => {
   const [isDeleteLessonDialogOpen, setIsDeleteLessonDialogOpen] = useState(false);
   const [lessonToDelete, setLessonToDelete] = useState<{id: string, title: string, lesson_number: number} | null>(null);
   const [isDeletingLesson, setIsDeletingLesson] = useState(false);
-  const [activeTab, setActiveTab] = useState('students');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -637,7 +636,7 @@ const ClassDetailPage = () => {
         {/* Header */}
         <div className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 gap-4">
+            <div className="flex justify-between items-center py-4">
               <div className="flex items-center space-x-4">
                 <Button
                   onClick={handleGoBack}
@@ -648,29 +647,11 @@ const ClassDetailPage = () => {
                   <span>Quay lại</span>
                 </Button>
                 <div>
-                  <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
                     {classData.name}
                   </h1>
                   <p className="text-sm text-gray-600">Chi tiết lớp học</p>
                 </div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                <Button 
-                  onClick={handleOpenAddStudentModal} 
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 flex items-center justify-center space-x-2 text-sm px-4 py-2"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  <span>Thêm học viên</span>
-                </Button>
-                <Button 
-                  onClick={handleOpenAddLessonModal} 
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 flex items-center justify-center space-x-2 text-sm px-4 py-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Thêm buổi học</span>
-                </Button>
               </div>
             </div>
           </div>
@@ -747,7 +728,7 @@ const ClassDetailPage = () => {
           </Card>
 
           {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <Tabs defaultValue="students" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="students" className="flex items-center space-x-2">
                 <Users className="h-4 w-4" />
@@ -762,14 +743,23 @@ const ClassDetailPage = () => {
             <TabsContent value="students">
               <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
                 <CardHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white">
-                  <div>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Users className="h-5 w-5" />
-                      <span>Danh sách học viên ({classData.enrollments?.length || 0})</span>
-                    </CardTitle>
-                    <CardDescription className="text-purple-100">
-                      Tất cả học viên đã đăng ký lớp học này
-                    </CardDescription>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Users className="h-5 w-5" />
+                        <span>Danh sách học viên ({classData.enrollments?.length || 0})</span>
+                      </CardTitle>
+                      <CardDescription className="text-purple-100">
+                        Tất cả học viên đã đăng ký lớp học này
+                      </CardDescription>
+                    </div>
+                    <Button 
+                      onClick={handleOpenAddStudentModal} 
+                      className="bg-white/20 hover:bg-white/30 text-white border-0 flex items-center space-x-2 w-full sm:w-auto justify-center"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      <span>Thêm học viên</span>
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="p-0 sm:p-6">
@@ -842,14 +832,23 @@ const ClassDetailPage = () => {
             <TabsContent value="lessons">
               <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
                 <CardHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white">
-                  <div>
-                    <CardTitle className="flex items-center space-x-2">
-                      <BookOpen className="h-5 w-5" />
-                      <span>Danh sách buổi học ({classData.lessons?.length || 0})</span>
-                    </CardTitle>
-                    <CardDescription className="text-purple-100">
-                      Tất cả buổi học trong lớp
-                    </CardDescription>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <CardTitle className="flex items-center space-x-2">
+                        <BookOpen className="h-5 w-5" />
+                        <span>Danh sách buổi học ({classData.lessons?.length || 0})</span>
+                      </CardTitle>
+                      <CardDescription className="text-purple-100">
+                        Tất cả buổi học trong lớp
+                      </CardDescription>
+                    </div>
+                    <Button 
+                      onClick={handleOpenAddLessonModal} 
+                      className="bg-white/20 hover:bg-white/30 text-white border-0 flex items-center space-x-2 w-full sm:w-auto justify-center"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Thêm buổi học</span>
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="p-0 sm:p-6">
@@ -986,7 +985,7 @@ const ClassDetailPage = () => {
             <Button 
               onClick={handleAddStudent} 
               disabled={isAddingStudent || availableStudents.length === 0 || !selectedStudentId}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
+              className="bg-blue-500 hover:bg-blue-600 text-white"
             >
               {isAddingStudent ? 'Đang thêm...' : 'Thêm học viên'}
             </Button>
@@ -1061,7 +1060,7 @@ const ClassDetailPage = () => {
             <Button 
               onClick={handleAddLesson} 
               disabled={isAddingLesson || !lessonTitle.trim()}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0"
+              className="bg-blue-500 hover:bg-blue-600 text-white"
             >
               {isAddingLesson ? 'Đang thêm...' : 'Thêm buổi học'}
             </Button>
@@ -1158,4 +1157,4 @@ const ClassDetailPage = () => {
   );
 };
 
-export default ClassDetailPage;
+export default ClassDetailPage; 

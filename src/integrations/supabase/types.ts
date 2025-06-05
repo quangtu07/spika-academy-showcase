@@ -9,96 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      assignment_submissions: {
-        Row: {
-          assignment_id: string
-          content: Json | null
-          feedback: string | null
-          id: string
-          status: Database["public"]["Enums"]["trang_thai_bai_nop"] | null
-          student_id: string
-          submitted_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          assignment_id: string
-          content?: Json | null
-          feedback?: string | null
-          id?: string
-          status?: Database["public"]["Enums"]["trang_thai_bai_nop"] | null
-          student_id: string
-          submitted_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          assignment_id?: string
-          content?: Json | null
-          feedback?: string | null
-          id?: string
-          status?: Database["public"]["Enums"]["trang_thai_bai_nop"] | null
-          student_id?: string
-          submitted_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "assignment_submissions_assignment_id_fkey"
-            columns: ["assignment_id"]
-            isOneToOne: false
-            referencedRelation: "assignments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assignment_submissions_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      assignments: {
-        Row: {
-          content: Json
-          created_at: string | null
-          id: string
-          instructor_id: string
-          lesson_id: string
-          updated_at: string | null
-        }
-        Insert: {
-          content: Json
-          created_at?: string | null
-          id?: string
-          instructor_id: string
-          lesson_id: string
-          updated_at?: string | null
-        }
-        Update: {
-          content?: Json
-          created_at?: string | null
-          id?: string
-          instructor_id?: string
-          lesson_id?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "assignments_instructor_id_fkey"
-            columns: ["instructor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assignments_lesson_id_fkey"
-            columns: ["lesson_id"]
-            isOneToOne: false
-            referencedRelation: "lessons"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       classes: {
         Row: {
           course_id: string
@@ -319,7 +229,6 @@ export type Database = {
       class_status: "Đang hoạt động" | "Đã kết thúc"
       course_level: "basic" | "intermediate" | "advance"
       course_status: "Đang mở" | "Đang bắt đầu" | "Kết thúc"
-      trang_thai_bai_nop: "Chưa làm" | "Đang chờ chấm" | "Đã hoàn thành"
       user_role: "student" | "teacher" | "admin"
     }
     CompositeTypes: {
@@ -439,7 +348,6 @@ export const Constants = {
       class_status: ["Đang hoạt động", "Đã kết thúc"],
       course_level: ["basic", "intermediate", "advance"],
       course_status: ["Đang mở", "Đang bắt đầu", "Kết thúc"],
-      trang_thai_bai_nop: ["Chưa làm", "Đang chờ chấm", "Đã hoàn thành"],
       user_role: ["student", "teacher", "admin"],
     },
   },
