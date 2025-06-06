@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import StudentCourses from '@/components/student/StudentCourses';
 import StudentProfile from '@/components/student/StudentProfile';
+import StudentNotificationBell from '@/components/student/StudentNotificationBell';
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -80,14 +82,17 @@ const StudentDashboard = () => {
                   <p className="text-white/80 text-sm">Bảng điều khiển</p>
                 </div>
               </div>
-              <Button 
-                onClick={handleGoHome}
-                variant="outline"
-                size="sm"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
-              >
-                <Home className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center space-x-2">
+                <StudentNotificationBell />
+                <Button 
+                  onClick={handleGoHome}
+                  variant="outline"
+                  size="sm"
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+                >
+                  <Home className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -145,14 +150,19 @@ const StudentDashboard = () => {
                 <p className="text-gray-600 mt-1">Bảng điều khiển học viên</p>
               </div>
             </div>
-            <Button 
-              onClick={handleGoHome}
-              variant="outline"
-              className="flex items-center space-x-2 hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-            >
-              <Home className="h-4 w-4" />
-              <span>Về trang chủ</span>
-            </Button>
+            <div className="flex items-center space-x-4">
+              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-2">
+                <StudentNotificationBell />
+              </div>
+              <Button 
+                onClick={handleGoHome}
+                variant="outline"
+                className="flex items-center space-x-2 hover:bg-indigo-50 border-indigo-200 text-indigo-700"
+              >
+                <Home className="h-4 w-4" />
+                <span>Về trang chủ</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
