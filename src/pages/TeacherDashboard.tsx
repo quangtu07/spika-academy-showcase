@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,11 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
 import TeacherClasses from '@/components/teacher/TeacherClasses';
+import NotificationBell from '@/components/teacher/NotificationBell';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
   const { userRole, isLoading } = useUserRole();
   const { toast } = useToast();
+  const [currentTeacherId, setCurrentTeacherId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading) {
@@ -47,6 +50,8 @@ const TeacherDashboard = () => {
         variant: "destructive",
       });
       navigate('/', { replace: true });
+    } else {
+      setCurrentTeacherId(user.id);
     }
   }, [navigate, toast]);
 
@@ -106,16 +111,19 @@ const TeacherDashboard = () => {
                 <p className="text-gray-600 mt-1 text-sm sm:text-base">Quản lý lớp học của bạn</p>
               </div>
             </div>
-            <Button 
-              onClick={handleGoHome}
-              variant="outline"
-              size="sm"
-              className="flex items-center space-x-1 sm:space-x-2 hover:bg-blue-50 border-blue-200 text-blue-700 text-sm sm:text-base px-2 sm:px-4"
-            >
-              <Home className="h-4 w-4" />
-              <span className="hidden sm:inline">Về trang chủ</span>
-              <span className="sm:hidden">Trang chủ</span>
-            </Button>
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <NotificationBell teacherId={currentTeacherId} />
+              <Button 
+                onClick={handleGoHome}
+                variant="outline"
+                size="sm"
+                className="flex items-center space-x-1 sm:space-x-2 hover:bg-blue-50 border-blue-200 text-blue-700 text-sm sm:text-base px-2 sm:px-4"
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Về trang chủ</span>
+                <span className="sm:hidden">Trang chủ</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
