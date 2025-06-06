@@ -815,16 +815,16 @@ const TeacherClassDetailPage = () => {
                     </Button>
                   </div> */}
                   
-                  {enrollments.length === 0 ? (
-                    <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-3xl border border-gray-100">
-                      <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <GraduationCap className="w-12 h-12 text-gray-500" />
-                      </div>
-                      <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có học viên nào</h4>
-                      <p className="text-gray-500 mb-8 text-lg">Lớp học này chưa có học viên nào đăng ký.</p>
+                {enrollments.length === 0 ? (
+                  <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-3xl border border-gray-100">
+                    <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <GraduationCap className="w-12 h-12 text-gray-500" />
                     </div>
-                  ) : (
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                    <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có học viên nào</h4>
+                    <p className="text-gray-500 mb-8 text-lg">Lớp học này chưa có học viên nào đăng ký.</p>
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                     <Table>
                       <TableHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
                         <TableRow>
@@ -863,8 +863,8 @@ const TeacherClassDetailPage = () => {
                         ))}
                       </TableBody>
                     </Table>
-                    </div>
-                  )}
+                  </div>
+                )}
                 </div>
               </TabsContent>
 
@@ -881,16 +881,16 @@ const TeacherClassDetailPage = () => {
                     </Button>
                   </div>
                   
-                  {lessons.length === 0 ? (
-                    <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl border border-gray-100">
-                      <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-purple-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <BookOpen className="w-12 h-12 text-gray-500" />
-                      </div>
-                      <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có buổi học nào</h4>
-                      <p className="text-gray-500 mb-8 text-lg">Chưa có buổi học nào được tạo cho lớp này.</p>
+                {lessons.length === 0 ? (
+                  <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl border border-gray-100">
+                    <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-purple-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <BookOpen className="w-12 h-12 text-gray-500" />
                     </div>
-                  ) : (
-                    <div className="space-y-6">
+                    <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có buổi học nào</h4>
+                    <p className="text-gray-500 mb-8 text-lg">Chưa có buổi học nào được tạo cho lớp này.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
                     {lessons.map((lesson) => (
                       <Card key={lesson.id} className="shadow-xl hover:shadow-2xl transition-shadow border-0 bg-gradient-to-r from-white to-purple-50 overflow-hidden">
                         <CardHeader className="pb-4 bg-gradient-to-r from-violet-50 to-purple-50 border-b border-violet-100">
@@ -952,8 +952,8 @@ const TeacherClassDetailPage = () => {
                         )}
                       </Card>
                     ))}
-                    </div>
-                  )}
+                  </div>
+                )}
                 </div>
               </TabsContent>
             </Tabs>

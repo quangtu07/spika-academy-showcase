@@ -365,26 +365,26 @@ const StudentCourses = () => {
               </div>
 
               <CardHeader className="pb-3">
-                <div className="space-y-2">
+                  <div className="space-y-2">
                   <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                    {enrollment.classes.name}
-                  </CardTitle>
+                      {enrollment.classes.name}
+                    </CardTitle>
                   <p className="text-sm text-indigo-600 font-semibold">
                     {enrollment.classes.courses.name}
-                  </p>
+                    </p>
                   
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
                     <User className="h-4 w-4 text-indigo-500" />
                     <span className="truncate">GV: {enrollment.classes.courses.instructor_name}</span>
-                  </div>
+                    </div>
                   
                   <div className="flex items-center justify-between">
-                    {enrollment.classes.courses.duration && (
-                      <div className="flex items-center space-x-1 text-sm text-gray-500">
-                        <Clock className="h-4 w-4" />
-                        <span>{enrollment.classes.courses.duration} buổi</span>
-                      </div>
-                    )}
+                      {enrollment.classes.courses.duration && (
+                        <div className="flex items-center space-x-1 text-sm text-gray-500">
+                          <Clock className="h-4 w-4" />
+                          <span>{enrollment.classes.courses.duration} buổi</span>
+                        </div>
+                      )}
                   </div>
                 </div>
               </CardHeader>

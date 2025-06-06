@@ -505,7 +505,7 @@ const UserManagement = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
         <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
-          <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
+        <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
             <div className="flex items-center space-x-3">
               <Users className="h-6 w-6 md:h-8 md:w-8" />
               <div>
@@ -515,15 +515,15 @@ const UserManagement = () => {
                 </CardDescription>
               </div>
             </div>
-          </CardHeader>
+        </CardHeader>
           <CardContent className="p-4 md:p-8">
-            <div className="animate-pulse space-y-4">
+          <div className="animate-pulse space-y-4">
               {[...Array(isMobile ? 3 : 5)].map((_, i) => (
-                <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
       </div>
     );
   }
@@ -597,41 +597,41 @@ const UserManagement = () => {
             </TabsContent>
           </Tabs>
         </CardContent>
-              </Card>
+      </Card>
 
-        <UserFormModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          user={editingUser}
-          onSaved={handleUserSaved}
-        />
+      <UserFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        user={editingUser}
+        onSaved={handleUserSaved}
+      />
 
-        <EnrollmentFormModal
-          isOpen={isEnrollmentModalOpen}
-          onClose={() => setIsEnrollmentModalOpen(false)}
-          onSaved={handleEnrollmentSaved}
-        />
+      <EnrollmentFormModal
+        isOpen={isEnrollmentModalOpen}
+        onClose={() => setIsEnrollmentModalOpen(false)}
+        onSaved={handleEnrollmentSaved}
+      />
 
-        <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
-          <AlertDialogContent className="border-0 shadow-xl">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-xl text-gray-800">Xác nhận xóa người dùng</AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-600">
-                Bạn có chắc chắn muốn xóa người dùng "{deletingUser?.fullname}"? 
-                Hành động này không thể hoàn tác.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="hover:bg-gray-100">Hủy</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deletingUser && handleDeleteUser(deletingUser.id)}
-                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0"
-              >
-                Xác nhận xóa
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+      <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
+        <AlertDialogContent className="border-0 shadow-xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl text-gray-800">Xác nhận xóa người dùng</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600">
+              Bạn có chắc chắn muốn xóa người dùng "{deletingUser?.fullname}"? 
+              Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="hover:bg-gray-100">Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deletingUser && handleDeleteUser(deletingUser.id)}
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0"
+            >
+              Xác nhận xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
