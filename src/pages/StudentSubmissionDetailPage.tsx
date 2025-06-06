@@ -117,23 +117,23 @@ const StudentSubmissionDetailPage = () => {
     const statusMap = {
       'Chưa làm': { 
         text: 'Chưa làm', 
-        class: 'bg-amber-500/15 text-amber-700 border-amber-300', 
+        class: 'bg-yellow-100 text-yellow-800 border-yellow-200', 
         icon: AlertCircle 
       },
       'Đang chờ chấm': { 
         text: 'Đang chờ chấm', 
-        class: 'bg-blue-500/15 text-blue-700 border-blue-300', 
+        class: 'bg-blue-100 text-blue-800 border-blue-200', 
         icon: Clock 
       },
       'Đã hoàn thành': { 
         text: 'Đã hoàn thành', 
-        class: 'bg-emerald-500/15 text-emerald-700 border-emerald-300', 
+        class: 'bg-green-100 text-green-800 border-green-200', 
         icon: CheckCircle 
       },
     };
 
     const statusInfo = statusMap[status as keyof typeof statusMap] || 
-      { text: 'Không xác định', class: 'bg-gray-500/15 text-gray-700 border-gray-300', icon: AlertCircle };
+      { text: 'Không xác định', class: 'bg-gray-100 text-gray-800 border-gray-200', icon: AlertCircle };
 
     const IconComponent = statusInfo.icon;
 

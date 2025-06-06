@@ -152,10 +152,10 @@ const UserDetailPage = () => {
                 <ArrowLeft className="h-4 w-4" />
                 <span>Quay lại</span>
               </Button>
-              <div>
+              {/* <div>
                 <h1 className="text-3xl font-bold text-white">{userData.fullname}</h1>
                 <p className="text-blue-100 mt-1">Chi tiết thông tin người dùng</p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

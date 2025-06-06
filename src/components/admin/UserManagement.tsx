@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, ArrowUpDown, Upload, GraduationCap, ArrowRight, Users, UserCheck, Shield } from 'lucide-react';
+import { Plus, Edit, Trash2, ArrowUpDown, Upload, GraduationCap, ArrowRight, Users, UserCheck, Shield, Mail, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import UserFormModal from './UserFormModal';
 import EnrollmentFormModal from './EnrollmentFormModal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -51,6 +52,7 @@ const UserManagement = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Kiểm tra nếu có userRoleTab từ state khi quay lại từ UserDetailPage
@@ -273,7 +275,102 @@ const UserManagement = () => {
     return configs[role] || configs.student;
   };
 
-  const renderUserTable = (roleFilter: string) => {
+  const renderMobileUserCards = (roleFilter: string) => {
+    const sortedUsers = getSortedUsers(roleFilter);
+    const config = getTabConfig(roleFilter);
+
+    return (
+      <div className="space-y-4">
+        <div className={`bg-gradient-to-r ${config.bgGradient} rounded-2xl p-4 border border-gray-100`}>
+          <div className="flex items-center space-x-3">
+            <div className={`w-10 h-10 bg-gradient-to-r ${config.gradient} rounded-xl flex items-center justify-center shadow-lg`}>
+              <config.icon className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-gray-800">
+                {roleFilter === 'student' ? 'Học viên' : 
+                 roleFilter === 'teacher' ? 'Giáo viên' : 'Quản trị'}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {sortedUsers.length} người
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {sortedUsers.map((user) => (
+            <Card key={user.id} className="shadow-md border-0 bg-white overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-start space-x-4">
+                  <Avatar className="h-14 w-14 shadow-lg border-2 border-white">
+                    <AvatarImage src={user.avatar_url} alt={user.fullname} />
+                    <AvatarFallback className={`bg-gradient-to-r ${config.gradient} text-white font-semibold text-lg`}>
+                      {getInitials(user.fullname)}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 className="font-bold text-gray-900 text-base">{user.fullname}</h4>
+                        <p className="text-sm text-gray-500">@{user.username}</p>
+                      </div>
+                      {getRoleBadge(user.role)}
+                    </div>
+                    
+                    <div className="space-y-1 mb-3">
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <Mail className="h-3 w-3" />
+                        <span className="truncate">{user.email}</span>
+                      </div>
+                      {user.phone_number && (
+                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <Phone className="h-3 w-3" />
+                          <span>{user.phone_number}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditUser(user)}
+                        className="flex-1 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700"
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Sửa
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewUserDetail(user)}
+                        className="flex-1 hover:bg-green-50 hover:border-green-200 hover:text-green-700"
+                      >
+                        <ArrowRight className="h-3 w-3 mr-1" />
+                        Xem
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDeletingUser(user)}
+                        className="hover:bg-red-50 hover:border-red-200 hover:text-red-700"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderDesktopUserTable = (roleFilter: string) => {
     const sortedUsers = getSortedUsers(roleFilter);
     const config = getTabConfig(roleFilter);
 
@@ -400,122 +497,142 @@ const UserManagement = () => {
     );
   };
 
+  const renderUserContent = (roleFilter: string) => {
+    return isMobile ? renderMobileUserCards(roleFilter) : renderDesktopUserTable(roleFilter);
+  };
+
   if (loading) {
     return (
-      <Card className="border-0 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
-          <CardTitle className="text-xl">Quản lý người dùng</CardTitle>
-          <CardDescription className="text-purple-100">Đang tải dữ liệu...</CardDescription>
-        </CardHeader>
-        <CardContent className="p-8">
-          <div className="animate-pulse space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+        <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
+            <div className="flex items-center space-x-3">
+              <Users className="h-6 w-6 md:h-8 md:w-8" />
+              <div>
+                <CardTitle className="text-xl md:text-2xl">Quản lý người dùng</CardTitle>
+                <CardDescription className="text-purple-100 text-sm md:text-base">
+                  Đang tải dữ liệu...
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 md:p-8">
+            <div className="animate-pulse space-y-4">
+              {[...Array(isMobile ? 3 : 5)].map((_, i) => (
+                <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <>
-      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+      <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
         <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
-          <div className="flex justify-between items-center">
+          <div className={`${isMobile ? 'space-y-4' : 'flex justify-between items-center'}`}>
             <div className="flex items-center space-x-3">
-              <Users className="h-8 w-8" />
+              <Users className="h-6 w-6 md:h-8 md:w-8" />
               <div>
-                <CardTitle className="text-2xl">Quản lý người dùng</CardTitle>
-                <CardDescription className="text-purple-100 mt-1">
+                <CardTitle className="text-lg md:text-2xl">Quản lý người dùng</CardTitle>
+                <CardDescription className="text-purple-100 mt-1 text-sm md:text-base">
                   Quản lý tất cả tài khoản người dùng theo vai trò
                 </CardDescription>
               </div>
             </div>
             <Button 
               onClick={handleAddUser} 
-              className="bg-white text-purple-600 hover:bg-gray-100 border-0 shadow-lg"
+              className={`bg-white text-purple-600 hover:bg-gray-100 border-0 shadow-lg ${isMobile ? 'w-full' : ''}`}
+              size={isMobile ? "default" : "default"}
             >
               <Plus className="h-4 w-4 mr-2" />
               <span>Thêm người dùng</span>
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-purple-100 to-blue-100 p-1 rounded-xl shadow-inner">
+        <CardContent className="p-4 md:p-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 md:space-y-8">
+            <TabsList className={`grid w-full grid-cols-3 bg-gradient-to-r from-purple-100 to-blue-100 p-1 rounded-xl shadow-inner ${isMobile ? 'h-12' : 'h-14'}`}>
               <TabsTrigger 
                 value="student"
-                className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-700 rounded-lg transition-all duration-200"
+                className="flex items-center justify-center space-x-1 md:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-700 rounded-lg transition-all duration-200 text-xs md:text-sm"
               >
-                <UserCheck className="h-4 w-4" />
-                <span className="font-medium">Học viên ({users.filter(u => u.role === 'student').length})</span>
+                <UserCheck className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="font-medium">
+                  {isMobile ? `HV (${users.filter(u => u.role === 'student').length})` : `Học viên (${users.filter(u => u.role === 'student').length})`}
+                </span>
               </TabsTrigger>
               <TabsTrigger 
                 value="teacher"
-                className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-green-700 rounded-lg transition-all duration-200"
+                className="flex items-center justify-center space-x-1 md:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-green-700 rounded-lg transition-all duration-200 text-xs md:text-sm"
               >
-                <GraduationCap className="h-4 w-4" />
-                <span className="font-medium">Giáo viên ({users.filter(u => u.role === 'teacher').length})</span>
+                <GraduationCap className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="font-medium">
+                  {isMobile ? `GV (${users.filter(u => u.role === 'teacher').length})` : `Giáo viên (${users.filter(u => u.role === 'teacher').length})`}
+                </span>
               </TabsTrigger>
               <TabsTrigger 
                 value="admin"
-                className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-700 rounded-lg transition-all duration-200"
+                className="flex items-center justify-center space-x-1 md:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-700 rounded-lg transition-all duration-200 text-xs md:text-sm"
               >
-                <Shield className="h-4 w-4" />
-                <span className="font-medium">Quản trị ({users.filter(u => u.role === 'admin').length})</span>
+                <Shield className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="font-medium">
+                  {isMobile ? `QT (${users.filter(u => u.role === 'admin').length})` : `Quản trị (${users.filter(u => u.role === 'admin').length})`}
+                </span>
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="student" className="mt-6">
-              {renderUserTable('student')}
+            <TabsContent value="student" className="mt-4 md:mt-6">
+              {renderUserContent('student')}
             </TabsContent>
 
-            <TabsContent value="teacher" className="mt-6">
-              {renderUserTable('teacher')}
+            <TabsContent value="teacher" className="mt-4 md:mt-6">
+              {renderUserContent('teacher')}
             </TabsContent>
 
-            <TabsContent value="admin" className="mt-6">
-              {renderUserTable('admin')}
+            <TabsContent value="admin" className="mt-4 md:mt-6">
+              {renderUserContent('admin')}
             </TabsContent>
           </Tabs>
         </CardContent>
-      </Card>
+              </Card>
 
-      <UserFormModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        user={editingUser}
-        onSaved={handleUserSaved}
-      />
+        <UserFormModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          user={editingUser}
+          onSaved={handleUserSaved}
+        />
 
-      <EnrollmentFormModal
-        isOpen={isEnrollmentModalOpen}
-        onClose={() => setIsEnrollmentModalOpen(false)}
-        onSaved={handleEnrollmentSaved}
-      />
+        <EnrollmentFormModal
+          isOpen={isEnrollmentModalOpen}
+          onClose={() => setIsEnrollmentModalOpen(false)}
+          onSaved={handleEnrollmentSaved}
+        />
 
-      <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
-        <AlertDialogContent className="border-0 shadow-xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl text-gray-800">Xác nhận xóa người dùng</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-600">
-              Bạn có chắc chắn muốn xóa người dùng "{deletingUser?.fullname}"? 
-              Hành động này không thể hoàn tác.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="hover:bg-gray-100">Hủy</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deletingUser && handleDeleteUser(deletingUser.id)}
-              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0"
-            >
-              Xác nhận xóa
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+        <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
+          <AlertDialogContent className="border-0 shadow-xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-xl text-gray-800">Xác nhận xóa người dùng</AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-600">
+                Bạn có chắc chắn muốn xóa người dùng "{deletingUser?.fullname}"? 
+                Hành động này không thể hoàn tác.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="hover:bg-gray-100">Hủy</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => deletingUser && handleDeleteUser(deletingUser.id)}
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0"
+              >
+                Xác nhận xóa
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+    </div>
   );
 };
 

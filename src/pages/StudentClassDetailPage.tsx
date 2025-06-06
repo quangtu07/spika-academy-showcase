@@ -152,13 +152,13 @@ const StudentClassDetailPage = () => {
 
   const getStatusBadge = (status: string | null) => {
     const statusMap = {
-      'đang hoạt động': { text: 'Đang hoạt động', class: 'bg-emerald-500/15 text-emerald-700 border-emerald-300 shadow-sm' },
-      'đã kết thúc': { text: 'Đã kết thúc', class: 'bg-gray-500/15 text-gray-700 border-gray-300 shadow-sm' },
-      'hoàn thành': { text: 'Hoàn thành', class: 'bg-blue-500/15 text-blue-700 border-blue-300 shadow-sm' },
-      'chờ bắt đầu': { text: 'Chờ bắt đầu', class: 'bg-amber-500/15 text-amber-700 border-amber-300 shadow-sm' },
+      'đang hoạt động': { text: 'Đang hoạt động', class: 'bg-green-100 text-green-800 border-green-200 shadow-sm' },
+      'đã kết thúc': { text: 'Đã kết thúc', class: 'bg-gray-100 text-gray-800 border-gray-200 shadow-sm' },
+      'hoàn thành': { text: 'Hoàn thành', class: 'bg-blue-100 text-blue-800 border-blue-200 shadow-sm' },
+      'chờ bắt đầu': { text: 'Chờ bắt đầu', class: 'bg-yellow-100 text-yellow-800 border-yellow-200 shadow-sm' },
     };
 
-    const defaultStatus = { text: 'Không xác định', class: 'bg-gray-500/15 text-gray-700 border-gray-300 shadow-sm' };
+    const defaultStatus = { text: 'Không xác định', class: 'bg-gray-100 text-gray-800 border-gray-200 shadow-sm' };
     const normalizedStatus = status?.toString().trim().toLowerCase();
     
     let statusInfo = defaultStatus;

@@ -216,15 +216,17 @@ const TeacherClassDetailPage = () => {
     }
   };
 
+
+
   const getStatusBadge = (status: string | null) => {
     const statusMap = {
-      'đang hoạt động': { text: 'Đang hoạt động', class: 'bg-emerald-500/15 text-emerald-700 border-emerald-300 shadow-sm' },
-      'đã kết thúc': { text: 'Đã kết thúc', class: 'bg-gray-500/15 text-gray-700 border-gray-300 shadow-sm' },
-      'hoàn thành': { text: 'Hoàn thành', class: 'bg-blue-500/15 text-blue-700 border-blue-300 shadow-sm' },
-      'chờ bắt đầu': { text: 'Chờ bắt đầu', class: 'bg-amber-500/15 text-amber-700 border-amber-300 shadow-sm' },
+      'đang hoạt động': { text: 'Đang hoạt động', class: 'bg-green-100 text-green-800 border-green-200' },
+      'đã kết thúc': { text: 'Đã kết thúc', class: 'bg-gray-100 text-gray-800 border-gray-200' },
+      'hoàn thành': { text: 'Hoàn thành', class: 'bg-blue-100 text-blue-800 border-blue-200' },
+      'chờ bắt đầu': { text: 'Chờ bắt đầu', class: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
     };
 
-    const defaultStatus = { text: 'Không xác định', class: 'bg-gray-500/15 text-gray-700 border-gray-300 shadow-sm' };
+    const defaultStatus = { text: 'Không xác định', class: 'bg-gray-100 text-gray-800 border-gray-200' };
     const normalizedStatus = status?.toString().trim().toLowerCase();
     
     let statusInfo = defaultStatus;
@@ -233,7 +235,7 @@ const TeacherClassDetailPage = () => {
     }
 
     return (
-      <Badge className={`${statusInfo.class} border font-medium px-3 py-1`}>
+      <Badge className={`${statusInfo.class} font-medium px-3 py-1`}>
         {statusInfo.text}
       </Badge>
     );
@@ -378,28 +380,20 @@ const TeacherClassDetailPage = () => {
                 </div>
                 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-3 gap-3 mt-4">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30">
                     <div className="text-center">
-                      <Users className="w-5 h-5 text-indigo-100 mx-auto mb-1" />
-                      <p className="text-white text-lg font-bold">{enrollments.length}</p>
-                      <p className="text-indigo-100 text-xs">Học viên</p>
+                      <Users className="w-6 h-6 text-indigo-100 mx-auto mb-2" />
+                      <p className="text-white text-xl font-bold">{enrollments.length}</p>
+                      <p className="text-indigo-100 text-sm">Học viên</p>
                     </div>
                   </div>
                   
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30">
                     <div className="text-center">
-                      <BookOpen className="w-5 h-5 text-purple-100 mx-auto mb-1" />
-                      <p className="text-white text-lg font-bold">{lessons.length}</p>
-                      <p className="text-purple-100 text-xs">Buổi học</p>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
-                    <div className="text-center">
-                      <Award className="w-5 h-5 text-pink-100 mx-auto mb-1" />
-                      <p className="text-white text-lg font-bold">85%</p>
-                      <p className="text-pink-100 text-xs">Hoàn thành</p>
+                      <BookOpen className="w-6 h-6 text-purple-100 mx-auto mb-2" />
+                      <p className="text-white text-xl font-bold">{lessons.length}</p>
+                      <p className="text-purple-100 text-sm">Buổi học</p>
                     </div>
                   </div>
                 </div>
@@ -683,39 +677,27 @@ const TeacherClassDetailPage = () => {
                 </div>
                 
                 {/* Enhanced Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <Users className="w-6 h-6 text-indigo-100" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 max-w-4xl mx-auto">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 border border-white/30">
+                    <div className="flex items-center space-x-6">
+                      <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <Users className="w-8 h-8 text-indigo-100" />
                       </div>
                       <div>
-                        <p className="text-indigo-100 text-sm font-medium">Học viên</p>
-                        <p className="text-white text-2xl font-bold">{enrollments.length}</p>
+                        <p className="text-indigo-100 text-lg font-medium">Học viên</p>
+                        <p className="text-white text-3xl font-bold">{enrollments.length}</p>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <BookOpen className="w-6 h-6 text-purple-100" />
+                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 border border-white/30">
+                    <div className="flex items-center space-x-6">
+                      <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <BookOpen className="w-8 h-8 text-purple-100" />
                       </div>
                       <div>
-                        <p className="text-purple-100 text-sm font-medium">Buổi học</p>
-                        <p className="text-white text-2xl font-bold">{lessons.length}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <Award className="w-6 h-6 text-yellow-100" />
-                      </div>
-                      <div>
-                        <p className="text-yellow-100 text-sm font-medium">Hoàn thành</p>
-                        <p className="text-white text-2xl font-bold">85%</p>
+                        <p className="text-purple-100 text-lg font-medium">Buổi học</p>
+                        <p className="text-white text-3xl font-bold">{lessons.length}</p>
                       </div>
                     </div>
                   </div>

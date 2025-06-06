@@ -38,7 +38,6 @@ const TeacherClasses = () => {
         throw new Error('Không tìm thấy thông tin giảng viên');
       }
 
-      console.log('🔍 currentUser:', currentUser);
       // Query lớp học của giảng viên hiện tại
       const { data: classesData } = await (supabase as any)
         .from('classes')
@@ -226,13 +225,13 @@ const TeacherClasses = () => {
             <CardContent className="p-6 bg-white">
               <div className="space-y-4">
                 {/* Class Description */}
-                {classItem.description && (
+                {/* {classItem.description && (
                   <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-4 border border-blue-100">
                     <p className="text-gray-700 text-sm leading-relaxed line-clamp-3">
                       {classItem.description}
                     </p>
                   </div>
-                )}
+                )} */}
                 
                 {/* Class Info */}
                 <div className="grid grid-cols-2 gap-4">

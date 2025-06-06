@@ -597,17 +597,17 @@ const LessonAssignmentsPage = () => {
                 className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại
+
               </Button>
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   Bài tập đã giao
                 </h1>
-                {lesson && (
+                {/* {lesson && (
                   <p className="text-gray-600 mt-1">
                     Buổi {lesson.lesson_number}: {lesson.title} - {lesson.class.name}
                   </p>
-                )}
+                )} */}
               </div>
             </div>
           </div>

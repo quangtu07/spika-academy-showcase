@@ -873,13 +873,13 @@ const ClassDetailPage = () => {
                                 <TableCell>
                                   <div>
                                     <div className="font-medium">{lesson.title}</div>
-                                    <div className="text-sm text-gray-500 sm:hidden line-clamp-2">{lesson.content || '-'}</div>
-                                    <div className="text-xs text-gray-400 sm:hidden">
+                                    {/* <div className="text-sm text-gray-500 sm:hidden line-clamp-2">{lesson.content || '-'}</div> */}
+                                    {/* <div className="text-xs text-gray-400 sm:hidden">
                                       Tạo: {new Date(lesson.created_at).toLocaleString('vi-VN')}
                                       {lesson.updated_at && (
                                         <><br />Cập nhật: {new Date(lesson.updated_at).toLocaleString('vi-VN')}</>
                                       )}
-                                    </div>
+                                    </div> */}
                                   </div>
                                 </TableCell>
                                 <TableCell className="hidden sm:table-cell">{lesson.content || '-'}</TableCell>
@@ -1070,51 +1070,58 @@ const ClassDetailPage = () => {
 
       {/* Edit Lesson Modal */}
       <Dialog open={isEditLessonModalOpen} onOpenChange={handleCloseEditLessonModal}>
-        <DialogContent className="sm:max-w-[425px] bg-white/80 backdrop-blur-xl border-0 shadow-xl">
-          <DialogHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white p-6">
-            <DialogTitle className="flex items-center space-x-2">
-              <Edit className="h-5 w-5" />
-              <span>Chỉnh sửa buổi học</span>
-            </DialogTitle>
-            <DialogDescription className="text-purple-100">
-              Nhập thông tin cho buổi học đã chọn
+        <DialogContent className="sm:max-w-[500px] w-[95vw] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">Chỉnh sửa buổi học</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Cập nhật thông tin cho buổi học đã chọn
             </DialogDescription>
           </DialogHeader>
-          <div className="p-6 space-y-6">
-            <div className="space-y-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-lesson-title" className="text-right font-medium">
-                  Tiêu đề
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-lesson-title" className="text-sm font-medium">
+                Tiêu đề buổi học
                 </Label>
                 <Input 
                   id="edit-lesson-title" 
                   value={editLessonTitle} 
                   onChange={(e) => setEditLessonTitle(e.target.value)}
-                  className="col-span-3"
                   placeholder="Nhập tiêu đề buổi học"
+                className="w-full"
                 />
               </div>
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="edit-lesson-content" className="text-right font-medium">
-                  Nội dung
+            
+            <div className="space-y-2">
+              <Label htmlFor="edit-lesson-content" className="text-sm font-medium">
+                Nội dung buổi học
                 </Label>
                 <Textarea 
                   id="edit-lesson-content" 
                   value={editLessonContent} 
                   onChange={(e) => setEditLessonContent(e.target.value)}
-                  className="col-span-3 min-h-[100px]"
-                  placeholder="Nhập nội dung buổi học"
+                placeholder="Nhập nội dung buổi học (tùy chọn)"
+                className="w-full min-h-[120px] resize-none"
+                rows={5}
                 />
               </div>
             </div>
-          </div>
-          <DialogFooter className="px-6 py-4 bg-gray-50">
+          
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
+            <Button 
+              variant="outline" 
+              onClick={handleCloseEditLessonModal}
+              disabled={isEditingLesson}
+              className="w-full sm:w-auto"
+            >
+              Hủy
+            </Button>
             <Button 
               onClick={handleEditLesson} 
               disabled={isEditingLesson || !editLessonTitle.trim()}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
+              className="w-full sm:w-auto"
             >
-              {isEditingLesson ? 'Đang cập nhật...' : 'Cập nhật buổi học'}
+              {isEditingLesson ? 'Đang cập nhật...' : 'Cập nhật'}
             </Button>
           </DialogFooter>
         </DialogContent>

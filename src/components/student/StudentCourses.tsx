@@ -188,15 +188,15 @@ const StudentCourses = () => {
     const statusMap = {
       'active': { 
         text: 'Đang học', 
-        class: 'bg-emerald-500/15 text-emerald-700 border-emerald-300' 
+        class: 'bg-green-100 text-green-800 border-green-200' 
       },
       'completed': { 
         text: 'Hoàn thành', 
-        class: 'bg-blue-500/15 text-blue-700 border-blue-300' 
+        class: 'bg-blue-100 text-blue-800 border-blue-200' 
       },
       'inactive': { 
         text: 'Đã dừng', 
-        class: 'bg-gray-500/15 text-gray-700 border-gray-300' 
+        class: 'bg-gray-100 text-gray-800 border-gray-200' 
       }
     };
 
