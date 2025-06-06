@@ -151,7 +151,7 @@ const StudentDashboard = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-2">
+              <div className="from-indigo-500 to-purple-600 rounded-xl p-2">
                 <StudentNotificationBell />
               </div>
               <Button 

@@ -16,13 +16,25 @@ import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const StudentNotificationBell = () => {
-  const { notifications, isLoading } = useStudentNotifications();
+  const { notifications, isLoading, markAsViewed } = useStudentNotifications();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const handleNotificationClick = (submissionId: string) => {
-    navigate(`/student-submission/${submissionId}`);
+  const handleNotificationClick = (notification: any) => {
+    // Nếu là bài tập chưa làm, chuyển đến trang danh sách bài tập của lesson
+    if (notification.status === 'Chưa làm') {
+      navigate(`/student/lesson/${notification.assignment.lesson.id}/assignments`);
+    } 
+    // Nếu là bài tập đã hoàn thành có feedback, chuyển đến trang chi tiết bài đã nộp
+    else if (notification.status === 'Đã hoàn thành' && notification.feedback) {
+      // Kiểm tra nếu là ID tạm thời (new-*) thì không navigate đến submission detail
+      if (!notification.id.startsWith('new-')) {
+        // Đánh dấu notification đã được xem trước khi navigate
+        markAsViewed(notification.id);
+        navigate(`/student/submission/${notification.id}`);
+      }
+    }
     setOpen(false);
   };
 
@@ -43,13 +55,15 @@ const StudentNotificationBell = () => {
       return {
         title: 'BÀI TẬP CHƯA LÀM',
         badgeClass: 'bg-amber-500 text-white',
-        time: null
+        time: null,
+        actionText: 'Nhấn để làm bài →'
       };
     } else if (notification.status === 'Đã hoàn thành' && notification.feedback) {
       return {
         title: 'BÀI ĐÃ ĐƯỢC CHẤM',
         badgeClass: 'bg-green-500 text-white',
-        time: notification.submitted_at
+        time: notification.submitted_at,
+        actionText: 'Nhấn để xem nhận xét →'
       };
     }
     return null;
@@ -57,8 +71,8 @@ const StudentNotificationBell = () => {
 
   if (isLoading) {
     return (
-      <Button variant="ghost" size="sm" className="relative">
-        <Bell className="h-5 w-5 text-gray-400" />
+      <Button variant="ghost" size="sm" className="relative hover:bg-transparent">
+        <Bell className={`h-5 w-5 ${isMobile ? 'text-white' : 'text-gray-400'}`} />
       </Button>
     );
   }
@@ -66,8 +80,8 @@ const StudentNotificationBell = () => {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="relative">
-          <Bell className={`h-5 w-5 ${notifications.length > 0 ? 'text-blue-600' : 'text-gray-500'}`} />
+        <Button variant="ghost" size="sm" className="relative hover:bg-transparent">
+          <Bell className={`h-5 w-5 ${isMobile ? 'text-white' : (notifications.length > 0 ? 'text-blue-600' : 'text-gray-500')}`} />
           {notifications.length > 0 && (
             <Badge 
               className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs"
@@ -100,8 +114,8 @@ const StudentNotificationBell = () => {
             return (
               <DropdownMenuItem
                 key={notification.id}
-                className="flex flex-col items-start p-4 cursor-pointer hover:bg-gray-50"
-                onClick={() => handleNotificationClick(notification.id)}
+                className="flex flex-col items-start p-4 cursor-pointer"
+                onClick={() => handleNotificationClick(notification)}
               >
                 <div className="w-full">
                   <div className="flex items-start justify-between mb-2">
@@ -125,7 +139,7 @@ const StudentNotificationBell = () => {
                       {notificationInfo.title}
                     </Badge>
                     <span className="text-xs text-gray-500">
-                      Nhấn để xem →
+                      {notificationInfo.actionText}
                     </span>
                   </div>
 
@@ -147,10 +161,13 @@ const StudentNotificationBell = () => {
             <div className="p-3">
               <Button 
                 variant="ghost" 
-                className="w-full text-sm"
-                onClick={() => navigate('/student')}
+                className="w-full text-sm text-blue-600 hover:bg-transparent hover:text-blue-600"
+                onClick={() => {
+                  navigate('/student');
+                  setOpen(false);
+                }}
               >
-                Xem tất cả thông báo
+                Về trang chính →
               </Button>
             </div>
           </>

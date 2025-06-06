@@ -8,6 +8,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentClassDetailPage from "./pages/StudentClassDetailPage";
 import StudentLessonAssignmentsPage from "./pages/StudentLessonAssignmentsPage";
+import StudentSubmissionPage from "./pages/StudentSubmissionPage";
 import StudentSubmissionDetailPage from "./pages/StudentSubmissionDetailPage";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import TeacherClassDetailPage from "./pages/TeacherClassDetailPage";
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/student" element={<StudentDashboard />} />
           <Route path="/student/class/:classId" element={<StudentClassDetailPage />} />
           <Route path="/student/lesson/:lessonId/assignments" element={<StudentLessonAssignmentsPage />} />
+          <Route path="/student/assignment/:assignmentId/submit" element={<StudentSubmissionPage />} />
           <Route path="/student/submission/:submissionId" element={<StudentSubmissionDetailPage />} />
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher/class/:classId" element={<TeacherClassDetailPage />} />
