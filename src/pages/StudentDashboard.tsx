@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,12 +9,10 @@ import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import StudentCourses from '@/components/student/StudentCourses';
 import StudentProfile from '@/components/student/StudentProfile';
-import StudentNotificationBell from '@/components/student/StudentNotificationBell';
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('courses');
-  const [currentStudentId, setCurrentStudentId] = useState<string | null>(null);
   const { userRole, isLoading } = useUserRole();
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -30,14 +27,6 @@ const StudentDashboard = () => {
       navigate('/');
     }
   }, [userRole, isLoading, navigate, toast]);
-
-  useEffect(() => {
-    const currentUser = localStorage.getItem('currentUser');
-    if (currentUser) {
-      const user = JSON.parse(currentUser);
-      setCurrentStudentId(user.id);
-    }
-  }, []);
 
   const handleGoHome = () => {
     navigate('/');
@@ -91,17 +80,14 @@ const StudentDashboard = () => {
                   <p className="text-white/80 text-sm">Bảng điều khiển</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <StudentNotificationBell studentId={currentStudentId} />
-                <Button 
-                  onClick={handleGoHome}
-                  variant="outline"
-                  size="sm"
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
-                >
-                  <Home className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button 
+                onClick={handleGoHome}
+                variant="outline"
+                size="sm"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+              >
+                <Home className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>
@@ -159,17 +145,14 @@ const StudentDashboard = () => {
                 <p className="text-gray-600 mt-1">Bảng điều khiển học viên</p>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <StudentNotificationBell studentId={currentStudentId} />
-              <Button 
-                onClick={handleGoHome}
-                variant="outline"
-                className="flex items-center space-x-2 hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <Home className="h-4 w-4" />
-                <span>Về trang chủ</span>
-              </Button>
-            </div>
+            <Button 
+              onClick={handleGoHome}
+              variant="outline"
+              className="flex items-center space-x-2 hover:bg-indigo-50 border-indigo-200 text-indigo-700"
+            >
+              <Home className="h-4 w-4" />
+              <span>Về trang chủ</span>
+            </Button>
           </div>
         </div>
       </div>
