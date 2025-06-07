@@ -42,15 +42,24 @@ const StudentClassDetailPage = () => {
   const [lessonAssignments, setLessonAssignments] = useState<{[key: string]: boolean}>({});
   const [assignmentProgress, setAssignmentProgress] = useState<{ completed: number; pending: number; total: number }>({ completed: 0, pending: 0, total: 0 });
   const [loading, setLoading] = useState(true);
+  const [isEnrolled, setIsEnrolled] = useState<boolean | null>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
   useEffect(() => {
     if (classId) {
-      fetchClassDetail();
-      fetchLessons();
+      checkEnrollment();
     }
   }, [classId]);
+
+  useEffect(() => {
+    if (isEnrolled === true) {
+      fetchClassDetail();
+      fetchLessons();
+    } else if (isEnrolled === false) {
+      setLoading(false);
+    }
+  }, [isEnrolled]);
 
   useEffect(() => {
     if (lessons.length > 0) {
@@ -58,6 +67,44 @@ const StudentClassDetailPage = () => {
       fetchAssignmentProgress();
     }
   }, [lessons]);
+
+  const checkEnrollment = async () => {
+    try {
+      // Get current student ID from localStorage
+      const currentUserStr = localStorage.getItem('currentUser');
+      if (!currentUserStr) {
+        console.error('No current user found');
+        setIsEnrolled(false);
+        return;
+      }
+      
+      const currentUser = JSON.parse(currentUserStr);
+      const studentId = currentUser.id;
+
+      // Check if student is enrolled in this class
+      const { data, error } = await supabase
+        .from('enrollments')
+        .select('id')
+        .eq('class_id', classId)
+        .eq('student_id', studentId)
+        .eq('status', 'active')
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        throw error;
+      }
+
+      setIsEnrolled(!!data);
+    } catch (error) {
+      console.error('Error checking enrollment:', error);
+      setIsEnrolled(false);
+      toast({
+        title: "Lỗi",
+        description: "Không thể kiểm tra quyền truy cập",
+        variant: "destructive",
+      });
+    }
+  };
 
   const fetchClassDetail = async () => {
     try {
@@ -256,8 +303,34 @@ const StudentClassDetailPage = () => {
             <GraduationCap className="w-8 h-8 text-white" />
           </div>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">Đang tải thông tin lớp học...</p>
+          <p className="text-gray-600 text-lg font-medium">Đang kiểm tra quyền truy cập...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (isEnrolled === false) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl border-0 overflow-hidden">
+          <CardHeader className="text-center bg-gradient-to-r from-red-500 to-pink-500 text-white">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileText className="w-8 h-8 text-white" />
+            </div>
+            <CardTitle className="text-xl">Không có quyền truy cập</CardTitle>
+            <CardDescription className="text-red-100">
+              Bạn chưa đăng ký lớp học này hoặc không có quyền truy cập.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center pt-6">
+            <Button 
+              onClick={() => navigate('/student')} 
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg"
+            >
+              Quay lại trang học viên
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
