@@ -67,6 +67,23 @@
       ]
     }
     </script>
+
+    <!-- Custom CSS để di chuyển GetButton chat widget sang góc trái -->
+    <style>
+      /* Di chuyển GetButton widget sang góc trái */
+      #getbutton {
+        left: 20px !important;
+        right: auto !important;
+      }
+      
+      /* Đảm bảo widget hiển thị ở góc trái trên mobile */
+      @media (max-width: 768px) {
+        #getbutton {
+          left: 15px !important;
+          right: auto !important;
+        }
+      }
+    </style>
   </head>
 
   <body>
