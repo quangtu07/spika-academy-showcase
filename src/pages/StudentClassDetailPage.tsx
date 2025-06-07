@@ -40,6 +40,7 @@ const StudentClassDetailPage = () => {
   const [classDetail, setClassDetail] = useState<ClassDetail | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [lessonAssignments, setLessonAssignments] = useState<{[key: string]: boolean}>({});
+  const [assignmentProgress, setAssignmentProgress] = useState<{ completed: number; total: number }>({ completed: 0, total: 0 });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -54,6 +55,7 @@ const StudentClassDetailPage = () => {
   useEffect(() => {
     if (lessons.length > 0) {
       fetchLessonAssignments();
+      fetchAssignmentProgress();
     }
   }, [lessons]);
 
@@ -152,6 +154,66 @@ const StudentClassDetailPage = () => {
     }
   };
 
+  const fetchAssignmentProgress = async () => {
+    try {
+      // Get current student ID from localStorage
+      const currentUserStr = localStorage.getItem('currentUser');
+      if (!currentUserStr) {
+        console.error('No current user found');
+        return;
+      }
+      
+      const currentUser = JSON.parse(currentUserStr);
+      const studentId = currentUser.id;
+
+      // Get all lesson IDs for this class
+      const lessonIds = lessons.map(lesson => lesson.id);
+      
+      if (lessonIds.length === 0) {
+        setAssignmentProgress({ completed: 0, total: 0 });
+        return;
+      }
+
+      // Get all assignments for lessons in this class
+      const { data: assignments, error: assignmentsError } = await supabase
+        .from('assignments')
+        .select('id, lesson_id')
+        .in('lesson_id', lessonIds);
+
+      if (assignmentsError) throw assignmentsError;
+
+      const totalAssignments = assignments?.length || 0;
+
+      if (totalAssignments === 0) {
+        setAssignmentProgress({ completed: 0, total: 0 });
+        return;
+      }
+
+      // Get completed assignments for this student
+      const assignmentIds = assignments?.map(assignment => assignment.id) || [];
+      
+      const { data: submissions, error: submissionsError } = await supabase
+        .from('assignment_submissions')
+        .select('assignment_id, status')
+        .eq('student_id', studentId)
+        .in('assignment_id', assignmentIds)
+        .eq('status', 'Đã hoàn thành');
+
+      if (submissionsError) throw submissionsError;
+
+      const completedAssignments = submissions?.length || 0;
+
+      setAssignmentProgress({ 
+        completed: completedAssignments, 
+        total: totalAssignments 
+      });
+
+    } catch (error) {
+      console.error('Error fetching assignment progress:', error);
+      setAssignmentProgress({ completed: 0, total: 0 });
+    }
+  };
+
   const getStatusBadge = (status: string | null) => {
     const statusMap = {
       'đang hoạt động': { text: 'Đang hoạt động', class: 'bg-green-100 text-green-800 border-green-200 shadow-sm' },
@@ -177,6 +239,11 @@ const StudentClassDetailPage = () => {
 
   const handleViewAssignments = (lesson: Lesson) => {
     navigate(`/student/lesson/${lesson.id}/assignments`);
+  };
+
+  const calculateProgressPercentage = () => {
+    if (assignmentProgress.total === 0) return 0;
+    return Math.round((assignmentProgress.completed / assignmentProgress.total) * 100);
   };
 
   if (loading) {
@@ -267,8 +334,9 @@ const StudentClassDetailPage = () => {
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
                     <div className="text-center">
                       <Award className="w-5 h-5 text-pink-100 mx-auto mb-1" />
-                      <p className="text-white text-lg font-bold">85%</p>
-                      <p className="text-pink-100 text-xs">Tiến độ</p>
+                      <p className="text-white text-lg font-bold">{calculateProgressPercentage()}%</p>
+                      <p className="text-pink-100 text-xs">Bài tập hoàn thành</p>
+                      <p className="text-pink-100 text-xs">({assignmentProgress.completed}/{assignmentProgress.total})</p>
                     </div>
                   </div>
                 </div>
@@ -450,8 +518,9 @@ const StudentClassDetailPage = () => {
                         <Award className="w-6 h-6 text-yellow-100" />
                       </div>
                       <div>
-                        <p className="text-yellow-100 text-sm font-medium">Tiến độ</p>
-                        <p className="text-white text-2xl font-bold">85%</p>
+                        <p className="text-yellow-100 text-sm font-medium">Bài tập hoàn thành</p>
+                        <p className="text-white text-2xl font-bold">{calculateProgressPercentage()}%</p>
+                        <p className="text-yellow-100 text-xs">({assignmentProgress.completed}/{assignmentProgress.total} bài tập)</p>
                       </div>
                     </div>
                   </div>
@@ -603,4 +672,4 @@ const StudentClassDetailPage = () => {
   );
 };
 
-export default StudentClassDetailPage; 
+export default StudentClassDetailPage;
