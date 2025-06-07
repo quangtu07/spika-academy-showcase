@@ -40,7 +40,7 @@ const StudentClassDetailPage = () => {
   const [classDetail, setClassDetail] = useState<ClassDetail | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [lessonAssignments, setLessonAssignments] = useState<{[key: string]: boolean}>({});
-  const [assignmentProgress, setAssignmentProgress] = useState<{ completed: number; total: number }>({ completed: 0, total: 0 });
+  const [assignmentProgress, setAssignmentProgress] = useState<{ completed: number; pending: number; total: number }>({ completed: 0, pending: 0, total: 0 });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -170,7 +170,7 @@ const StudentClassDetailPage = () => {
       const lessonIds = lessons.map(lesson => lesson.id);
       
       if (lessonIds.length === 0) {
-        setAssignmentProgress({ completed: 0, total: 0 });
+        setAssignmentProgress({ completed: 0, pending: 0, total: 0 });
         return;
       }
 
@@ -185,32 +185,34 @@ const StudentClassDetailPage = () => {
       const totalAssignments = assignments?.length || 0;
 
       if (totalAssignments === 0) {
-        setAssignmentProgress({ completed: 0, total: 0 });
+        setAssignmentProgress({ completed: 0, pending: 0, total: 0 });
         return;
       }
 
-      // Get completed assignments for this student
+      // Get all submissions for this student
       const assignmentIds = assignments?.map(assignment => assignment.id) || [];
       
       const { data: submissions, error: submissionsError } = await supabase
         .from('assignment_submissions')
         .select('assignment_id, status')
         .eq('student_id', studentId)
-        .in('assignment_id', assignmentIds)
-        .eq('status', 'Đã hoàn thành');
+        .in('assignment_id', assignmentIds);
 
       if (submissionsError) throw submissionsError;
 
-      const completedAssignments = submissions?.length || 0;
+      // Count completed and pending assignments
+      const completedAssignments = submissions?.filter(sub => sub.status === 'Đã hoàn thành').length || 0;
+      const pendingAssignments = submissions?.filter(sub => sub.status === 'Đang chờ chấm').length || 0;
 
       setAssignmentProgress({ 
-        completed: completedAssignments, 
+        completed: completedAssignments,
+        pending: pendingAssignments,
         total: totalAssignments 
       });
 
     } catch (error) {
       console.error('Error fetching assignment progress:', error);
-      setAssignmentProgress({ completed: 0, total: 0 });
+      setAssignmentProgress({ completed: 0, pending: 0, total: 0 });
     }
   };
 
@@ -322,7 +324,7 @@ const StudentClassDetailPage = () => {
                 </div>
                 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="grid grid-cols-3 gap-3 mt-4">
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
                     <div className="text-center">
                       <BookOpen className="w-5 h-5 text-purple-100 mx-auto mb-1" />
@@ -335,8 +337,16 @@ const StudentClassDetailPage = () => {
                     <div className="text-center">
                       <Award className="w-5 h-5 text-pink-100 mx-auto mb-1" />
                       <p className="text-white text-lg font-bold">{calculateProgressPercentage()}%</p>
-                      <p className="text-pink-100 text-xs">Bài tập hoàn thành</p>
+                      <p className="text-pink-100 text-xs">Hoàn thành</p>
                       <p className="text-pink-100 text-xs">({assignmentProgress.completed}/{assignmentProgress.total})</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
+                    <div className="text-center">
+                      <Clock className="w-5 h-5 text-yellow-100 mx-auto mb-1" />
+                      <p className="text-white text-lg font-bold">{assignmentProgress.pending}</p>
+                      <p className="text-yellow-100 text-xs">Chờ chấm</p>
                     </div>
                   </div>
                 </div>
@@ -499,7 +509,7 @@ const StudentClassDetailPage = () => {
                 </div>
                 
                 {/* Enhanced Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                   <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -521,6 +531,19 @@ const StudentClassDetailPage = () => {
                         <p className="text-yellow-100 text-sm font-medium">Bài tập hoàn thành</p>
                         <p className="text-white text-2xl font-bold">{calculateProgressPercentage()}%</p>
                         <p className="text-yellow-100 text-xs">({assignmentProgress.completed}/{assignmentProgress.total} bài tập)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <Clock className="w-6 h-6 text-orange-100" />
+                      </div>
+                      <div>
+                        <p className="text-orange-100 text-sm font-medium">Bài tập chờ chấm</p>
+                        <p className="text-white text-2xl font-bold">{assignmentProgress.pending}</p>
+                        <p className="text-orange-100 text-xs">bài tập</p>
                       </div>
                     </div>
                   </div>
