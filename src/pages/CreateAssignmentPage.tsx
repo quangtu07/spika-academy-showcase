@@ -6,6 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Type, Image, Video, Upload, Trash2, FileText, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import TeacherToolbar from '@/components/teacher/TeacherToolbar';
+import NotificationBell from '@/components/teacher/NotificationBell';
 
 interface AssignmentBlock {
   id: string;
@@ -35,6 +37,7 @@ const CreateAssignmentPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingBlocks, setUploadingBlocks] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [teacherId, setTeacherId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -42,6 +45,15 @@ const CreateAssignmentPage = () => {
       fetchLessonInfo();
     }
   }, [lessonId]);
+
+  useEffect(() => {
+    // Get teacherId from localStorage
+    const currentUserStr = localStorage.getItem('currentUser');
+    if (currentUserStr) {
+      const currentUser = JSON.parse(currentUserStr);
+      setTeacherId(currentUser?.id || null);
+    }
+  }, []);
 
   const fetchLessonInfo = async () => {
     try {
@@ -374,31 +386,11 @@ const CreateAssignmentPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Header */}
-      <div className="bg-white shadow-lg border-b sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="outline"
-                size="sm"
-                className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại
-              </Button>
-              <div>
-                <h1 className="text-xl lg:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Giao bài tập
-                </h1>
-                {/* <p className="text-sm lg:text-base text-gray-600 mt-1">
-                  Buổi {lesson.lesson_number}: {lesson.title} - {lesson.class.name}
-                </p> */}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <TeacherToolbar 
+        title="Giao bài tập"
+        subtitle={lesson ? `Buổi ${lesson.lesson_number}: ${lesson.title} - ${lesson.class.name}` : undefined}
+        rightContent={<NotificationBell teacherId={teacherId} />}
+      />
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">

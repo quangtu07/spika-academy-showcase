@@ -4,10 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, FileText, Calendar, User, CheckCircle, Clock, AlertCircle, Type, Image, Video, Save, MessageSquare, GraduationCap } from 'lucide-react';
+import { FileText, Calendar, User, CheckCircle, Clock, AlertCircle, Type, Image, Video, Save, MessageSquare, GraduationCap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import TeacherToolbar from '@/components/teacher/TeacherToolbar';
 
 interface Submission {
   id: string;
@@ -185,17 +186,17 @@ const TeacherSubmissionDetailPage = () => {
     const statusMap = {
       'Chưa làm': { 
         text: 'Chưa làm', 
-        class: 'bg-amber-500/15 text-amber-700 border-amber-300', 
+        class: 'bg-amber-100 text-amber-800 border-amber-400', 
         icon: AlertCircle 
       },
       'Đang chờ chấm': { 
         text: 'Đang chờ chấm', 
-        class: 'bg-blue-500/15 text-blue-700 border-blue-300', 
+        class: 'bg-blue-100 text-blue-800 border-blue-400', 
         icon: Clock 
       },
       'Đã hoàn thành': { 
         text: 'Đã hoàn thành', 
-        class: 'bg-emerald-500/15 text-emerald-700 border-emerald-300', 
+        class: 'bg-emerald-100 text-emerald-800 border-emerald-400', 
         icon: CheckCircle 
       },
     };
@@ -313,28 +314,10 @@ const TeacherSubmissionDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
         {/* Mobile Header */}
-        <div className="bg-white shadow-lg border-b sticky top-0 z-50">
-          <div className="px-4 py-3">
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="ghost"
-                size="sm"
-                className="p-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent truncate">
-                  Chấm bài tập
-                </h1>
-                <p className="text-xs text-gray-500 truncate">
-                  {submission.student.fullname}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <TeacherToolbar
+          title="Chấm bài tập"
+          subtitle={submission.student.fullname}
+        />
 
         {/* Mobile Content */}
         <div className="p-4">
@@ -442,34 +425,11 @@ const TeacherSubmissionDetailPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Header */}
-      <div className="bg-white shadow-lg border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="outline"
-                size="sm"
-                className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Chấm bài tập
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Bài nộp của {submission.student.fullname}
-                </p>
-              </div>
-            </div>
-            <div>
-              {getStatusBadge(submission.status)}
-            </div>
-          </div>
-        </div>
-      </div>
+      <TeacherToolbar
+        title="Chấm bài tập"
+        subtitle={`Bài nộp của ${submission.student.fullname}`}
+        rightContent={getStatusBadge(submission.status)}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

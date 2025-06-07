@@ -7,90 +7,105 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, BookOpen, GraduationCap } from 'lucide-react';
+import { BookOpen, GraduationCap, Edit } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import TeacherToolbar from '@/components/teacher/TeacherToolbar';
+import NotificationBell from '@/components/teacher/NotificationBell';
 
-interface ClassDetail {
+interface Lesson {
   id: string;
-  name: string;
-  course: {
+  title: string;
+  content: string | null;
+  lesson_number: number;
+  class: {
+    id: string;
     name: string;
+    course: {
+      name: string;
+    };
   };
 }
 
-const CreateLessonPage = () => {
+const EditLessonPage = () => {
   const navigate = useNavigate();
-  const { classId } = useParams();
+  const { lessonId } = useParams();
   const isMobile = useIsMobile();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
   });
-  const [classDetail, setClassDetail] = useState<ClassDetail | null>(null);
-  const [nextLessonNumber, setNextLessonNumber] = useState(1);
+  const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+  const [teacherId, setTeacherId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (classId) {
-      fetchClassDetail();
-      fetchNextLessonNumber();
+    if (lessonId) {
+      fetchLessonDetail();
     }
-  }, [classId]);
+  }, [lessonId]);
 
-  const fetchClassDetail = async () => {
+  useEffect(() => {
+    // Get teacherId from localStorage
+    const currentUserStr = localStorage.getItem('currentUser');
+    if (currentUserStr) {
+      const currentUser = JSON.parse(currentUserStr);
+      setTeacherId(currentUser?.id || null);
+    }
+  }, []);
+
+  const fetchLessonDetail = async () => {
     try {
       const { data, error } = await supabase
-        .from('classes')
+        .from('lessons')
         .select(`
           id,
-          name,
-          courses (
-            name
+          title,
+          content,
+          lesson_number,
+          classes (
+            id,
+            name,
+            courses (
+              name
+            )
           )
         `)
-        .eq('id', classId)
+        .eq('id', lessonId)
         .single();
 
       if (error) throw error;
 
-      setClassDetail({
+      const lessonData = {
         id: data.id,
-        name: data.name,
-        course: data.courses || { name: 'Không xác định' }
+        title: data.title,
+        content: data.content,
+        lesson_number: data.lesson_number,
+        class: {
+          id: data.classes?.id || '',
+          name: data.classes?.name || 'Không xác định',
+          course: {
+            name: data.classes?.courses?.name || 'Không xác định'
+          }
+        }
+      };
+
+      setLesson(lessonData);
+      setFormData({
+        title: lessonData.title,
+        content: lessonData.content || '',
       });
     } catch (error) {
-      console.error('Error fetching class detail:', error);
+      console.error('Error fetching lesson detail:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể tải thông tin lớp học",
+        description: "Không thể tải thông tin buổi học",
         variant: "destructive",
       });
+      navigate(-1);
     } finally {
       setPageLoading(false);
-    }
-  };
-
-  const fetchNextLessonNumber = async () => {
-    try {
-      const { data: maxLessonData, error: maxLessonError } = await supabase
-        .from('lessons')
-        .select('lesson_number')
-        .eq('class_id', classId)
-        .order('lesson_number', { ascending: false })
-        .limit(1);
-
-      if (maxLessonError) throw maxLessonError;
-
-      const next = maxLessonData && maxLessonData.length > 0
-        ? maxLessonData[0].lesson_number + 1
-        : 1;
-
-      setNextLessonNumber(next);
-    } catch (error) {
-      console.error('Error fetching next lesson number:', error);
     }
   };
 
@@ -103,7 +118,7 @@ const CreateLessonPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.content) {
+    if (!formData.title || !lesson) {
       toast({
         title: "Lỗi",
         description: "Vui lòng điền đầy đủ thông tin",
@@ -116,30 +131,27 @@ const CreateLessonPage = () => {
     try {
       const { error } = await supabase
         .from('lessons')
-        .insert({
-          class_id: classId,
+        .update({
           title: formData.title,
           content: formData.content,
-          lesson_number: nextLessonNumber,
-        });
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', lesson.id);
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       toast({
         title: "Thành công",
-        description: "Đã thêm buổi học mới",
+        description: "Đã cập nhật buổi học",
         className: "bg-green-50 border-green-200 text-green-900",
       });
 
-      navigate(`/teacher/class/${classId}`);
+      navigate(`/teacher/class/${lesson.class.id}`);
     } catch (error: any) {
-      console.error('Error creating lesson:', error);
+      console.error('Error updating lesson:', error);
       toast({
         title: "Lỗi",
-        description: error.message || "Không thể thêm buổi học",
+        description: error.message || "Không thể cập nhật buổi học",
         variant: "destructive",
       });
     } finally {
@@ -151,12 +163,27 @@ const CreateLessonPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 animate-pulse shadow-lg">
-            <BookOpen className="w-8 h-8 text-white" />
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 animate-pulse shadow-lg">
+            <Edit className="w-8 h-8 text-white" />
           </div>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">Đang tải thông tin...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg font-medium">Đang tải thông tin buổi học...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (!lesson) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl border-0">
+          <CardContent className="text-center p-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Không tìm thấy buổi học</h3>
+            <Button onClick={() => navigate(-1)} className="w-full">
+              Quay lại
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -165,14 +192,15 @@ const CreateLessonPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Header */}
       <TeacherToolbar 
-        title="Thêm buổi học"
-        subtitle={classDetail ? `${classDetail.name} - ${classDetail.course.name}` : undefined}
+        title="Chỉnh sửa buổi học"
+        subtitle={`${lesson.class.name} - ${lesson.class.course.name}`}
+        rightContent={<NotificationBell teacherId={teacherId} />}
       />
 
       {/* Main Content */}
       <div className={`mx-auto px-4 py-6 ${isMobile ? 'max-w-full' : 'max-w-4xl xl:max-w-5xl sm:px-6 lg:px-8 xl:px-12 py-8 xl:py-12'}`}>
         <Card className={`shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden ${isMobile ? 'rounded-lg' : 'rounded-xl'}`}>
-          <CardHeader className="bg-gradient-to-r from-violet-500 to-purple-500 text-white relative">
+          <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white relative">
             <div className="absolute inset-0 bg-black/10"></div>
             {!isMobile && (
               <>
@@ -184,12 +212,14 @@ const CreateLessonPage = () => {
             <div className="relative z-10">
               <div className={`flex items-center mb-4 ${isMobile ? 'space-x-3' : 'space-x-4'}`}>
                 <div className={`bg-white/20 rounded-xl flex items-center justify-center ${isMobile ? 'w-10 h-10' : 'w-16 h-16 xl:w-20 xl:h-20'}`}>
-                  <BookOpen className={`text-white ${isMobile ? 'w-5 h-5' : 'w-8 h-8 xl:w-10 xl:h-10'}`} />
+                  <Edit className={`text-white ${isMobile ? 'w-5 h-5' : 'w-8 h-8 xl:w-10 xl:h-10'}`} />
                 </div>
                 <div>
-                  <CardTitle className={`font-bold ${isMobile ? 'text-lg' : 'text-3xl xl:text-4xl'}`}>Buổi học số {nextLessonNumber}</CardTitle>
-                  <CardDescription className={`text-violet-100 ${isMobile ? 'text-sm' : 'text-lg xl:text-xl'}`}>
-                    Tạo buổi học mới cho lớp
+                  <CardTitle className={`font-bold ${isMobile ? 'text-lg' : 'text-3xl xl:text-4xl'}`}>
+                    Buổi học số {lesson.lesson_number}
+                  </CardTitle>
+                  <CardDescription className={`text-blue-100 ${isMobile ? 'text-sm' : 'text-lg xl:text-xl'}`}>
+                    Chỉnh sửa thông tin buổi học
                   </CardDescription>
                 </div>
               </div>
@@ -221,7 +251,6 @@ const CreateLessonPage = () => {
                   value={formData.content}
                   onChange={(e) => handleInputChange('content', e.target.value)}
                   placeholder="Nhập nội dung chi tiết của buổi học"
-                  required
                   rows={isMobile ? 6 : 8}
                   className={`resize-none ${isMobile ? 'text-base' : 'text-lg xl:text-xl'}`}
                 />
@@ -234,7 +263,7 @@ const CreateLessonPage = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate(`/teacher/class/${classId}`)}
+                  onClick={() => navigate(`/teacher/class/${lesson.class.id}`)}
                   disabled={loading}
                   className={`${isMobile ? 'w-full h-11 text-base' : 'flex-1 h-14 xl:h-16 text-lg xl:text-xl'}`}
                 >
@@ -242,10 +271,10 @@ const CreateLessonPage = () => {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={loading || !formData.title || !formData.content}
-                  className={`bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 ${isMobile ? 'w-full h-11 text-base' : 'flex-1 h-14 xl:h-16 text-lg xl:text-xl'}`}
+                  disabled={loading || !formData.title}
+                  className={`bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 ${isMobile ? 'w-full h-11 text-base' : 'flex-1 h-14 xl:h-16 text-lg xl:text-xl'}`}
                 >
-                  {loading ? "Đang xử lý..." : "Tạo buổi học"}
+                  {loading ? "Đang xử lý..." : "Lưu thay đổi"}
                 </Button>
               </div>
             </form>
@@ -256,4 +285,4 @@ const CreateLessonPage = () => {
   );
 };
 
-export default CreateLessonPage; 
+export default EditLessonPage; 

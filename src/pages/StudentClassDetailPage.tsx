@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, BookOpen, Calendar, User, Mail, GraduationCap, Clock, FileText, Award, Eye } from 'lucide-react';
+import { BookOpen, Calendar, User, Mail, GraduationCap, Clock, FileText, Award, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import StudentToolbar from '@/components/student/StudentToolbar';
+import StudentNotificationBell from '@/components/student/StudentNotificationBell';
 
 interface ClassDetail {
   id: string;
@@ -222,26 +224,11 @@ const StudentClassDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
         {/* Mobile Header */}
-        <div className="bg-white shadow-lg border-b sticky top-0 z-50">
-          <div className="px-4 py-3">
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={() => navigate('/student')}
-                variant="ghost"
-                size="sm"
-                className="p-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent truncate">
-                  {classDetail.name}
-                </h1>
-                <p className="text-xs text-gray-500 truncate">{classDetail.course.name}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StudentToolbar 
+          title={classDetail.name}
+          subtitle={classDetail.course.name}
+          rightContent={<StudentNotificationBell />}
+        />
 
         {/* Mobile Class Info Card */}
         <div className="p-4">
@@ -415,29 +402,11 @@ const StudentClassDetailPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Enhanced Header */}
-      <div className="bg-white shadow-lg border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate('/student')}
-                variant="outline"
-                size="sm"
-                className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại trang học viên
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Chi tiết lớp học
-                </h1>
-                <p className="text-gray-600 mt-1">{classDetail?.name}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StudentToolbar
+        title="Chi tiết lớp học"
+        subtitle={classDetail?.name}
+        rightContent={<StudentNotificationBell />}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

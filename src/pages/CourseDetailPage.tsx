@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Users, Image, Clock, DollarSign, Calendar, BookOpen, GraduationCap } from 'lucide-react';
+import { Users, Image, Clock, DollarSign, Calendar, BookOpen, GraduationCap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import AdminToolbar from '@/components/admin/AdminToolbar';
 
 interface Course {
   id: string;
@@ -127,14 +128,7 @@ const CourseDetailPage = () => {
     );
   };
 
-  const handleGoBack = () => {
-    const tab = searchParams.get('tab');
-    if (tab === 'courses') {
-      navigate('/admin', { state: { activeTab: 'courses' } });
-    } else {
-      navigate('/admin');
-    }
-  };
+
 
   if (loading) {
     return (
@@ -175,32 +169,10 @@ const CourseDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200/50 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Button
-                onClick={handleGoBack}
-                variant="outline"
-                className="flex items-center space-x-2 hover:bg-blue-50 border-blue-200 text-blue-700 shadow-sm"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Quay lại</span>
-              </Button>
-              <div className="border-l border-gray-300 pl-4">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {courseData.name}
-                </h1>
-                <p className="text-sm text-gray-600 flex items-center">
-                  <BookOpen className="w-4 h-4 mr-1" />
-                  Chi tiết khóa học
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AdminToolbar 
+        title={courseData.name} 
+        subtitle="Chi tiết khóa học" 
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

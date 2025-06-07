@@ -6,13 +6,16 @@ import { Home, Users, AlertCircle, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import TeacherClasses from '@/components/teacher/TeacherClasses';
 import NotificationBell from '@/components/teacher/NotificationBell';
+import TeacherToolbar from '@/components/teacher/TeacherToolbar';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
   const { userRole, isLoading } = useUserRole();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [currentTeacherId, setCurrentTeacherId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -97,36 +100,11 @@ const TeacherDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       {/* Header */}
-      <div className="bg-white shadow-lg border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 sm:h-20">
-            <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                <GraduationCap className="text-white h-5 w-5 sm:h-6 sm:w-6" />
-              </div>
-              <div className="min-w-0 flex-1 hidden lg:block">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
-                  Bảng điều khiển giảng viên
-                </h1>
-                <p className="text-gray-600 mt-1 text-sm sm:text-base">Quản lý lớp học của bạn</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <NotificationBell teacherId={currentTeacherId} />
-              <Button 
-                onClick={handleGoHome}
-                variant="outline"
-                size="sm"
-                className="flex items-center space-x-1 sm:space-x-2 hover:bg-blue-50 border-blue-200 text-blue-700 text-sm sm:text-base px-2 sm:px-4"
-              >
-                <Home className="h-4 w-4" />
-                <span className="hidden sm:inline">Về trang chủ</span>
-                <span className="sm:hidden">Trang chủ</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <TeacherToolbar 
+        title={isMobile ? "Bảng điều khiển" : "Bảng điều khiển giảng viên"}
+        subtitle={isMobile ? "Quản lý lớp học" : "Quản lý lớp học của bạn"}
+        rightContent={<NotificationBell teacherId={currentTeacherId} />}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">

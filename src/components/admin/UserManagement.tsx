@@ -351,14 +351,14 @@ const UserManagement = () => {
                         <ArrowRight className="h-3 w-3 mr-1" />
                         Xem
                       </Button>
-                      <Button
+                      {/* <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setDeletingUser(user)}
                         className="hover:bg-red-50 hover:border-red-200 hover:text-red-700"
                       >
                         <Trash2 className="h-3 w-3" />
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 </div>
@@ -470,14 +470,14 @@ const UserManagement = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button
+                      {/* <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setDeletingUser(user)}
                         className="hover:bg-red-50 hover:border-red-200 hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="outline"
                         size="sm"
@@ -503,7 +503,7 @@ const UserManagement = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+      <div className="space-y-6">
         <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
         <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
             <div className="flex items-center space-x-3">
@@ -529,7 +529,7 @@ const UserManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+    <div className="space-y-6">
       <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
         <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
           <div className={`${isMobile ? 'space-y-4' : 'flex justify-between items-center'}`}>

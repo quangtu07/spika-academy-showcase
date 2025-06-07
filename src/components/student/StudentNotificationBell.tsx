@@ -72,7 +72,7 @@ const StudentNotificationBell = () => {
   if (isLoading) {
     return (
       <Button variant="ghost" size="sm" className="relative hover:bg-transparent">
-        <Bell className={`h-5 w-5 ${isMobile ? 'text-white' : 'text-gray-400'}`} />
+        <Bell className="h-5 w-5 text-black" />
       </Button>
     );
   }
@@ -81,7 +81,7 @@ const StudentNotificationBell = () => {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="relative hover:bg-transparent">
-          <Bell className={`h-5 w-5 ${isMobile ? 'text-white' : (notifications.length > 0 ? 'text-blue-600' : 'text-gray-500')}`} />
+          <Bell className="h-5 w-5 text-black" />
           {notifications.length > 0 && (
             <Badge 
               className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs"

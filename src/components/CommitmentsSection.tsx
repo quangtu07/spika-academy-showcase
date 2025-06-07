@@ -48,7 +48,7 @@ const CommitmentsSection = () => {
             <Star className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6">
-            Cam kết của Spika
+            Cam kết của FutureWings
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Ba điểm mạnh làm nên sự khác biệt của chúng tôi trong lĩnh vực đào tạo

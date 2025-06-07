@@ -9,7 +9,8 @@ import { ArrowLeft, Users, BookOpen, Calendar, User, Mail, Plus, GraduationCap, 
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import LessonEditModal from '@/components/admin/LessonEditModal';
+import TeacherToolbar from '@/components/teacher/TeacherToolbar';
+import NotificationBell from '@/components/teacher/NotificationBell';
 
 interface ClassDetail {
   id: string;
@@ -53,12 +54,11 @@ const TeacherClassDetailPage = () => {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [lessonAssignments, setLessonAssignments] = useState<{[key: string]: boolean}>({});
   const [loading, setLoading] = useState(true);
-  const [showLessonEditModal, setShowLessonEditModal] = useState(false);
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [activeTab, setActiveTab] = useState('students');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const [teacherId, setTeacherId] = useState<string | null>(null);
 
   useEffect(() => {
     if (classId) {
@@ -85,6 +85,15 @@ const TeacherClassDetailPage = () => {
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, [lessons]);
+
+  useEffect(() => {
+    // Get teacherId from localStorage
+    const currentUserStr = localStorage.getItem('currentUser');
+    if (currentUserStr) {
+      const currentUser = JSON.parse(currentUserStr);
+      setTeacherId(currentUser?.id || null);
+    }
+  }, []);
 
   const fetchClassDetail = async () => {
     try {
@@ -216,8 +225,6 @@ const TeacherClassDetailPage = () => {
     }
   };
 
-
-
   const getStatusBadge = (status: string | null) => {
     const statusMap = {
       'đang hoạt động': { text: 'Đang hoạt động', class: 'bg-green-100 text-green-800 border-green-200' },
@@ -249,15 +256,8 @@ const TeacherClassDetailPage = () => {
     navigate(`/teacher/class/${classId}/create-lesson`);
   };
 
-  const handleLessonEditSaved = () => {
-    fetchLessons();
-    setShowLessonEditModal(false);
-    setSelectedLesson(null);
-  };
-
   const handleEditLesson = (lesson: Lesson) => {
-    setSelectedLesson(lesson);
-    setShowLessonEditModal(true);
+    navigate(`/teacher/lesson/${lesson.id}/edit`);
   };
 
   const handleAssignmentForLesson = (lesson: Lesson) => {
@@ -313,36 +313,11 @@ const TeacherClassDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
         {/* Mobile Header */}
-        <div className="bg-white shadow-lg border-b sticky top-0 z-50">
-          <div className="px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Button 
-                  onClick={() => navigate('/teacher')}
-                  variant="ghost"
-                  size="sm"
-                  className="p-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <div className="min-w-0 flex-1">
-                  <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent truncate">
-                    {classDetail.name}
-                  </h1>
-                  <p className="text-xs text-gray-500 truncate">{classDetail.course.name}</p>
-                </div>
-              </div>
-              {/* <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="p-2"
-              >
-                {showMobileMenu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-              </Button> */}
-            </div>
-          </div>
-        </div>
+        <TeacherToolbar 
+          title={classDetail.name}
+          subtitle={classDetail.course.name}
+          rightContent={<NotificationBell teacherId={teacherId} />}
+        />
 
         {/* Mobile Actions Menu */}
         {showMobileMenu && (
@@ -423,17 +398,17 @@ const TeacherClassDetailPage = () => {
                       Giảng viên
                     </h4>
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                      {/* <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
                         <span className="text-white font-semibold text-sm">
                           {classDetail.instructor.fullname.charAt(0)}
                         </span>
-                      </div>
+                      </div> */}
                       <div>
-                        <p className="font-medium text-gray-900">{classDetail.instructor.fullname}</p>
-                        <p className="text-gray-600 text-sm flex items-center">
+                        <p className="font-medium text-gray-700">{classDetail.instructor.fullname}</p>
+                        {/* <p className="text-gray-600 text-sm flex items-center">
                           <Mail className="w-3 h-3 mr-1" />
                           {classDetail.instructor.email}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   </div>
@@ -627,32 +602,11 @@ const TeacherClassDetailPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Enhanced Header */}
-      <div className="bg-white shadow-lg border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate('/teacher')}
-                variant="outline"
-                size="sm"
-                className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại trang giảng viên
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Chi tiết lớp học
-                </h1>
-                <p className="text-gray-600 mt-1">{classDetail?.name}</p>
-              </div>
-            </div>
-            {/* <div className="text-center">
-              <p className="text-gray-600 text-sm">Các chức năng đã được di chuyển xuống từng tab tương ứng</p>
-            </div> */}
-          </div>
-        </div>
-      </div>
+      <TeacherToolbar 
+        title="Chi tiết lớp học"
+        subtitle={classDetail?.name}
+        rightContent={<NotificationBell teacherId={teacherId} />}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -961,15 +915,7 @@ const TeacherClassDetailPage = () => {
         </div>
       </div>
 
-      {/* Modals */}
-      {showLessonEditModal && selectedLesson && (
-        <LessonEditModal
-          isOpen={showLessonEditModal}
-          onClose={() => setShowLessonEditModal(false)}
-          lesson={selectedLesson}
-          onSaved={handleLessonEditSaved}
-        />
-      )}
+
     </div>
   );
 };

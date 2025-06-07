@@ -3,10 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileText, Calendar, User, CheckCircle, Clock, AlertCircle, Type, Image, Video } from 'lucide-react';
+import { FileText, Calendar, User, CheckCircle, Clock, AlertCircle, Type, Image, Video } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import StudentToolbar from '@/components/student/StudentToolbar';
 
 interface Submission {
   id: string;
@@ -245,37 +246,19 @@ const StudentSubmissionDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
         {/* Mobile Header */}
-        <div className="bg-white shadow-lg border-b sticky top-0 z-50">
-          <div className="px-4 py-3">
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="ghost"
-                size="sm"
-                className="p-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent truncate">
-                  Bài đã nộp
-                </h1>
-                <p className="text-xs text-gray-500 truncate">
-                  Buổi {submission.assignment.lesson.lesson_number}: {submission.assignment.lesson.title}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StudentToolbar
+          title="Bài đã nộp"
+          subtitle={`Buổi ${submission.assignment.lesson.lesson_number}: ${submission.assignment.lesson.title}`}
+          rightContent={getStatusBadge(submission.status)}
+        />
 
         {/* Mobile Content */}
         <div className="p-4">
-          {/* Status Card */}
+          {/* Class Info Card */}
           <Card className="shadow-xl border-0 overflow-hidden mb-6">
             <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-              <CardTitle className="text-xl font-bold flex items-center justify-between">
-                <span>Bài tập đã nộp</span>
-                {getStatusBadge(submission.status)}
+              <CardTitle className="text-xl font-bold">
+                Bài tập đã nộp
               </CardTitle>
               <CardDescription className="text-indigo-100">
                 {submission.assignment.lesson.class.name}
@@ -343,34 +326,11 @@ const StudentSubmissionDetailPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Header */}
-      <div className="bg-white shadow-lg border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="outline"
-                size="sm"
-                className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Bài tập đã nộp
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Buổi {submission.assignment.lesson.lesson_number}: {submission.assignment.lesson.title} - {submission.assignment.lesson.class.name}
-                </p>
-              </div>
-            </div>
-            <div>
-              {getStatusBadge(submission.status)}
-            </div>
-          </div>
-        </div>
-      </div>
+      <StudentToolbar
+        title="Bài tập đã nộp"
+        subtitle={`Buổi ${submission.assignment.lesson.lesson_number}: ${submission.assignment.lesson.title} - ${submission.assignment.lesson.class.name}`}
+        rightContent={getStatusBadge(submission.status)}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

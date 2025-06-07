@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Home, Users, BookOpen, BarChart3, AlertCircle, Settings, Menu, X, LogOut } from 'lucide-react';
+import { Users, BookOpen, BarChart3, AlertCircle, Settings } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
@@ -11,12 +11,12 @@ import UserManagement from '@/components/admin/UserManagement';
 import CourseManagement from '@/components/admin/CourseManagement';
 import ClassManagement from '@/components/admin/ClassManagement';
 import AdminOverview from '@/components/admin/AdminOverview';
+import AdminToolbar from '@/components/admin/AdminToolbar';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('overview');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [logoutMessage, setLogoutMessage] = useState('');
   const { userRole, isLoading } = useUserRole();
   const { toast } = useToast();
@@ -67,23 +67,7 @@ const AdminDashboard = () => {
     }
   }, [location.state, navigate, location.pathname]);
 
-  const handleGoHome = () => {
-    navigate('/');
-  };
 
-  const handleLogout = () => {
-    // Xóa thông tin người dùng
-    localStorage.removeItem('currentUser');
-    
-    // Hiển thị thông báo đăng xuất
-    setLogoutMessage('Đã đăng xuất thành công!');
-    
-    // Tự động ẩn message và chuyển hướng sau 2 giây
-    setTimeout(() => {
-      setLogoutMessage('');
-      navigate('/');
-    }, 2000);
-  };
 
   const tabItems = [
     {
@@ -142,7 +126,7 @@ const AdminDashboard = () => {
               <p className="text-sm text-gray-600">
                 Đang chuyển hướng về trang chủ...
               </p>
-              <Button onClick={handleGoHome} className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+              <Button onClick={() => navigate('/')} className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
                 Về trang chủ ngay
               </Button>
             </CardContent>
@@ -179,79 +163,7 @@ const AdminDashboard = () => {
         )}
         
         <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
-          {/* Mobile Header */}
-          <div className="bg-white shadow-lg border-b sticky top-0 z-50">
-            <div className="px-4 py-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                    <Settings className="text-white h-4 w-4" />
-                  </div>
-                  <div>
-                    <h1 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                      Admin
-                    </h1>
-                    <p className="text-xs text-gray-600">Quản lý hệ thống</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button 
-                    onClick={handleGoHome}
-                    variant="ghost"
-                    size="sm"
-                    className="p-2"
-                  >
-                    <Home className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    onClick={handleLogout}
-                    variant="ghost"
-                    size="sm"
-                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="p-2"
-                  >
-                    {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Navigation Menu */}
-          {isMobileMenuOpen && (
-            <div className="bg-white border-b shadow-lg">
-              <div className="px-4 py-3">
-                <div className="grid grid-cols-2 gap-2">
-                  {tabItems.map((item) => (
-                    <Button
-                      key={item.value}
-                      variant={activeTab === item.value ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => {
-                        setActiveTab(item.value);
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`flex flex-col items-center p-3 h-auto ${
-                        activeTab === item.value 
-                          ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white' 
-                          : 'hover:bg-purple-50'
-                      }`}
-                    >
-                      <item.icon className="h-5 w-5 mb-1" />
-                      <span className="text-xs font-medium">{item.label}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+          <AdminToolbar title="Quản trị" subtitle="Bảng điều khiển hệ thống" />
 
           {/* Mobile Content */}
           <div className="p-4">
@@ -297,44 +209,7 @@ const AdminDashboard = () => {
       )}
       
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
-        {/* Header */}
-        <div className="bg-white shadow-lg border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4 sm:py-6">
-              <div className="flex items-center space-x-3 w-full sm:w-auto">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                  <Settings className="text-white h-5 w-5 sm:h-6 sm:w-6" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                    Bảng điều khiển quản trị
-                  </h1>
-                  <p className="text-gray-600 mt-1 text-sm sm:text-base">Quản lý toàn bộ hệ thống</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Button 
-                  onClick={handleGoHome}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-2 hover:bg-purple-50 border-purple-200 text-purple-700 w-full sm:w-auto justify-center"
-                >
-                  <Home className="h-4 w-4" />
-                  <span>Về trang chủ</span>
-                </Button>
-                <Button 
-                  onClick={handleLogout}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-2 hover:bg-red-50 border-red-200 text-red-700 w-full sm:w-auto justify-center"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Đăng xuất</span>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AdminToolbar title="Bảng điều khiển quản trị" subtitle="Quản lý toàn bộ hệ thống" />
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">

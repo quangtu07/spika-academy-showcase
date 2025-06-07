@@ -4,11 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-
-import { ArrowLeft, FileText, Calendar, User, BookOpen, GraduationCap, Type, Image, Video, Send, Eye } from 'lucide-react';
+import { FileText, Calendar, User, BookOpen, GraduationCap, Type, Image, Video, Send, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import StudentToolbar from '@/components/student/StudentToolbar';
+import StudentNotificationBell from '@/components/student/StudentNotificationBell';
 
 
 
@@ -254,30 +255,11 @@ const StudentLessonAssignmentsPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
         
         {/* Mobile Header */}
-        <div className="bg-white shadow-lg border-b sticky top-0 z-50">
-          <div className="px-4 py-3">
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="ghost"
-                size="sm"
-                className="p-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent truncate">
-                  Bài tập được giao
-                </h1>
-                {lesson && (
-                  <p className="text-xs text-gray-500 truncate">
-                    Buổi {lesson.lesson_number}: {lesson.title}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <StudentToolbar
+          title="Bài tập được giao"
+          subtitle={lesson ? `Buổi ${lesson.lesson_number}: ${lesson.title}` : undefined}
+          rightContent={<StudentNotificationBell />}
+        />
 
         {/* Mobile Content */}
         <div className="p-4">
@@ -381,33 +363,11 @@ const StudentLessonAssignmentsPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       
       {/* Enhanced Header */}
-      <div className="bg-white shadow-lg border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="outline"
-                size="sm"
-                className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Bài tập được giao
-                </h1>
-                {lesson && (
-                  <p className="text-gray-600 mt-1">
-                    Buổi {lesson.lesson_number}: {lesson.title} - {lesson.class.name}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StudentToolbar
+        title="Bài tập được giao"
+        subtitle={lesson ? `Buổi ${lesson.lesson_number}: ${lesson.title} - ${lesson.class.name}` : undefined}
+        rightContent={<StudentNotificationBell />}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

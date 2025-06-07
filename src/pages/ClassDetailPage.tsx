@@ -19,10 +19,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Users, BookOpen, UserPlus, Trash2, Plus, Edit } from 'lucide-react';
+import { Users, BookOpen, UserPlus, Trash2, Plus, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import AdminToolbar from '@/components/admin/AdminToolbar';
 
 interface DatabaseClass {
   id: string;
@@ -103,7 +104,7 @@ const ClassDetailPage = () => {
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [isAddingStudent, setIsAddingStudent] = useState(false);
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-  const [studentToRemove, setStudentToRemove] = useState<{id: string, name: string} | null>(null);
+  const [studentToRemove, setStudentToRemove] = useState<{id: string, name: string, studentId: string} | null>(null);
   const [isRemovingStudent, setIsRemovingStudent] = useState(false);
   const [isAddLessonModalOpen, setIsAddLessonModalOpen] = useState(false);
   const [lessonTitle, setLessonTitle] = useState('');
@@ -329,8 +330,8 @@ const ClassDetailPage = () => {
     setSelectedStudentId('');
   };
 
-  const handleRemoveStudentClick = (enrollmentId: string, studentName: string) => {
-    setStudentToRemove({ id: enrollmentId, name: studentName });
+  const handleRemoveStudentClick = (enrollmentId: string, studentName: string, studentId: string) => {
+    setStudentToRemove({ id: enrollmentId, name: studentName, studentId: studentId });
     setIsRemoveDialogOpen(true);
   };
 
@@ -339,16 +340,129 @@ const ClassDetailPage = () => {
 
     setIsRemovingStudent(true);
     try {
-      const { error } = await supabase
+      // Step 1: Lấy tất cả assignments thuộc class này thông qua lessons
+      const lessonIds = classData?.lessons?.map(lesson => lesson.id) || [];
+      let assignmentIds: string[] = [];
+      
+      if (lessonIds.length > 0) {
+        const { data: assignments, error: assignmentsError } = await supabase
+          .from('assignments')
+          .select('id')
+          .in('lesson_id', lessonIds);
+
+        if (assignmentsError) throw assignmentsError;
+        
+        assignmentIds = assignments?.map(assignment => assignment.id) || [];
+      }
+
+      // Step 2: Nếu có assignments, lấy thông tin files của học viên để xóa từ storage
+      if (assignmentIds.length > 0) {
+        // Lấy thông tin tất cả submissions của học viên để lấy file paths
+        const { data: submissions, error: getSubmissionsError } = await supabase
+          .from('assignment_submissions')
+          .select('content')
+          .eq('student_id', studentToRemove.studentId)
+          .in('assignment_id', assignmentIds);
+
+        if (getSubmissionsError) throw getSubmissionsError;
+
+        // Step 2a: Xóa files từ Supabase Storage
+        if (submissions && submissions.length > 0) {
+          const filePaths: string[] = [];
+          
+          submissions.forEach(submission => {
+            try {
+              let content;
+              
+              // Parse content - có thể là object hoặc string JSON
+              if (typeof submission.content === 'string') {
+                content = JSON.parse(submission.content);
+              } else if (typeof submission.content === 'object' && submission.content !== null) {
+                content = submission.content;
+              }
+              
+              // Kiểm tra nếu content có blocks (format mới)
+              if (content && content.blocks && Array.isArray(content.blocks)) {
+                content.blocks.forEach((block: any) => {
+                  // Chỉ xử lý blocks có type là image hoặc video
+                  if ((block.type === 'image' || block.type === 'video') && block.content) {
+                    try {
+                      // Extract file path từ URL
+                      const url = new URL(block.content);
+                      // Lấy full path sau domain (bỏ phần đầu /storage/v1/object/public/assignment-student-files/)
+                      const pathParts = url.pathname.split('/');
+                      const bucketIndex = pathParts.findIndex(part => part === 'assignment-student-files');
+                      if (bucketIndex !== -1 && bucketIndex < pathParts.length - 1) {
+                        // Lấy path từ sau tên bucket
+                        const filePath = pathParts.slice(bucketIndex + 1).join('/');
+                        if (filePath) {
+                          filePaths.push(filePath);
+                        }
+                      }
+                    } catch (urlError) {
+                      console.log('Could not parse URL:', block.content);
+                    }
+                  }
+                });
+              }
+              // Kiểm tra format cũ (backup)
+              else if (content && content.fileUrl) {
+                try {
+                  const url = new URL(content.fileUrl);
+                  const pathParts = url.pathname.split('/');
+                  const bucketIndex = pathParts.findIndex(part => part === 'assignment-student-files');
+                  if (bucketIndex !== -1 && bucketIndex < pathParts.length - 1) {
+                    const filePath = pathParts.slice(bucketIndex + 1).join('/');
+                    if (filePath) {
+                      filePaths.push(filePath);
+                    }
+                  }
+                } catch (urlError) {
+                  console.log('Could not parse legacy URL:', content.fileUrl);
+                }
+              }
+            } catch (e) {
+              console.log('Could not parse submission content:', submission.content);
+            }
+          });
+
+          // Xóa files từ storage bucket
+          if (filePaths.length > 0) {
+            console.log('Deleting files from storage:', filePaths);
+            const { error: storageError } = await supabase.storage
+              .from('assignment-student-files')
+              .remove(filePaths);
+
+            if (storageError) {
+              console.error('Error deleting files from storage:', storageError);
+              // Không throw error ở đây để không block việc xóa submission data
+            } else {
+              console.log('Successfully deleted files from storage');
+            }
+          }
+        }
+
+        // Step 2b: Xóa assignment_submissions
+        const { error: submissionsError } = await supabase
+          .from('assignment_submissions')
+          .delete()
+          .eq('student_id', studentToRemove.studentId)
+          .in('assignment_id', assignmentIds);
+
+        if (submissionsError) throw submissionsError;
+      }
+
+      // Step 3: Xóa enrollment
+      const { error: enrollmentError } = await supabase
         .from('enrollments')
         .delete()
         .eq('id', studentToRemove.id);
 
-      if (error) throw error;
+      if (enrollmentError) throw enrollmentError;
 
       toast({
         title: "Thành công",
-        description: `Đã xóa học viên ${studentToRemove.name} khỏi lớp học`,
+        description: `Đã xóa học viên ${studentToRemove.name} khỏi lớp học và tất cả bài nộp liên quan`,
       });
 
       // Đóng dialog và reset
@@ -517,16 +631,45 @@ const ClassDetailPage = () => {
 
     setIsDeletingLesson(true);
     try {
-      const { error } = await supabase
+      // Step 1: Lấy tất cả assignments thuộc lesson này
+      const { data: assignments, error: assignmentsError } = await supabase
+        .from('assignments')
+        .select('id')
+        .eq('lesson_id', lessonToDelete.id);
+
+      if (assignmentsError) throw assignmentsError;
+
+      // Step 2: Nếu có assignments, xóa tất cả assignment_submissions của các assignments đó
+      if (assignments && assignments.length > 0) {
+        const assignmentIds = assignments.map(assignment => assignment.id);
+        
+        const { error: submissionsError } = await supabase
+          .from('assignment_submissions')
+          .delete()
+          .in('assignment_id', assignmentIds);
+
+        if (submissionsError) throw submissionsError;
+
+        // Step 3: Xóa tất cả assignments thuộc lesson này
+        const { error: assignmentsDeleteError } = await supabase
+          .from('assignments')
+          .delete()
+          .eq('lesson_id', lessonToDelete.id);
+
+        if (assignmentsDeleteError) throw assignmentsDeleteError;
+      }
+
+      // Step 4: Cuối cùng xóa lesson
+      const { error: lessonError } = await supabase
         .from('lessons')
         .delete()
         .eq('id', lessonToDelete.id);
 
-      if (error) throw error;
+      if (lessonError) throw lessonError;
 
       toast({
         title: "Thành công",
-        description: `Đã xóa buổi học ${lessonToDelete.lesson_number}: ${lessonToDelete.title}`,
+        description: `Đã xóa buổi học ${lessonToDelete.lesson_number}: ${lessonToDelete.title} và tất cả bài tập liên quan`,
       });
 
       // Đóng dialog và reset
@@ -552,14 +695,7 @@ const ClassDetailPage = () => {
     setLessonToDelete(null);
   };
 
-  const handleGoBack = () => {
-    const tab = searchParams.get('tab');
-    if (tab === 'classes') {
-      navigate('/admin', { state: { activeTab: 'classes' } });
-    } else {
-      navigate('/admin');
-    }
-  };
+
 
   const getStatusBadge = (status: string | null) => {
     // Debug để kiểm tra status từ database
@@ -633,29 +769,10 @@ const ClassDetailPage = () => {
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-purple-50/50 via-blue-50/50 to-indigo-50/50">
-        {/* Header */}
-        <div className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-4">
-              <div className="flex items-center space-x-4">
-                <Button
-                  onClick={handleGoBack}
-                  variant="outline"
-                  className="flex items-center space-x-2 bg-white/50 backdrop-blur-xl hover:bg-white/80 transition-all duration-300"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>Quay lại</span>
-                </Button>
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    {classData.name}
-                  </h1>
-                  <p className="text-sm text-gray-600">Chi tiết lớp học</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AdminToolbar 
+          title={classData.name} 
+          subtitle="Chi tiết lớp học" 
+        />
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -679,9 +796,9 @@ const ClassDetailPage = () => {
                       <span className="font-semibold text-purple-700 min-w-[140px]">Giảng viên:</span>
                       <span className="text-gray-700">{classData.instructor?.fullname || 'Không xác định'}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-purple-700 min-w-[140px]">Email giảng viên:</span>
-                      <span className="text-gray-700">{classData.instructor?.email || 'Không xác định'}</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-1 sm:space-y-0">
+                      <span className="font-semibold text-purple-700 sm:min-w-[140px]">Email giảng viên:</span>
+                      <span className="text-gray-700 break-all text-sm sm:text-sm">{classData.instructor?.email || 'Không xác định'}</span>
                     </div>
                     <div className="flex items-start space-x-2">
                       <span className="font-semibold text-purple-700 min-w-[140px]">Mô tả khóa học:</span>
@@ -800,7 +917,7 @@ const ClassDetailPage = () => {
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          onClick={() => handleRemoveStudentClick(enrollment.id, enrollment.student?.fullname || 'Học viên')}
+                                          onClick={() => handleRemoveStudentClick(enrollment.id, enrollment.student?.fullname || 'Học viên', enrollment.student_id)}
                                           className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                                         >
                                           <Trash2 className="h-4 w-4" />
@@ -995,31 +1112,28 @@ const ClassDetailPage = () => {
 
       {/* Remove Student Dialog */}
       <AlertDialog open={isRemoveDialogOpen} onOpenChange={handleCancelRemove}>
-        <AlertDialogContent className="bg-white/80 backdrop-blur-xl border-0 shadow-xl">
-          <AlertDialogHeader className="border-b bg-gradient-to-r from-red-500 to-pink-500 text-white p-6">
-            <AlertDialogTitle className="flex items-center space-x-2">
-              <Trash2 className="h-5 w-5" />
-              <span>Xác nhận xóa học viên</span>
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-red-100">
-              Bạn có chắc chắn muốn xóa học viên <strong className="text-white">{studentToRemove?.name}</strong> khỏi lớp học này?
+        <AlertDialogContent className="sm:max-w-[425px] w-[95vw]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa học viên</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa học viên <strong>{studentToRemove?.name}</strong> khỏi lớp học này?
               <br />
-              <span className="text-red-200 mt-2 block">
+              <span className="text-red-600 mt-2 block">
                 Thao tác này không thể hoàn tác.
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="p-6">
+          <AlertDialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
             <AlertDialogCancel 
               disabled={isRemovingStudent}
-              className="bg-gray-100 hover:bg-gray-200 border-0"
+              className="w-full sm:w-auto order-2 sm:order-1"
             >
               Hủy
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleRemoveStudent}
               disabled={isRemovingStudent}
-              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white border-0"
+              className="bg-red-600 hover:bg-red-700 w-full sm:w-auto order-1 sm:order-2"
             >
               {isRemovingStudent ? 'Đang xóa...' : 'Xóa'}
             </AlertDialogAction>
@@ -1129,33 +1243,30 @@ const ClassDetailPage = () => {
 
       {/* Delete Lesson Dialog */}
       <AlertDialog open={isDeleteLessonDialogOpen} onOpenChange={handleCancelDeleteLesson}>
-        <AlertDialogContent className="bg-white/80 backdrop-blur-xl border-0 shadow-xl">
-          <AlertDialogHeader className="border-b bg-gradient-to-r from-red-500 to-pink-500 text-white p-6">
-            <AlertDialogTitle className="flex items-center space-x-2">
-              <Trash2 className="h-5 w-5" />
-              <span>Xác nhận xóa buổi học</span>
+        <AlertDialogContent className="sm:max-w-[425px] w-[95vw] max-w-[95vw] mx-auto">
+          <AlertDialogHeader className="text-left">
+            <AlertDialogTitle className="text-lg font-semibold">
+              Xác nhận xóa buổi học
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-red-100">
-              Bạn có chắc chắn muốn xóa buổi học <strong className="text-white">{lessonToDelete?.title}</strong> khỏi lớp học này?
+            <AlertDialogDescription className="text-sm text-gray-600 mt-2">
+              Bạn có chắc chắn muốn xóa buổi học "{lessonToDelete?.title}" khỏi lớp học này?
               <br />
-              <span className="text-red-200 mt-2 block">
-                Thao tác này không thể hoàn tác.
-              </span>
+              <span className="text-red-600 font-medium">Thao tác này không thể hoàn tác.</span>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="p-6">
+          <AlertDialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0 mt-6">
             <AlertDialogCancel 
               disabled={isDeletingLesson}
-              className="bg-gray-100 hover:bg-gray-200 border-0"
+              className="w-full sm:w-auto order-2 sm:order-1"
             >
               Hủy
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteLesson}
               disabled={isDeletingLesson}
-              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white border-0"
+              className="bg-red-600 hover:bg-red-700 w-full sm:w-auto order-1 sm:order-2"
             >
-              {isDeletingLesson ? 'Đang xóa...' : 'Xóa'}
+              {isDeletingLesson ? 'Đang xóa...' : 'Xóa buổi học'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -4,10 +4,11 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, User, Mail, Phone, Calendar, Clock } from 'lucide-react';
+import { User, Mail, Phone, Calendar, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import AdminToolbar from '@/components/admin/AdminToolbar';
 
 interface User {
   id: string;
@@ -92,17 +93,6 @@ const UserDetailPage = () => {
       .slice(0, 2);
   };
 
-  const handleGoBack = () => {
-    const roleTab = searchParams.get('tab');
-    navigate('/admin', {
-      replace: true,
-      state: { 
-        activeTab: 'users',
-        userRoleTab: roleTab || 'student'
-      }
-    });
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
@@ -139,35 +129,17 @@ const UserDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Header với gradient đẹp */}
-      <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <Button
-                onClick={handleGoBack}
-                variant="outline"
-                className="flex items-center space-x-2 bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Quay lại</span>
-              </Button>
-              {/* <div>
-                <h1 className="text-3xl font-bold text-white">{userData.fullname}</h1>
-                <p className="text-blue-100 mt-1">Chi tiết thông tin người dùng</p>
-              </div> */}
-            </div>
-          </div>
-        </div>
-      </div>
+      <AdminToolbar 
+        title={userData.fullname} 
+        subtitle="Chi tiết thông tin người dùng" 
+      />
 
       {/* Main Content với design đẹp */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 h-32"></div>
-          <CardContent className="relative px-8 pb-8">
+          <CardContent className="px-8 py-8">
             {/* Avatar và thông tin chính */}
-            <div className="flex flex-col md:flex-row items-start md:items-end space-y-6 md:space-y-0 md:space-x-8 -mt-16">
+            <div className="flex flex-col md:flex-row items-start md:items-end space-y-6 md:space-y-0 md:space-x-8">
               <div className="relative">
                 <Avatar className="h-32 w-32 border-4 border-white shadow-xl">
                   <AvatarImage src={userData.avatar_url} alt={userData.fullname} />

@@ -4,16 +4,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Home, BookOpen, MessageSquare, User, GraduationCap } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import StudentCourses from '@/components/student/StudentCourses';
 import StudentProfile from '@/components/student/StudentProfile';
 import StudentNotificationBell from '@/components/student/StudentNotificationBell';
+import StudentToolbar from '@/components/student/StudentToolbar';
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('courses');
   const { userRole, isLoading } = useUserRole();
   const { toast } = useToast();
@@ -29,6 +31,13 @@ const StudentDashboard = () => {
       navigate('/');
     }
   }, [userRole, isLoading, navigate, toast]);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && (tab === 'courses' || tab === 'profile')) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const handleGoHome = () => {
     navigate('/');
@@ -70,32 +79,11 @@ const StudentDashboard = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
         {/* Mobile Header */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg sticky top-0 z-50">
-          <div className="px-4 py-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                  <GraduationCap className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-white">Học viên</h1>
-                  <p className="text-white/80 text-sm">Bảng điều khiển</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <StudentNotificationBell />
-                <Button 
-                  onClick={handleGoHome}
-                  variant="outline"
-                  size="sm"
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
-                >
-                  <Home className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StudentToolbar 
+          title="Học viên"
+          subtitle="Bảng điều khiển"
+          rightContent={<StudentNotificationBell />}
+        />
 
         {/* Mobile Content */}
         <div className="p-4">
@@ -136,36 +124,11 @@ const StudentDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Header */}
-      <div className="bg-white shadow-lg border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <GraduationCap className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Học viên
-                </h1>
-                <p className="text-gray-600 mt-1">Bảng điều khiển học viên</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="from-indigo-500 to-purple-600 rounded-xl p-2">
-                <StudentNotificationBell />
-              </div>
-              <Button 
-                onClick={handleGoHome}
-                variant="outline"
-                className="flex items-center space-x-2 hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <Home className="h-4 w-4" />
-                <span>Về trang chủ</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StudentToolbar 
+        title="Học viên"
+        subtitle="Bảng điều khiển học viên"
+        rightContent={<StudentNotificationBell />}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -3,10 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Type, Image, Video, Upload, Trash2, Send, FileText, User, Calendar } from 'lucide-react';
+import { Type, Image, Video, Upload, Trash2, Send, FileText, User, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import StudentToolbar from '@/components/student/StudentToolbar';
 
 interface SubmissionBlock {
   id: string;
@@ -310,31 +311,10 @@ const StudentSubmissionPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Header */}
-      <div className="bg-white shadow-lg border-b sticky top-0 z-50">
-        <div className={`${isMobile ? 'px-4 py-3' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
-          <div className={`flex ${isMobile ? 'items-center space-x-3' : 'justify-between items-center h-20'}`}>
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="ghost"
-                size="sm"
-                className={`p-2 ${!isMobile && 'hover:bg-indigo-50 border-indigo-200 text-indigo-700'}`}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                {!isMobile && 'Quay lại'}
-              </Button>
-              <div className={`${isMobile ? 'min-w-0 flex-1' : ''}`}>
-                <h1 className={`${isMobile ? 'text-lg' : 'text-3xl'} font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent ${isMobile ? 'truncate' : ''}`}>
-                  Nộp bài tập
-                </h1>
-                <p className={`text-gray-600 ${isMobile ? 'text-xs truncate' : 'mt-1'}`}>
-                  Thêm nội dung bài làm của bạn
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StudentToolbar
+        title="Nộp bài tập"
+        subtitle="Thêm nội dung bài làm của bạn"
+      />
 
       {/* Content */}
       <div className={`${isMobile ? 'p-4' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'}`}>

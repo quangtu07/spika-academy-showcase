@@ -8,9 +8,9 @@ const TestimonialsSection = () => {
     {
       name: "Nguyễn Minh Anh",
       role: "MC Freelancer",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
+      avatar: "/images/ava01.png",
       rating: 5,
-      comment: "Spika đã giúp tôi từ một người nhút nhát trở thành MC tự tin. Giảng viên rất tận tâm và phương pháp học rất hiệu quả.",
+      comment: "FutureWings đã giúp tôi từ một người nhút nhát trở thành MC tự tin. Giảng viên rất tận tâm và phương pháp học rất hiệu quả.",
       gradient: "from-purple-500 to-pink-500"
     },
     {
@@ -26,7 +26,7 @@ const TestimonialsSection = () => {
       role: "MC Truyền hình",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
       rating: 5,
-      comment: "Môi trường học tập chuyên nghiệp, cơ sở vật chất hiện đại. Cảm ơn Spika đã giúp tôi theo đuổi đam mê MC.",
+      comment: "Môi trường học tập chuyên nghiệp, cơ sở vật chất hiện đại. Cảm ơn FutureWings đã giúp tôi theo đuổi đam mê MC.",
       gradient: "from-green-500 to-emerald-500"
     }
   ];
@@ -49,7 +49,7 @@ const TestimonialsSection = () => {
             <MessageCircle className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6 leading-tight">
-            Học viên nói gì về Spika
+            Học viên nói gì về FutureWings
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Những chia sẻ chân thực từ các học viên đã thành công trong hành trình học tập
@@ -98,7 +98,7 @@ const TestimonialsSection = () => {
                         alt={testimonial.name}
                         className="w-16 h-16 rounded-full object-cover shadow-lg ring-4 ring-white"
                       />
-                      <div className={`absolute -inset-1 bg-gradient-to-r ${testimonial.gradient} rounded-full opacity-30 blur-sm`}></div>
+                      <div className={`absolute -inset-1 ${testimonial.gradient} rounded-full opacity-30 blur-sm`}></div>
                     </div>
                     <div className="ml-4 text-center">
                       <h4 className="font-bold text-gray-900 text-lg group-hover:text-purple-600 transition-colors duration-300">

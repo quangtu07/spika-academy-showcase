@@ -50,11 +50,11 @@ const NotificationBell = ({ teacherId }: NotificationBellProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="relative p-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200">
-          <Bell className={`h-5 w-5 ${pendingCount > 0 ? 'text-blue-600' : 'text-gray-500'} transition-colors`} />
+        <Button variant="ghost" size="sm" className="relative p-2">
+          <Bell className="h-5 w-5 text-gray-500" />
           {pendingCount > 0 && (
             <Badge 
-              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold shadow-lg animate-pulse"
+              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs hover:bg-red-500"
             >
               {pendingCount > 99 ? '99+' : pendingCount}
             </Badge>
@@ -64,12 +64,12 @@ const NotificationBell = ({ teacherId }: NotificationBellProps) => {
 
       <DropdownMenuContent 
         align="end" 
-        className={`${isMobile ? 'w-80' : 'w-96'} max-h-96 overflow-y-auto bg-white/95 backdrop-blur-sm shadow-2xl border-0 rounded-xl`}
+        className={`${isMobile ? 'w-80' : 'w-96'} max-h-96 overflow-y-auto`}
       >
-        <DropdownMenuLabel className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent px-4 py-3">
-          THÔNG BÁO ({pendingCount})
+        <DropdownMenuLabel className="text-lg font-bold px-4 py-3">
+          Thông báo ({pendingCount})
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-gradient-to-r from-blue-200 to-purple-200" />
+        <DropdownMenuSeparator />
 
         {pendingSubmissions.length === 0 ? (
           <div className="p-6 text-center">
@@ -81,29 +81,29 @@ const NotificationBell = ({ teacherId }: NotificationBellProps) => {
           pendingSubmissions.map((submission) => (
             <DropdownMenuItem
               key={submission.id}
-              className="flex flex-col items-start p-4 cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 border-b border-gray-100 last:border-b-0 transition-all duration-200"
+              className="flex flex-col items-start p-4 cursor-pointer"
               onClick={() => handleNotificationClick(submission.id)}
             >
               <div className="w-full">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-base text-gray-900 mb-1">
-                      {submission.student_name.toUpperCase()}
+                    <p className="font-medium text-base text-gray-900 mb-1">
+                      {submission.student_name}
                     </p>
                     <p className="text-sm text-gray-600 mb-1">
                       đã nộp bài tập từ:
                     </p>
-                    <p className="text-sm font-semibold text-blue-700 truncate">
+                    <p className="text-sm font-medium text-gray-800 truncate">
                       {submission.lesson_title}
                     </p>
                   </div>
-                  <span className="text-xs text-gray-500 ml-3 flex-shrink-0 bg-gray-100 px-2 py-1 rounded-full">
+                  <span className="text-xs text-gray-500 ml-3">
                     {formatTimeAgo(submission.submitted_at)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between mt-3">
-                  <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 text-xs font-bold shadow-md">
-                    ĐANG CHỜ CHẤM
+                  <Badge className="bg-blue-500 text-white text-xs">
+                    Đang chờ chấm
                   </Badge>
                   <div className="text-xs text-gray-500">
                     Nhấn để chấm bài →
@@ -116,14 +116,14 @@ const NotificationBell = ({ teacherId }: NotificationBellProps) => {
 
         {pendingSubmissions.length > 0 && (
           <>
-            <DropdownMenuSeparator className="bg-gradient-to-r from-blue-200 to-purple-200" />
+            <DropdownMenuSeparator />
             <div className="p-3">
               <Button 
                 variant="ghost" 
-                className="w-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 transition-all duration-200 shadow-lg"
+                className="w-full text-sm text-blue-600 hover:bg-blue-50"
                 onClick={() => navigate('/teacher')}
               >
-                XEM TẤT CẢ THÔNG BÁO
+                Xem tất cả thông báo
               </Button>
             </div>
           </>
