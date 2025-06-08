@@ -49,7 +49,6 @@ interface Lesson {
   lesson_number: number;
   class: {
     name: string;
-    id: string;
   };
 }
 
@@ -63,19 +62,12 @@ interface AssignmentSubmission {
   };
 }
 
-interface EnrolledStudent {
-  id: string;
-  fullname: string;
-  email: string;
-}
-
 const LessonAssignmentsPage = () => {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [submissions, setSubmissions] = useState<AssignmentSubmission[]>([]);
-  const [enrolledStudents, setEnrolledStudents] = useState<EnrolledStudent[]>([]);
   const [loading, setLoading] = useState(true);
   
   // New states for edit/delete functionality
@@ -97,11 +89,10 @@ const LessonAssignmentsPage = () => {
   }, [lessonId]);
 
   useEffect(() => {
-    if (assignments.length > 0 && lesson) {
+    if (assignments.length > 0) {
       fetchSubmissions();
-      fetchEnrolledStudents();
     }
-  }, [assignments, lesson]);
+  }, [assignments]);
 
   useEffect(() => {
     // Get teacherId from localStorage
@@ -121,7 +112,6 @@ const LessonAssignmentsPage = () => {
           title,
           lesson_number,
           classes (
-            id,
             name
           )
         `)
@@ -134,43 +124,13 @@ const LessonAssignmentsPage = () => {
         id: data.id,
         title: data.title,
         lesson_number: data.lesson_number,
-        class: data.classes || { id: '', name: 'Không xác định' }
+        class: data.classes || { name: 'Không xác định' }
       });
     } catch (error) {
       console.error('Error fetching lesson info:', error);
       toast({
         title: "Lỗi",
         description: "Không thể tải thông tin buổi học",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const fetchEnrolledStudents = async () => {
-    if (!lesson?.class?.id) return;
-
-    try {
-      const { data, error } = await (supabase as any)
-        .from('enrollments')
-        .select(`
-          student:profiles (
-            id,
-            fullname,
-            email
-          )
-        `)
-        .eq('class_id', lesson.class.id)
-        .eq('status', 'active');
-
-      if (error) throw error;
-
-      const students = data?.map((enrollment: any) => enrollment.student).filter(Boolean) || [];
-      setEnrolledStudents(students);
-    } catch (error) {
-      console.error('Error fetching enrolled students:', error);
-      toast({
-        title: "Lỗi",
-        description: "Không thể tải danh sách học sinh đã đăng ký",
         variant: "destructive",
       });
     }
@@ -624,26 +584,6 @@ const LessonAssignmentsPage = () => {
     navigate(`/teacher/assignment/${assignment.id}/submissions/${statusParam}`);
   };
 
-  // Calculate counts for each assignment
-  const getAssignmentStats = (assignment: Assignment) => {
-    const assignmentSubmissions = submissions.filter(s => s.assignment_id === assignment.id);
-    const submittedStudentIds = assignmentSubmissions.map(s => s.student_id);
-    
-    // Students who haven't submitted this assignment
-    const notSubmittedCount = enrolledStudents.filter(student => 
-      !submittedStudentIds.includes(student.id)
-    ).length;
-    
-    const pendingCount = assignmentSubmissions.filter(s => s.status === 'Đang chờ chấm').length;
-    const completedCount = assignmentSubmissions.filter(s => s.status === 'Đã hoàn thành').length;
-    
-    return {
-      notSubmitted: notSubmittedCount,
-      pending: pendingCount,
-      completed: completedCount
-    };
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -680,115 +620,113 @@ const LessonAssignmentsPage = () => {
             </Card>
           ) : (
             <div className="space-y-6">
-              {assignments.map((assignment) => {
-                const stats = getAssignmentStats(assignment);
-                
-                return (
-                  <Card key={assignment.id} className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
-                    <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <CardTitle className="text-xl flex items-center space-x-3">
-                            <FileText className="w-6 h-6 text-indigo-500" />
-                            <span>Bài tập</span>
-                          </CardTitle>
-                          <CardDescription className="flex items-center space-x-3 mt-2">
-                            <User className="w-4 h-4" />
-                            <span>Giảng viên: {assignment.instructor.fullname}</span>
-                            <Calendar className="w-4 h-4 ml-4" />
-                            <span>Giao ngày: {new Date(assignment.created_at).toLocaleDateString('vi-VN')}</span>
-                          </CardDescription>
-                        </div>
-                        
-                        {/* Action buttons */}
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditAssignment(assignment)}
-                            className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100 p-2"
-                            title="Chỉnh sửa bài tập"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteAssignment(assignment)}
-                            className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200 text-red-700 hover:from-red-100 hover:to-pink-100 p-2"
-                            title="Xóa bài tập"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+              {assignments.map((assignment) => (
+                <Card key={assignment.id} className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+                  <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-xl flex items-center space-x-3">
+                          <FileText className="w-6 h-6 text-indigo-500" />
+                          <span>Bài tập</span>
+                        </CardTitle>
+                        <CardDescription className="flex items-center space-x-3 mt-2">
+                          <User className="w-4 h-4" />
+                          <span>Giảng viên: {assignment.instructor.fullname}</span>
+                          <Calendar className="w-4 h-4 ml-4" />
+                          <span>Giao ngày: {new Date(assignment.created_at).toLocaleDateString('vi-VN')}</span>
+                        </CardDescription>
+                      </div>
+                      
+                      {/* Action buttons */}
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditAssignment(assignment)}
+                          className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100 p-2"
+                          title="Chỉnh sửa bài tập"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteAssignment(assignment)}
+                          className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200 text-red-700 hover:from-red-100 hover:to-pink-100 p-2"
+                          title="Xóa bài tập"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="p-6">
+                    <div className="space-y-6">
+                      {/* Assignment Content */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-900 mb-4">Nội dung bài tập</h4>
+                        <div className="bg-gradient-to-br from-gray-50 to-indigo-50 rounded-xl p-6 border">
+                          {renderSortedContentBlocks(assignment.content.blocks)}
                         </div>
                       </div>
-                    </CardHeader>
-                    
-                    <CardContent className="p-6">
-                      <div className="space-y-6">
-                        {/* Assignment Content */}
-                        <div>
-                          <h4 className="text-lg font-semibold text-gray-900 mb-4">Nội dung bài tập</h4>
-                          <div className="bg-gradient-to-br from-gray-50 to-indigo-50 rounded-xl p-6 border">
-                            {renderSortedContentBlocks(assignment.content.blocks)}
-                          </div>
-                        </div>
 
-                        {/* Submissions Summary */}
-                        <div>
-                          <h4 className="text-lg font-semibold text-gray-900 mb-4">Tổng quan bài nộp</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <button
-                              onClick={() => handleViewSubmissions(assignment, 'Chưa làm')}
-                              className="bg-amber-50 rounded-lg p-4 border border-amber-200 hover:bg-amber-100 transition-colors text-left w-full"
-                            >
-                              <div className="flex items-center space-x-3">
-                                <Upload className="w-5 h-5 text-amber-600" />
-                                <div>
-                                  <p className="text-amber-900 font-semibold">Chưa làm</p>
-                                  <p className="text-amber-700 text-2xl font-bold">
-                                    {stats.notSubmitted}
-                                  </p>
-                                </div>
+                      {/* Submissions Summary */}
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-900 mb-4">Tổng quan bài nộp</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <button
+                            onClick={() => handleViewSubmissions(assignment, 'Chưa làm')}
+                            className="bg-amber-50 rounded-lg p-4 border border-amber-200 hover:bg-amber-100 transition-colors text-left w-full"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <Upload className="w-5 h-5 text-amber-600" />
+                              <div>
+                                <p className="text-amber-900 font-semibold">Chưa làm</p>
+                                <p className="text-amber-700 text-2xl font-bold">
+                                  {submissions.filter(s => s.status === 'Chưa làm').length}
+                                </p>
                               </div>
-                            </button>
-                            <button
-                              onClick={() => handleViewSubmissions(assignment, 'Đang chờ chấm')}
-                              className="bg-blue-50 rounded-lg p-4 border border-blue-200 hover:bg-blue-100 transition-colors text-left w-full"
-                            >
-                              <div className="flex items-center space-x-3">
-                                <Eye className="w-5 h-5 text-blue-600" />
-                                <div>
-                                  <p className="text-blue-900 font-semibold">Đang chờ chấm</p>
-                                  <p className="text-blue-700 text-2xl font-bold">
-                                    {stats.pending}
-                                  </p>
-                                </div>
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => handleViewSubmissions(assignment, 'Đang chờ chấm')}
+                            className="bg-blue-50 rounded-lg p-4 border border-blue-200 hover:bg-blue-100 transition-colors text-left w-full"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <Eye className="w-5 h-5 text-blue-600" />
+                              <div>
+                                <p className="text-blue-900 font-semibold">Đang chờ chấm</p>
+                                <p className="text-blue-700 text-2xl font-bold">
+                                  {submissions.filter(s => s.status === 'Đang chờ chấm').length}
+                                </p>
                               </div>
-                            </button>
-                            <button
-                              onClick={() => handleViewSubmissions(assignment, 'Đã hoàn thành')}
-                              className="bg-emerald-50 rounded-lg p-4 border border-emerald-200 hover:bg-emerald-100 transition-colors text-left w-full"
-                            >
-                              <div className="flex items-center space-x-3">
-                                <Download className="w-5 h-5 text-emerald-600" />
-                                <div>
-                                  <p className="text-emerald-900 font-semibold">Đã hoàn thành</p>
-                                  <p className="text-emerald-700 text-2xl font-bold">
-                                    {stats.completed}
-                                  </p>
-                                </div>
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => handleViewSubmissions(assignment, 'Đã hoàn thành')}
+                            className="bg-emerald-50 rounded-lg p-4 border border-emerald-200 hover:bg-emerald-100 transition-colors text-left w-full"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <Download className="w-5 h-5 text-emerald-600" />
+                              <div>
+                                <p className="text-emerald-900 font-semibold">Đã hoàn thành</p>
+                                <p className="text-emerald-700 text-2xl font-bold">
+                                  {submissions.filter(s => s.status === 'Đã hoàn thành').length}
+                                </p>
                               </div>
-                            </button>
-                          </div>
+                            </div>
+                          </button>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
+
+          {/* Submissions Table - REMOVED */}
         </div>
       </div>
 
@@ -898,4 +836,4 @@ const LessonAssignmentsPage = () => {
   );
 };
 
-export default LessonAssignmentsPage;
+export default LessonAssignmentsPage; 
