@@ -69,6 +69,12 @@ interface SubmissionStats {
   daHoanThanh: number;
 }
 
+interface StudentNotSubmitted {
+  id: string;
+  fullname: string;
+  email: string;
+}
+
 const LessonAssignmentsPage = () => {
   const { lessonId } = useParams();
   const navigate = useNavigate();
@@ -85,6 +91,11 @@ const LessonAssignmentsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingBlocks, setUploadingBlocks] = useState<Set<string>>(new Set());
   const [teacherId, setTeacherId] = useState<string | null>(null);
+  
+  // New states for showing students who haven't submitted
+  const [showNotSubmittedModal, setShowNotSubmittedModal] = useState(false);
+  const [notSubmittedStudents, setNotSubmittedStudents] = useState<StudentNotSubmitted[]>([]);
+  const [selectedAssignmentForNotSubmitted, setSelectedAssignmentForNotSubmitted] = useState<Assignment | null>(null);
   
   const { toast } = useToast();
 
@@ -236,6 +247,58 @@ const LessonAssignmentsPage = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchNotSubmittedStudents = async (assignment: Assignment) => {
+    try {
+      if (!lesson?.class?.id) return;
+
+      // Get all enrolled students
+      const { data: enrolledStudents, error: enrollError } = await supabase
+        .from('enrollments')
+        .select(`
+          student_id,
+          profiles!enrollments_student_id_fkey (
+            id,
+            fullname,
+            email
+          )
+        `)
+        .eq('class_id', lesson.class.id)
+        .eq('status', 'active');
+
+      if (enrollError) throw enrollError;
+
+      // Get students who have submitted this assignment
+      const { data: submissions, error: submissionError } = await supabase
+        .from('assignment_submissions')
+        .select('student_id')
+        .eq('assignment_id', assignment.id);
+
+      if (submissionError) throw submissionError;
+
+      const submittedStudentIds = submissions?.map(s => s.student_id) || [];
+
+      // Filter out students who have already submitted
+      const notSubmitted = enrolledStudents
+        ?.filter(enrollment => !submittedStudentIds.includes(enrollment.student_id))
+        ?.map(enrollment => ({
+          id: enrollment.profiles?.id || '',
+          fullname: enrollment.profiles?.fullname || 'Không xác định',
+          email: enrollment.profiles?.email || 'Không xác định'
+        })) || [];
+
+      setNotSubmittedStudents(notSubmitted);
+      setSelectedAssignmentForNotSubmitted(assignment);
+      setShowNotSubmittedModal(true);
+    } catch (error) {
+      console.error('Error fetching not submitted students:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải danh sách học viên chưa nộp bài",
+        variant: "destructive",
+      });
     }
   };
 
@@ -600,9 +663,12 @@ const LessonAssignmentsPage = () => {
   };
 
   const handleViewSubmissions = (assignment: Assignment, status: string) => {
-    const statusParam = status === 'Chưa làm' ? 'chua-lam' : 
-                       status === 'Đang chờ chấm' ? 'dang-cho-cham' : 'da-hoan-thanh';
-    navigate(`/teacher/assignment/${assignment.id}/submissions/${statusParam}`);
+    if (status === 'Chưa làm') {
+      fetchNotSubmittedStudents(assignment);
+    } else {
+      const statusParam = status === 'Đang chờ chấm' ? 'dang-cho-cham' : 'da-hoan-thanh';
+      navigate(`/teacher/assignment/${assignment.id}/submissions/${statusParam}`);
+    }
   };
 
   if (loading) {
@@ -855,6 +921,68 @@ const LessonAssignmentsPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Students Not Submitted Modal */}
+      <Dialog open={showNotSubmittedModal} onOpenChange={setShowNotSubmittedModal}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-amber-700 flex items-center space-x-2">
+              <Upload className="w-5 h-5" />
+              <span>Học viên chưa làm bài tập</span>
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {notSubmittedStudents.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Download className="w-8 h-8 text-emerald-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Tất cả học viên đã nộp bài</h3>
+                <p className="text-gray-600">Không có học viên nào chưa làm bài tập này.</p>
+              </div>
+            ) : (
+              <>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <p className="text-amber-800 font-medium">
+                    Có {notSubmittedStudents.length} học viên chưa nộp bài tập này
+                  </p>
+                </div>
+                
+                <div className="space-y-3">
+                  {notSubmittedStudents.map((student) => (
+                    <Card key={student.id} className="border border-gray-200">
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900">{student.fullname}</h4>
+                            <p className="text-sm text-gray-600">{student.email}</p>
+                          </div>
+                          <Badge className="bg-amber-100 text-amber-800 border-amber-300">
+                            Chưa nộp
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
+            )}
+            
+            <div className="flex justify-end pt-4 border-t">
+              <Button 
+                onClick={() => setShowNotSubmittedModal(false)}
+                className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
+              >
+                Đóng
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
