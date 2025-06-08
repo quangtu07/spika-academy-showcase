@@ -372,14 +372,14 @@ const ClassManagement = () => {
                             >
                               <Edit className="h-3 w-3" />
                             </Button>
-                            <Button
+                            {/* <Button
                               variant="outline"
                               size="sm"
                               onClick={() => setDeletingClass(classItem)}
                               className="h-7 px-2 hover:bg-red-50 hover:border-red-200 hover:text-red-700"
                             >
                               <Trash2 className="h-3 w-3" />
-                            </Button>
+                            </Button> */}
                           </div>
                           <Button
                             variant="outline"
@@ -474,14 +474,14 @@ const ClassManagement = () => {
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
-                              <Button
+                              {/* <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setDeletingClass(classItem)}
                                 className="hover:bg-red-50 hover:border-red-200 hover:text-red-700"
                               >
                                 <Trash2 className="h-4 w-4" />
-                              </Button>
+                              </Button> */}
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
