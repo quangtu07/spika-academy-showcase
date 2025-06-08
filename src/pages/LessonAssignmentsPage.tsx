@@ -48,6 +48,7 @@ interface Lesson {
   title: string;
   lesson_number: number;
   class: {
+    id: string;
     name: string;
   };
 }
@@ -62,12 +63,18 @@ interface AssignmentSubmission {
   };
 }
 
+interface SubmissionStats {
+  chuaLam: number;
+  dangChoChams: number;
+  daHoanThanh: number;
+}
+
 const LessonAssignmentsPage = () => {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [lesson, setLesson] = useState<Lesson | null>(null);
-  const [submissions, setSubmissions] = useState<AssignmentSubmission[]>([]);
+  const [submissionStats, setSubmissionStats] = useState<{ [assignmentId: string]: SubmissionStats }>({});
   const [loading, setLoading] = useState(true);
   
   // New states for edit/delete functionality
@@ -89,10 +96,10 @@ const LessonAssignmentsPage = () => {
   }, [lessonId]);
 
   useEffect(() => {
-    if (assignments.length > 0) {
-      fetchSubmissions();
+    if (assignments.length > 0 && lesson) {
+      fetchSubmissionStats();
     }
-  }, [assignments]);
+  }, [assignments, lesson]);
 
   useEffect(() => {
     // Get teacherId from localStorage
@@ -112,6 +119,7 @@ const LessonAssignmentsPage = () => {
           title,
           lesson_number,
           classes (
+            id,
             name
           )
         `)
@@ -124,7 +132,10 @@ const LessonAssignmentsPage = () => {
         id: data.id,
         title: data.title,
         lesson_number: data.lesson_number,
-        class: data.classes || { name: 'Không xác định' }
+        class: {
+          id: data.classes?.id || '',
+          name: data.classes?.name || 'Không xác định'
+        }
       });
     } catch (error) {
       console.error('Error fetching lesson info:', error);
@@ -171,41 +182,56 @@ const LessonAssignmentsPage = () => {
     }
   };
 
-  const fetchSubmissions = async () => {
+  const fetchSubmissionStats = async () => {
     try {
-      if (assignments.length === 0) return;
+      if (!lesson?.class?.id || assignments.length === 0) return;
 
       const assignmentIds = assignments.map(a => a.id);
 
-      const { data, error } = await (supabase as any)
+      // Get all enrolled students in this class
+      const { data: enrolledStudents, error: enrollError } = await supabase
+        .from('enrollments')
+        .select('student_id')
+        .eq('class_id', lesson.class.id)
+        .eq('status', 'active');
+
+      if (enrollError) throw enrollError;
+
+      const enrolledStudentIds = enrolledStudents?.map(e => e.student_id) || [];
+
+      // Get all submissions for these assignments
+      const { data: submissions, error: submissionError } = await supabase
         .from('assignment_submissions')
-        .select(`
-          id,
-          status,
-          submitted_at,
-          assignment_id,
-          student:profiles (
-            fullname,
-            email
-          )
-        `)
+        .select('assignment_id, student_id, status')
         .in('assignment_id', assignmentIds);
 
-      if (error) throw error;
+      if (submissionError) throw submissionError;
 
-      const formattedSubmissions = data?.map((submission: any) => ({
-        id: submission.id,
-        status: submission.status,
-        submitted_at: submission.submitted_at,
-        student: submission.student || { fullname: 'Không xác định', email: '' }
-      })) || [];
+      // Calculate stats for each assignment
+      const stats: { [assignmentId: string]: SubmissionStats } = {};
 
-      setSubmissions(formattedSubmissions);
+      assignments.forEach(assignment => {
+        const assignmentSubmissions = submissions?.filter(s => s.assignment_id === assignment.id) || [];
+        
+        const submittedStudentIds = assignmentSubmissions.map(s => s.student_id);
+        const chuaLamCount = enrolledStudentIds.filter(studentId => !submittedStudentIds.includes(studentId)).length;
+        
+        const dangChoChamsCount = assignmentSubmissions.filter(s => s.status === 'Đang chờ chấm').length;
+        const daHoanThanhCount = assignmentSubmissions.filter(s => s.status === 'Đã hoàn thành').length;
+
+        stats[assignment.id] = {
+          chuaLam: chuaLamCount,
+          dangChoChams: dangChoChamsCount,
+          daHoanThanh: daHoanThanhCount
+        };
+      });
+
+      setSubmissionStats(stats);
     } catch (error) {
-      console.error('Error fetching submissions:', error);
+      console.error('Error fetching submission stats:', error);
       toast({
         title: "Lỗi",
-        description: "Không thể tải danh sách bài nộp",
+        description: "Không thể tải thống kê bài nộp",
         variant: "destructive",
       });
     } finally {
@@ -269,9 +295,7 @@ const LessonAssignmentsPage = () => {
     }
   };
 
-  // Function to sort and render content blocks in order: text -> image -> video
   const renderSortedContentBlocks = (blocks: any[]) => {
-    // Sort blocks by type priority
     const sortedBlocks = [...blocks].sort((a, b) => {
       const typePriority = { 'text': 1, 'image': 2, 'video': 3 };
       return typePriority[a.type as keyof typeof typePriority] - typePriority[b.type as keyof typeof typePriority];
@@ -280,7 +304,6 @@ const LessonAssignmentsPage = () => {
     return sortedBlocks.map((block, index) => renderContentBlock(block, index));
   };
 
-  // Edit assignment functions
   const handleEditAssignment = (assignment: Assignment) => {
     setSelectedAssignment(assignment);
     setEditingBlocks(assignment.content.blocks.map((block, index) => ({ 
@@ -306,7 +329,6 @@ const LessonAssignmentsPage = () => {
 
       if (error) throw error;
 
-      // Remove from local state
       setAssignments(assignments.filter(a => a.id !== selectedAssignment.id));
       
       toast({
@@ -456,7 +478,6 @@ const LessonAssignmentsPage = () => {
 
       if (error) throw error;
 
-      // Update local state
       setAssignments(assignments.map(a => 
         a.id === selectedAssignment.id 
           ? { ...a, content: assignmentContent }
@@ -620,113 +641,115 @@ const LessonAssignmentsPage = () => {
             </Card>
           ) : (
             <div className="space-y-6">
-              {assignments.map((assignment) => (
-                <Card key={assignment.id} className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
-                  <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-xl flex items-center space-x-3">
-                          <FileText className="w-6 h-6 text-indigo-500" />
-                          <span>Bài tập</span>
-                        </CardTitle>
-                        <CardDescription className="flex items-center space-x-3 mt-2">
-                          <User className="w-4 h-4" />
-                          <span>Giảng viên: {assignment.instructor.fullname}</span>
-                          <Calendar className="w-4 h-4 ml-4" />
-                          <span>Giao ngày: {new Date(assignment.created_at).toLocaleDateString('vi-VN')}</span>
-                        </CardDescription>
-                      </div>
-                      
-                      {/* Action buttons */}
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditAssignment(assignment)}
-                          className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100 p-2"
-                          title="Chỉnh sửa bài tập"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteAssignment(assignment)}
-                          className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200 text-red-700 hover:from-red-100 hover:to-pink-100 p-2"
-                          title="Xóa bài tập"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="p-6">
-                    <div className="space-y-6">
-                      {/* Assignment Content */}
-                      <div>
-                        <h4 className="text-lg font-semibold text-gray-900 mb-4">Nội dung bài tập</h4>
-                        <div className="bg-gradient-to-br from-gray-50 to-indigo-50 rounded-xl p-6 border">
-                          {renderSortedContentBlocks(assignment.content.blocks)}
+              {assignments.map((assignment) => {
+                const stats = submissionStats[assignment.id] || { chuaLam: 0, dangChoChams: 0, daHoanThanh: 0 };
+                
+                return (
+                  <Card key={assignment.id} className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+                    <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-xl flex items-center space-x-3">
+                            <FileText className="w-6 h-6 text-indigo-500" />
+                            <span>Bài tập</span>
+                          </CardTitle>
+                          <CardDescription className="flex items-center space-x-3 mt-2">
+                            <User className="w-4 h-4" />
+                            <span>Giảng viên: {assignment.instructor.fullname}</span>
+                            <Calendar className="w-4 h-4 ml-4" />
+                            <span>Giao ngày: {new Date(assignment.created_at).toLocaleDateString('vi-VN')}</span>
+                          </CardDescription>
+                        </div>
+                        
+                        {/* Action buttons */}
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditAssignment(assignment)}
+                            className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100 p-2"
+                            title="Chỉnh sửa bài tập"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteAssignment(assignment)}
+                            className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200 text-red-700 hover:from-red-100 hover:to-pink-100 p-2"
+                            title="Xóa bài tập"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
+                    </CardHeader>
+                    
+                    <CardContent className="p-6">
+                      <div className="space-y-6">
+                        {/* Assignment Content */}
+                        <div>
+                          <h4 className="text-lg font-semibold text-gray-900 mb-4">Nội dung bài tập</h4>
+                          <div className="bg-gradient-to-br from-gray-50 to-indigo-50 rounded-xl p-6 border">
+                            {renderSortedContentBlocks(assignment.content.blocks)}
+                          </div>
+                        </div>
 
-                      {/* Submissions Summary */}
-                      <div>
-                        <h4 className="text-lg font-semibold text-gray-900 mb-4">Tổng quan bài nộp</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <button
-                            onClick={() => handleViewSubmissions(assignment, 'Chưa làm')}
-                            className="bg-amber-50 rounded-lg p-4 border border-amber-200 hover:bg-amber-100 transition-colors text-left w-full"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <Upload className="w-5 h-5 text-amber-600" />
-                              <div>
-                                <p className="text-amber-900 font-semibold">Chưa làm</p>
-                                <p className="text-amber-700 text-2xl font-bold">
-                                  {submissions.filter(s => s.status === 'Chưa làm').length}
-                                </p>
+                        {/* Submissions Summary */}
+                        <div>
+                          <h4 className="text-lg font-semibold text-gray-900 mb-4">Tổng quan bài nộp</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button
+                              onClick={() => handleViewSubmissions(assignment, 'Chưa làm')}
+                              className="bg-amber-50 rounded-lg p-4 border border-amber-200 hover:bg-amber-100 transition-colors text-left w-full"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <Upload className="w-5 h-5 text-amber-600" />
+                                <div>
+                                  <p className="text-amber-900 font-semibold">Chưa làm</p>
+                                  <p className="text-amber-700 text-2xl font-bold">
+                                    {stats.chuaLam}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          </button>
-                          <button
-                            onClick={() => handleViewSubmissions(assignment, 'Đang chờ chấm')}
-                            className="bg-blue-50 rounded-lg p-4 border border-blue-200 hover:bg-blue-100 transition-colors text-left w-full"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <Eye className="w-5 h-5 text-blue-600" />
-                              <div>
-                                <p className="text-blue-900 font-semibold">Đang chờ chấm</p>
-                                <p className="text-blue-700 text-2xl font-bold">
-                                  {submissions.filter(s => s.status === 'Đang chờ chấm').length}
-                                </p>
+                            </button>
+                            <button
+                              onClick={() => handleViewSubmissions(assignment, 'Đang chờ chấm')}
+                              className="bg-blue-50 rounded-lg p-4 border border-blue-200 hover:bg-blue-100 transition-colors text-left w-full"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <Eye className="w-5 h-5 text-blue-600" />
+                                <div>
+                                  <p className="text-blue-900 font-semibold">Đang chờ chấm</p>
+                                  <p className="text-blue-700 text-2xl font-bold">
+                                    {stats.dangChoChams}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          </button>
-                          <button
-                            onClick={() => handleViewSubmissions(assignment, 'Đã hoàn thành')}
-                            className="bg-emerald-50 rounded-lg p-4 border border-emerald-200 hover:bg-emerald-100 transition-colors text-left w-full"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <Download className="w-5 h-5 text-emerald-600" />
-                              <div>
-                                <p className="text-emerald-900 font-semibold">Đã hoàn thành</p>
-                                <p className="text-emerald-700 text-2xl font-bold">
-                                  {submissions.filter(s => s.status === 'Đã hoàn thành').length}
-                                </p>
+                            </button>
+                            <button
+                              onClick={() => handleViewSubmissions(assignment, 'Đã hoàn thành')}
+                              className="bg-emerald-50 rounded-lg p-4 border border-emerald-200 hover:bg-emerald-100 transition-colors text-left w-full"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <Download className="w-5 h-5 text-emerald-600" />
+                                <div>
+                                  <p className="text-emerald-900 font-semibold">Đã hoàn thành</p>
+                                  <p className="text-emerald-700 text-2xl font-bold">
+                                    {stats.daHoanThanh}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          </button>
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
-
-          {/* Submissions Table - REMOVED */}
         </div>
       </div>
 
@@ -836,4 +859,4 @@ const LessonAssignmentsPage = () => {
   );
 };
 
-export default LessonAssignmentsPage; 
+export default LessonAssignmentsPage;
