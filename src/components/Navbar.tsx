@@ -195,7 +195,7 @@ const Navbar = () => {
                 <div className="ml-6">
                   <Button 
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-2.5 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 group border-0"
+                    className="relative overflow-hidden bg-[#1b4486] hover:bg-[#1b4486]/90 text-white px-6 py-2.5 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 group border-0"
                   >
                     <div className="absolute inset-0 bg-white/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
                     <span className="relative z-10 font-medium">Đăng nhập</span>
@@ -270,7 +270,7 @@ const Navbar = () => {
                         setIsLoginModalOpen(true);
                         setIsMenuOpen(false);
                       }}
-                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg border-0"
+                      className="w-full bg-[#1b4486] hover:bg-[#1b4486]/90 text-white shadow-lg border-0"
                     >
                       Đăng nhập
                     </Button>
