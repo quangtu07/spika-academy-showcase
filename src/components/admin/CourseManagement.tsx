@@ -44,8 +44,6 @@ interface FormattedCourse extends Course {
 const CourseManagement = () => {
   const [courses, setCourses] = useState<FormattedCourse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCourse, setEditingCourse] = useState<FormattedCourse | null>(null);
   const [deletingCourse, setDeletingCourse] = useState<FormattedCourse | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -131,13 +129,11 @@ const CourseManagement = () => {
   };
 
   const handleEditCourse = (course: FormattedCourse) => {
-    setEditingCourse(course);
-    setIsModalOpen(true);
+    navigate(`/admin/course/edit/${course.id}`);
   };
 
   const handleAddCourse = () => {
-    setEditingCourse(null);
-    setIsModalOpen(true);
+    navigate('/admin/course/new');
   };
 
   const handleCourseSaved = () => {
