@@ -5,7 +5,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Edit, Trash2, Users, Image, ArrowRight, BookOpen, Star, Clock, DollarSign } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import CourseFormModal from './CourseFormModal';
 import { deleteCourseImage } from '@/lib/storage-helpers';
 import {
   AlertDialog,
@@ -44,8 +43,6 @@ interface FormattedCourse extends Course {
 const CourseManagement = () => {
   const [courses, setCourses] = useState<FormattedCourse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCourse, setEditingCourse] = useState<FormattedCourse | null>(null);
   const [deletingCourse, setDeletingCourse] = useState<FormattedCourse | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -131,20 +128,14 @@ const CourseManagement = () => {
   };
 
   const handleEditCourse = (course: FormattedCourse) => {
-    setEditingCourse(course);
-    setIsModalOpen(true);
+    navigate(`/admin/course/edit/${course.id}`);
   };
 
   const handleAddCourse = () => {
-    setEditingCourse(null);
-    setIsModalOpen(true);
+    navigate('/admin/course/create');
   };
 
-  const handleCourseSaved = () => {
-    fetchCourses();
-    setIsModalOpen(false);
-    setEditingCourse(null);
-  };
+
 
   const getStatusBadge = (status: Course['status']) => {
     const statusColors = {
@@ -456,12 +447,7 @@ const CourseManagement = () => {
         </CardContent>
       </Card>
 
-      <CourseFormModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        course={editingCourse}
-        onSaved={handleCourseSaved}
-      />
+
 
       <AlertDialog open={!!deletingCourse} onOpenChange={(open) => !open && setDeletingCourse(null)}>
         <AlertDialogContent className="border-0 shadow-xl mx-4 max-w-lg">

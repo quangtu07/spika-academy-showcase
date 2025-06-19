@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, BookOpen, Clock, DollarSign, Star, Users, ArrowRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, DollarSign, Star, Users, ArrowRight, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import RegistrationModal from '@/components/RegistrationModal';
 
 interface Course {
   id: string;
@@ -21,7 +20,6 @@ interface Course {
 const CoursesPage = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -151,11 +149,11 @@ const CoursesPage = () => {
                   
                   <Button 
                     className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
-                    onClick={() => setIsRegistrationModalOpen(true)}
+                    onClick={() => navigate(`/course/${course.id}`)}
                   >
                     <span className="flex items-center justify-center space-x-2">
-                      <Users className="h-4 w-4" />
-                      <span>Liên hệ tư vấn</span>
+                      <Eye className="h-4 w-4" />
+                      <span>Xem chi tiết</span>
                       <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
                     </span>
                   </Button>
@@ -185,10 +183,6 @@ const CoursesPage = () => {
       </main>
 
       <Footer />
-      <RegistrationModal 
-        isOpen={isRegistrationModalOpen}
-        onClose={() => setIsRegistrationModalOpen(false)}
-      />
     </div>
   );
 };

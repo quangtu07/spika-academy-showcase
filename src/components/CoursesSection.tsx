@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
-import { Star, Clock, DollarSign, BookOpen, Users, ArrowRight } from 'lucide-react';
+import { Star, Clock, DollarSign, BookOpen, Users, ArrowRight, Eye } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -16,11 +16,7 @@ interface Course {
   price: number;
 }
 
-interface CoursesSectionProps {
-  onOpenRegistrationModal: () => void;
-}
-
-const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
+const CoursesSection = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -161,11 +157,11 @@ const CoursesSection = ({ onOpenRegistrationModal }: CoursesSectionProps) => {
                   
                   <Button 
                     className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
-                    onClick={onOpenRegistrationModal}
+                    onClick={() => navigate(`/course/${course.id}`)}
                   >
                     <span className="flex items-center justify-center space-x-2">
-                      <Users className="h-4 w-4" />
-                      <span>Liên hệ tư vấn</span>
+                      <Eye className="h-4 w-4" />
+                      <span>Xem chi tiết</span>
                       <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
                     </span>
                   </Button>

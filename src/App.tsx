@@ -27,6 +27,9 @@ import EditProfile from "./pages/profile/EditProfile";
 import ClassDetailPage from "./pages/ClassDetailPage";
 import CourseDetailPage from '@/pages/CourseDetailPage';
 import UserDetailPage from '@/pages/UserDetailPage';
+import CreateCoursePage from './pages/admin/CreateCoursePage';
+import EditCoursePage from './pages/admin/EditCoursePage';
+import PublicCourseDetailPage from './pages/PublicCourseDetailPage';
 
 const queryClient = new QueryClient();
 
@@ -40,6 +43,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/class/:classId" element={<ClassDetailPage />} />
+          <Route path="/admin/course/create" element={<CreateCoursePage />} />
+          <Route path="/admin/course/edit/:courseId" element={<EditCoursePage />} />
           <Route path="/admin/course/:courseId" element={<CourseDetailPage />} />
           <Route path="/admin/user/:userId" element={<UserDetailPage />} />
           <Route path="/student" element={<StudentDashboard />} />
@@ -57,6 +62,7 @@ const App = () => (
           <Route path="/teacher/assignment/:assignmentId/submissions/:status" element={<AssignmentSubmissionsPage />} />
           <Route path="/teacher/submission/:submissionId" element={<TeacherSubmissionDetailPage />} />
           <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/course/:courseId" element={<PublicCourseDetailPage />} />
           <Route path="/teachers" element={<TeachersPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<EditProfile />} />

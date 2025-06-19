@@ -61,11 +61,17 @@ const AdminDashboard = () => {
   }, [navigate, toast]);
 
   useEffect(() => {
-    if (location.state?.activeTab) {
+    // Kiểm tra query params
+    const urlParams = new URLSearchParams(location.search);
+    const tab = urlParams.get('tab');
+    
+    if (tab) {
+      setActiveTab(tab);
+    } else if (location.state?.activeTab) {
       setActiveTab(location.state.activeTab);
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.state, navigate, location.pathname]);
+  }, [location.state, location.search, navigate, location.pathname]);
 
 
 
@@ -227,7 +233,10 @@ const AdminDashboard = () => {
             </CardHeader>
 
             <CardContent className="p-4 sm:p-6 lg:p-8">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+              <Tabs value={activeTab} onValueChange={(value) => {
+                setActiveTab(value);
+                navigate(`/admin?tab=${value}`, { replace: true });
+              }} className="space-y-6">
                 <div className="overflow-x-auto">
                   <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-purple-100 to-blue-100 p-1 rounded-xl shadow-inner min-w-[400px] sm:min-w-0">
                     {tabItems.map((item) => (

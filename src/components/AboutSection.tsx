@@ -130,7 +130,7 @@ const AboutSection = () => {
         </div>
 
         {/* Stats Grid - Full Width */}
-        <div ref={statsRef} className="grid grid-cols-2 lg:grid-cols-4 gap-6 reveal reveal-fade-up">
+        {/* <div ref={statsRef} className="grid grid-cols-2 lg:grid-cols-4 gap-6 reveal reveal-fade-up">
           {stats.map((stat, index) => (
             <Card key={index} className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-white/80 backdrop-blur-sm shadow-xl">
               <CardContent className="p-6 text-center">
@@ -143,7 +143,7 @@ const AboutSection = () => {
               </CardContent>
             </Card>
           ))}
-        </div>
+        </div> */}
       </div>
 
       {/* Registration Modal */}

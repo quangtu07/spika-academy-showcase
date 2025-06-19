@@ -25,19 +25,19 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
   const { toast } = useToast();
 
   const handleNavigateToOverview = () => {
-    navigate('/admin', { state: { activeTab: 'overview' } });
+    navigate('/admin?tab=overview');
   };
 
   const handleNavigateToUsers = () => {
-    navigate('/admin', { state: { activeTab: 'users' } });
+    navigate('/admin?tab=users');
   };
 
   const handleNavigateToCourses = () => {
-    navigate('/admin', { state: { activeTab: 'courses' } });
+    navigate('/admin?tab=courses');
   };
 
   const handleNavigateToClasses = () => {
-    navigate('/admin', { state: { activeTab: 'classes' } });
+    navigate('/admin?tab=classes');
   };
 
   const handleNavigateToHome = () => {

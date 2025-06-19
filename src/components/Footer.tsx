@@ -56,11 +56,11 @@ const Footer = () => {
               </div>
               <div>
                 <h4 className="font-semibold text-gray-300">Điện thoại / Zalo</h4>
-                <p className="text-gray-400">0123 456 789</p>
+                <p className="text-gray-400">0853326829</p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-300">Email</h4>
-                <p className="text-gray-400">contact@futurewings.edu.vn</p>
+                <p className="text-gray-400">futurewings.academy@gmail.com</p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-300">Thời gian làm việc</h4>
