@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -51,31 +52,6 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
     }
   };
 
-  const sendToGoogleSheet = async (fullName: string, phone: string, courseName: string) => {
-    try {
-      const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbydtGya87tIBTLcABllA60HTRg17Avd_InHhYtzIbolsECocDFw0a-yM-CihpjbNlGm/exec';
-      
-      const response = await fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fullName,
-          phone,
-          courseName,
-          timestamp: new Date().toISOString()
-        })
-      });
-
-      console.log('Data sent to Google Sheet successfully');
-    } catch (error) {
-      console.error('Error sending to Google Sheet:', error);
-      // Không hiển thị lỗi cho user vì đây là tính năng phụ
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -86,26 +62,25 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
       description: "Chúng mình sẽ liên hệ với bạn sớm nhất.",
     });
     
-    const originalFormData = { ...formData };
     setFormData({ fullName: '', phone: '', course: '' });
     onClose();
 
     try {
       // Tìm tên khóa học từ ID được chọn
-      const selectedCourse = courses.find(course => course.id === originalFormData.course);
+      const selectedCourse = courses.find(course => course.id === formData.course);
       const courseName = selectedCourse ? selectedCourse.name : 'Chưa xác định';
 
       console.log('Sending consultation request:', {
-        fullName: originalFormData.fullName,
-        phone: originalFormData.phone,
+        fullName: formData.fullName,
+        phone: formData.phone,
         courseName
       });
 
       // Gửi email trong background (không đợi kết quả)
       supabase.functions.invoke('send-consultation-email', {
         body: {
-          fullName: originalFormData.fullName,
-          phone: originalFormData.phone,
+          fullName: formData.fullName,
+          phone: formData.phone,
           courseName: courseName
         }
       }).then(({ data, error }) => {
@@ -115,9 +90,6 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
           console.log('Email sent successfully:', data);
         }
       });
-
-      // Gửi thông tin đến Google Sheet
-      await sendToGoogleSheet(originalFormData.fullName, originalFormData.phone, courseName);
 
     } catch (error) {
       console.error('Error submitting consultation request:', error);
@@ -134,7 +106,7 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] font-roboto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+          <DialogTitle className="text-2xl font-bold text-gray-900">
             Đăng ký tư vấn miễn phí
           </DialogTitle>
           <DialogDescription className="text-gray-600">
@@ -153,7 +125,7 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
               onChange={(e) => handleInputChange('fullName', e.target.value)}
               placeholder="Nhập họ và tên của bạn"
               required
-              className="mt-1 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="mt-1"
             />
           </div>
           <div>
@@ -167,7 +139,7 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
               onChange={(e) => handleInputChange('phone', e.target.value)}
               placeholder="Nhập số điện thoại"
               required
-              className="mt-1 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="mt-1"
             />
           </div>
           <div>
@@ -175,7 +147,7 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
               Khóa học quan tâm *
             </Label>
             <Select value={formData.course} onValueChange={(value) => handleInputChange('course', value)}>
-              <SelectTrigger className="mt-1 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+              <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Chọn khóa học bạn quan tâm" />
               </SelectTrigger>
               <SelectContent>
@@ -192,14 +164,14 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
               type="button" 
               variant="outline" 
               onClick={onClose}
-              className="flex-1 hover:bg-gray-50"
+              className="flex-1"
               disabled={isLoading}
             >
               Hủy
             </Button>
             <Button 
               type="submit" 
-              className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="flex-1 bg-primary-600 hover:bg-primary-700 text-white"
               disabled={isLoading}
             >
               {isLoading ? "Đang gửi..." : "Gửi thông tin"}
