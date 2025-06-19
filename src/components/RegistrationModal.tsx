@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -54,7 +53,7 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
 
   const sendToGoogleSheet = async (fullName: string, phone: string, courseName: string) => {
     try {
-      const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyPSO1EJga_iixRJa9lg0TAq00H8oG6Pl5ElJ3_Eg0LW98IUKWJEq73l_P1mebmdjhM/exec';
+      const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbydtGya87tIBTLcABllA60HTRg17Avd_InHhYtzIbolsECocDFw0a-yM-CihpjbNlGm/exec';
       
       const response = await fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
