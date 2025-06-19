@@ -22,8 +22,7 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
-    course: '',
-    googleSheetUrl: '' // URL Google Apps Script
+    course: ''
   });
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,8 +54,7 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
 
   const sendToGoogleSheet = async (fullName: string, phone: string, courseName: string) => {
     try {
-      // Thay thế URL này bằng URL Google Apps Script của bạn
-      const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+      const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyPSO1EJga_iixRJa9lg0TAq00H8oG6Pl5ElJ3_Eg0LW98IUKWJEq73l_P1mebmdjhM/exec';
       
       const response = await fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
@@ -90,7 +88,7 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
     });
     
     const originalFormData = { ...formData };
-    setFormData({ fullName: '', phone: '', course: '', googleSheetUrl: '' });
+    setFormData({ fullName: '', phone: '', course: '' });
     onClose();
 
     try {
