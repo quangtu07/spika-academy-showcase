@@ -5,7 +5,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Edit, Trash2, Users, Image, ArrowRight, BookOpen, Star, Clock, DollarSign } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import CourseFormModal from './CourseFormModal';
 import { deleteCourseImage } from '@/lib/storage-helpers';
 import {
   AlertDialog,
@@ -134,12 +133,6 @@ const CourseManagement = () => {
 
   const handleAddCourse = () => {
     navigate('/admin/course/new');
-  };
-
-  const handleCourseSaved = () => {
-    fetchCourses();
-    setIsModalOpen(false);
-    setEditingCourse(null);
   };
 
   const getStatusBadge = (status: Course['status']) => {
@@ -451,13 +444,6 @@ const CourseManagement = () => {
           </div>
         </CardContent>
       </Card>
-
-      <CourseFormModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        course={editingCourse}
-        onSaved={handleCourseSaved}
-      />
 
       <AlertDialog open={!!deletingCourse} onOpenChange={(open) => !open && setDeletingCourse(null)}>
         <AlertDialogContent className="border-0 shadow-xl mx-4 max-w-lg">
