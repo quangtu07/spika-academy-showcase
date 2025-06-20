@@ -18,6 +18,7 @@ interface Course {
   duration?: number;
   image_url?: string;
   status?: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
+  detail_lessons?: string;
   created_at: string;
   updated_at?: string;
   enrolled_count: number;
@@ -62,7 +63,16 @@ const CourseDetailPage = () => {
       const { data, error } = await supabase
         .from('courses')
         .select(`
-          *,
+          id,
+          name,
+          description,
+          price,
+          duration,
+          image_url,
+          status,
+          detail_lessons,
+          created_at,
+          updated_at,
           classes(
             id,
             name,
@@ -118,7 +128,13 @@ const CourseDetailPage = () => {
       }
     };
 
-    const config = status ? statusConfig[status as keyof typeof statusConfig] : statusConfig['Kết thúc'];
+    // Default config for undefined or unknown status
+    const defaultConfig = statusConfig['Kết thúc'];
+    
+    // Get config based on status, fallback to default if not found
+    const config = status && statusConfig[status as keyof typeof statusConfig] 
+      ? statusConfig[status as keyof typeof statusConfig] 
+      : defaultConfig;
 
     return (
       <Badge variant={config.variant} className={config.className}>
@@ -280,6 +296,33 @@ const CourseDetailPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Detail Lessons Section */}
+        {courseData.detail_lessons && (
+          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-2"></div>
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                  <BookOpen className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl text-gray-900">Chi tiết chương trình học</CardTitle>
+                  <CardDescription className="text-gray-600">Nội dung các buổi học trong khóa học</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100">
+                <div className="prose prose-lg max-w-none text-gray-700">
+                  <div className="whitespace-pre-line leading-relaxed">
+                    {courseData.detail_lessons}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Classes List */}
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm overflow-hidden">

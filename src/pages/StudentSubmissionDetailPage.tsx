@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Calendar, User, CheckCircle, Clock, AlertCircle, Type, Image, Video } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { FileText, Calendar, User, CheckCircle, Clock, AlertCircle, Type, Image, Video, Edit, Save, X, Upload, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -40,11 +41,26 @@ interface Submission {
   };
 }
 
+interface EditableBlock {
+  id: string;
+  type: 'text' | 'image' | 'video';
+  content: string;
+  metadata?: {
+    fileName?: string;
+    fileSize?: number;
+    mimeType?: string;
+  };
+}
+
 const StudentSubmissionDetailPage = () => {
   const { submissionId } = useParams();
   const navigate = useNavigate();
   const [submission, setSubmission] = useState<Submission | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editBlocks, setEditBlocks] = useState<EditableBlock[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [uploadingBlocks, setUploadingBlocks] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -146,6 +162,192 @@ const StudentSubmissionDetailPage = () => {
     );
   };
 
+  const generateId = () => Math.random().toString(36).substr(2, 9);
+
+  const startEditing = () => {
+    if (!submission?.content?.blocks) return;
+    
+    const blocksWithIds = submission.content.blocks.map(block => ({
+      ...block,
+      id: generateId()
+    }));
+    
+    setEditBlocks(blocksWithIds);
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setIsEditing(false);
+    setEditBlocks([]);
+  };
+
+  const updateBlockContent = (blockId: string, content: string) => {
+    setEditBlocks(prev => prev.map(block => 
+      block.id === blockId ? { ...block, content } : block
+    ));
+  };
+
+  const removeBlock = (blockId: string) => {
+    setEditBlocks(prev => prev.filter(block => block.id !== blockId));
+  };
+
+  const addTextBlock = () => {
+    const newBlock: EditableBlock = {
+      id: generateId(),
+      type: 'text',
+      content: '',
+    };
+    setEditBlocks([...editBlocks, newBlock]);
+  };
+
+  const addImageBlock = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        uploadFile(file, 'image');
+      }
+    };
+    input.click();
+  };
+
+  const addVideoBlock = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'video/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        uploadFile(file, 'video');
+      }
+    };
+    input.click();
+  };
+
+  const uploadFile = async (file: File, type: 'image' | 'video') => {
+    const currentUserStr = localStorage.getItem('currentUser');
+    if (!currentUserStr) {
+      toast({
+        title: "Lỗi",
+        description: "Bạn cần đăng nhập để tải lên file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+    const blockId = generateId();
+    
+    const newBlock: EditableBlock = {
+      id: blockId,
+      type,
+      content: '',
+      metadata: {
+        fileName: file.name,
+        fileSize: file.size,
+        mimeType: file.type,
+      },
+    };
+    
+    setEditBlocks(prev => [...prev, newBlock]);
+    setUploadingBlocks(prev => new Set([...prev, blockId]));
+
+    try {
+      const fileName = `${Date.now()}-${file.name}`;
+      const filePath = `${submission?.assignment_id}/${currentUser.id}/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('assignment-student-files')
+        .upload(filePath, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('assignment-student-files')
+        .getPublicUrl(filePath);
+
+      setEditBlocks(prev => prev.map(block => 
+        block.id === blockId 
+          ? { ...block, content: publicUrl }
+          : block
+      ));
+
+      toast({
+        title: "Thành công",
+        description: `${type === 'image' ? 'Hình ảnh' : 'Video'} đã được tải lên thành công`,
+      });
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải lên file. Vui lòng thử lại.",
+        variant: "destructive",
+      });
+      
+      setEditBlocks(prev => prev.filter(block => block.id !== blockId));
+    } finally {
+      setUploadingBlocks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(blockId);
+        return newSet;
+      });
+    }
+  };
+
+  const saveChanges = async () => {
+    if (editBlocks.length === 0) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng thêm ít nhất một nội dung cho bài nộp",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const submissionContent = {
+        blocks: editBlocks.map(({ id, ...block }) => block),
+      };
+
+      const { error } = await (supabase as any)
+        .from('assignment_submissions')
+        .update({
+          content: submissionContent,
+          status: 'Đang chờ chấm',
+          submitted_at: new Date().toISOString(),
+        })
+        .eq('id', submissionId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Thành công",
+        description: "Bài tập đã được cập nhật thành công",
+      });
+
+      // Refresh submission data
+      await fetchSubmissionDetail();
+      setIsEditing(false);
+      setEditBlocks([]);
+    } catch (error) {
+      console.error('Error saving changes:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể lưu thay đổi. Vui lòng thử lại.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Check if user can edit (status is not "Đã hoàn thành")
+  const canEdit = submission?.status === 'Chưa làm' || submission?.status === 'Đang chờ chấm';
+
   const renderContentBlock = (block: any, index: number) => {
     switch (block.type) {
       case 'text':
@@ -213,6 +415,105 @@ const StudentSubmissionDetailPage = () => {
     });
 
     return sortedBlocks.map((block, index) => renderContentBlock(block, index));
+  };
+
+  const renderEditableBlock = (block: EditableBlock) => {
+    const isUploading = uploadingBlocks.has(block.id);
+    
+    return (
+      <Card key={block.id} className="mb-4 border-0 shadow-lg">
+        <CardContent className="p-4">
+          <div className="flex items-start space-x-3">
+            <div className="flex-1">
+              {block.type === 'text' && (
+                <div>
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Type className="w-5 h-5 text-blue-500" />
+                    <span className="text-sm font-semibold text-gray-700">Văn bản</span>
+                  </div>
+                  <Textarea
+                    value={block.content}
+                    onChange={(e) => updateBlockContent(block.id, e.target.value)}
+                    placeholder="Nhập nội dung văn bản..."
+                    className="min-h-[120px] text-base resize-none"
+                  />
+                </div>
+              )}
+              
+              {block.type === 'image' && (
+                <div>
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Image className="w-5 h-5 text-green-500" />
+                    <span className="text-sm font-semibold text-gray-700">Hình ảnh</span>
+                  </div>
+                  {isUploading ? (
+                    <div className="p-6 bg-gray-50 rounded-xl text-center border-2 border-dashed border-gray-300">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-2"></div>
+                      <span className="text-sm text-gray-500">Đang tải lên...</span>
+                    </div>
+                  ) : block.content ? (
+                    <div className="space-y-3">
+                      <img 
+                        src={block.content} 
+                        alt={block.metadata?.fileName}
+                        className="max-w-full h-auto rounded-xl border border-gray-200 shadow-sm"
+                      />
+                      <p className="text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-full w-fit">
+                        {block.metadata?.fileName}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="p-6 bg-gray-50 rounded-xl text-center border-2 border-dashed border-gray-300">
+                      <span className="text-sm text-gray-500">Đang xử lý hình ảnh...</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {block.type === 'video' && (
+                <div>
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Video className="w-5 h-5 text-purple-500" />
+                    <span className="text-sm font-semibold text-gray-700">Video</span>
+                  </div>
+                  {isUploading ? (
+                    <div className="p-6 bg-gray-50 rounded-xl text-center border-2 border-dashed border-gray-300">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-2"></div>
+                      <span className="text-sm text-gray-500">Đang tải lên...</span>
+                    </div>
+                  ) : block.content ? (
+                    <div className="space-y-3">
+                      <video 
+                        src={block.content} 
+                        controls
+                        className="max-w-full h-auto rounded-xl border border-gray-200 shadow-sm"
+                      />
+                      <p className="text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-full w-fit">
+                        {block.metadata?.fileName}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="p-6 bg-gray-50 rounded-xl text-center border-2 border-dashed border-gray-300">
+                      <span className="text-sm text-gray-500">Đang xử lý video...</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => removeBlock(block.id)}
+              className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2"
+              disabled={isUploading}
+            >
+              <Trash2 className="w-5 h-5" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
   if (loading) {
@@ -287,16 +588,102 @@ const StudentSubmissionDetailPage = () => {
           {/* Submission Content */}
           <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm mb-6">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-indigo-500" />
-                <span>Nội dung bài làm</span>
+              <CardTitle className="text-lg flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <FileText className="w-5 h-5 text-indigo-500" />
+                  <span>Nội dung bài làm</span>
+                </div>
+                {canEdit && !isEditing && (
+                  <Button
+                    onClick={startEditing}
+                    size="sm"
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Chỉnh sửa
+                  </Button>
+                )}
+                {isEditing && (
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={saveChanges}
+                      size="sm"
+                      disabled={isSaving}
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      {isSaving ? 'Đang lưu...' : 'Lưu'}
+                    </Button>
+                    <Button
+                      onClick={cancelEditing}
+                      size="sm"
+                      variant="outline"
+                      disabled={isSaving}
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Hủy
+                    </Button>
+                  </div>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {submission.content?.blocks && submission.content.blocks.length > 0 ? (
-                renderSortedContentBlocks(submission.content.blocks)
+              {isEditing ? (
+                <div>
+                  {/* Add Content Buttons */}
+                  <div className="mb-6">
+                    <div className="grid grid-cols-1 gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addTextBlock}
+                        className="flex items-center justify-center space-x-3 h-12 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                      >
+                        <Type className="w-5 h-5" />
+                        <span className="font-medium">Thêm văn bản</span>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addImageBlock}
+                        className="flex items-center justify-center space-x-3 h-12 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700 hover:from-green-100 hover:to-emerald-100"
+                      >
+                        <Image className="w-5 h-5" />
+                        <span className="font-medium">Thêm hình ảnh</span>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addVideoBlock}
+                        className="flex items-center justify-center space-x-3 h-12 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-pink-100"
+                      >
+                        <Video className="w-5 h-5" />
+                        <span className="font-medium">Thêm video</span>
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Edit Blocks */}
+                  <div className="space-y-4">
+                    {editBlocks.length === 0 ? (
+                      <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-2xl border-2 border-dashed border-gray-300">
+                        <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">Chưa có nội dung nào</h3>
+                        <p className="text-gray-500 text-sm px-4">
+                          Hãy thêm văn bản, hình ảnh hoặc video để hoàn thành bài tập
+                        </p>
+                      </div>
+                    ) : (
+                      editBlocks.map(block => renderEditableBlock(block))
+                    )}
+                  </div>
+                </div>
               ) : (
-                <p className="text-gray-500 text-center py-8">Không có nội dung</p>
+                submission.content?.blocks && submission.content.blocks.length > 0 ? (
+                  renderSortedContentBlocks(submission.content.blocks)
+                ) : (
+                  <p className="text-gray-500 text-center py-8">Không có nội dung</p>
+                )
               )}
             </CardContent>
           </Card>
@@ -354,17 +741,100 @@ const StudentSubmissionDetailPage = () => {
           {/* Submission Content */}
           <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
             <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
-              <CardTitle className="text-2xl flex items-center space-x-4">
-                <FileText className="w-7 h-7 text-indigo-500" />
-                <span>Nội dung bài làm</span>
+              <CardTitle className="text-2xl flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <FileText className="w-7 h-7 text-indigo-500" />
+                  <span>Nội dung bài làm</span>
+                </div>
+                {canEdit && !isEditing && (
+                  <Button
+                    onClick={startEditing}
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    <Edit className="w-5 h-5 mr-2" />
+                    Chỉnh sửa
+                  </Button>
+                )}
+                {isEditing && (
+                  <div className="flex space-x-3">
+                    <Button
+                      onClick={saveChanges}
+                      disabled={isSaving}
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      <Save className="w-5 h-5 mr-2" />
+                      {isSaving ? 'Đang lưu...' : 'Lưu'}
+                    </Button>
+                    <Button
+                      onClick={cancelEditing}
+                      variant="outline"
+                      disabled={isSaving}
+                    >
+                      <X className="w-5 h-5 mr-2" />
+                      Hủy
+                    </Button>
+                  </div>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-8">
               <div className="bg-gradient-to-br from-gray-50 to-indigo-50 rounded-2xl p-8 border border-indigo-100">
-                {submission.content?.blocks && submission.content.blocks.length > 0 ? (
-                  renderSortedContentBlocks(submission.content.blocks)
+                {isEditing ? (
+                  <div>
+                    {/* Add Content Buttons */}
+                    <div className="mb-8">
+                      <div className="grid grid-cols-3 gap-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={addTextBlock}
+                          className="flex items-center justify-center space-x-3 h-16 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                        >
+                          <Type className="w-6 h-6" />
+                          <span className="font-medium text-lg">Thêm văn bản</span>
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={addImageBlock}
+                          className="flex items-center justify-center space-x-3 h-16 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700 hover:from-green-100 hover:to-emerald-100"
+                        >
+                          <Image className="w-6 h-6" />
+                          <span className="font-medium text-lg">Thêm hình ảnh</span>
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={addVideoBlock}
+                          className="flex items-center justify-center space-x-3 h-16 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-pink-100"
+                        >
+                          <Video className="w-6 h-6" />
+                          <span className="font-medium text-lg">Thêm video</span>
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Edit Blocks */}
+                    <div className="space-y-6">
+                      {editBlocks.length === 0 ? (
+                        <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-2xl border-2 border-dashed border-gray-300">
+                          <Upload className="w-20 h-20 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-2xl font-semibold text-gray-700 mb-2">Chưa có nội dung nào</h3>
+                          <p className="text-gray-500 text-lg px-8">
+                            Hãy thêm văn bản, hình ảnh hoặc video để hoàn thành bài tập
+                          </p>
+                        </div>
+                      ) : (
+                        editBlocks.map(block => renderEditableBlock(block))
+                      )}
+                    </div>
+                  </div>
                 ) : (
-                  <p className="text-gray-500 text-center py-16 text-xl">Không có nội dung</p>
+                  submission.content?.blocks && submission.content.blocks.length > 0 ? (
+                    renderSortedContentBlocks(submission.content.blocks)
+                  ) : (
+                    <p className="text-gray-500 text-center py-16 text-xl">Không có nội dung</p>
+                  )
                 )}
               </div>
             </CardContent>
