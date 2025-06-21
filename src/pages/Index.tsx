@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroCarousel from '@/components/HeroCarousel';
@@ -6,6 +7,7 @@ import CoursesSection from '@/components/CoursesSection';
 import CommitmentsSection from '@/components/CommitmentsSection';
 import ActivitiesSection from '@/components/ActivitiesSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
+import BlogSection from '@/components/BlogSection';
 import Footer from '@/components/Footer';
 import RegistrationModal from '@/components/RegistrationModal';
 
@@ -21,6 +23,7 @@ const Index = () => {
       <CommitmentsSection />
       <TestimonialsSection />
       <ActivitiesSection />
+      <BlogSection />
       <Footer />
       <RegistrationModal 
         isOpen={isRegistrationModalOpen}

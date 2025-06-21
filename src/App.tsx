@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,6 +31,8 @@ import UserDetailPage from '@/pages/UserDetailPage';
 import CreateCoursePage from './pages/admin/CreateCoursePage';
 import EditCoursePage from './pages/admin/EditCoursePage';
 import PublicCourseDetailPage from './pages/PublicCourseDetailPage';
+import BlogPage from './pages/BlogPage';
+import BlogDetailPage from './pages/BlogDetailPage';
 
 const queryClient = new QueryClient();
 
@@ -41,6 +44,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:id" element={<BlogDetailPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/class/:classId" element={<ClassDetailPage />} />
           <Route path="/admin/course/create" element={<CreateCoursePage />} />
