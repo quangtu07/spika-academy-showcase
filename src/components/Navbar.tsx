@@ -20,7 +20,7 @@ const Navbar = () => {
     { name: 'Giới thiệu', href: '#about', action: () => handleScrollToSection('about') },
     { name: 'Giảng viên', href: '/teachers', action: () => handleTeachersClick() },
     { name: 'Khóa học', href: '#courses', action: () => handleCoursesClick() },
-    { name: 'Hoạt động', href: '#activities', action: () => handleScrollToSection('activities') },
+    { name: 'Blog chia sẻ', href: '/blog', action: () => handleBlogClick() },
     { name: 'Liên hệ', href: '#contact', action: () => handleScrollToSection('contact') },
   ];
 
@@ -77,6 +77,10 @@ const Navbar = () => {
 
   const handleCoursesClick = () => {
     navigate('/courses');
+  };
+
+  const handleBlogClick = () => {
+    navigate('/blog');
   };
 
   const handleLoginSuccess = (user: any) => {

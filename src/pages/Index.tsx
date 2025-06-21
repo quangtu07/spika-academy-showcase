@@ -5,7 +5,6 @@ import HeroCarousel from '@/components/HeroCarousel';
 import AboutSection from '@/components/AboutSection';
 import CoursesSection from '@/components/CoursesSection';
 import CommitmentsSection from '@/components/CommitmentsSection';
-import ActivitiesSection from '@/components/ActivitiesSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import BlogSection from '@/components/BlogSection';
 import Footer from '@/components/Footer';
@@ -22,7 +21,6 @@ const Index = () => {
       <CoursesSection onOpenRegistrationModal={() => setIsRegistrationModalOpen(true)} />
       <CommitmentsSection />
       <TestimonialsSection />
-      <ActivitiesSection />
       <BlogSection />
       <Footer />
       <RegistrationModal 
