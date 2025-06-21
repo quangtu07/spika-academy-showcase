@@ -675,7 +675,7 @@ const LessonAssignmentsPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg font-medium">Đang tải danh sách bài tập...</p>
         </div>
       </div>
@@ -698,7 +698,7 @@ const LessonAssignmentsPage = () => {
           {assignments.length === 0 ? (
             <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
               <CardContent className="text-center py-16">
-                <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
                   <FileText className="w-12 h-12 text-gray-500" />
                 </div>
                 <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có bài tập nào</h4>
@@ -712,11 +712,11 @@ const LessonAssignmentsPage = () => {
                 
                 return (
                   <Card key={assignment.id} className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
-                    <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
+                    <CardHeader className="bg-[#02458b]/5 border-b border-[#02458b]/20">
                       <div className="flex items-start justify-between">
                         <div>
                           <CardTitle className="text-xl flex items-center space-x-3">
-                            <FileText className="w-6 h-6 text-indigo-500" />
+                            <FileText className="w-6 h-6 text-[#02458b]" />
                             <span>Bài tập</span>
                           </CardTitle>
                           <CardDescription className="flex items-center space-x-3 mt-2">
@@ -733,7 +733,7 @@ const LessonAssignmentsPage = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleEditAssignment(assignment)}
-                            className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100 p-2"
+                            className="bg-[#02458b]/5 border-[#02458b]/30 text-[#02458b] hover:bg-[#02458b]/10 p-2"
                             title="Chỉnh sửa bài tập"
                           >
                             <Edit className="w-4 h-4" />
@@ -742,7 +742,7 @@ const LessonAssignmentsPage = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleDeleteAssignment(assignment)}
-                            className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200 text-red-700 hover:from-red-100 hover:to-pink-100 p-2"
+                            className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 p-2"
                             title="Xóa bài tập"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -756,7 +756,7 @@ const LessonAssignmentsPage = () => {
                         {/* Assignment Content */}
                         <div>
                           <h4 className="text-lg font-semibold text-gray-900 mb-4">Nội dung bài tập</h4>
-                          <div className="bg-gradient-to-br from-gray-50 to-indigo-50 rounded-xl p-6 border">
+                          <div className="bg-[#02458b]/5 rounded-xl p-6 border border-[#02458b]/20">
                             {renderSortedContentBlocks(assignment.content.blocks)}
                           </div>
                         </div>
@@ -781,13 +781,13 @@ const LessonAssignmentsPage = () => {
                             </button>
                             <button
                               onClick={() => handleViewSubmissions(assignment, 'Đang chờ chấm')}
-                              className="bg-blue-50 rounded-lg p-4 border border-blue-200 hover:bg-blue-100 transition-colors text-left w-full"
+                              className="bg-[#02458b]/5 rounded-lg p-4 border border-[#02458b]/20 hover:bg-[#02458b]/10 transition-colors text-left w-full"
                             >
                               <div className="flex items-center space-x-3">
-                                <Eye className="w-5 h-5 text-blue-600" />
+                                <Eye className="w-5 h-5 text-[#02458b]" />
                                 <div>
-                                  <p className="text-blue-900 font-semibold">Đang chờ chấm</p>
-                                  <p className="text-blue-700 text-2xl font-bold">
+                                  <p className="text-[#02458b] font-semibold">Đang chờ chấm</p>
+                                  <p className="text-[#02458b] text-2xl font-bold">
                                     {stats.dangChoChams}
                                   </p>
                                 </div>
@@ -823,7 +823,7 @@ const LessonAssignmentsPage = () => {
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
         <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold text-[#02458b]">
               Chỉnh sửa bài tập
             </DialogTitle>
           </DialogHeader>
@@ -889,7 +889,7 @@ const LessonAssignmentsPage = () => {
                 type="button"
                 onClick={saveEditedAssignment}
                 disabled={isSubmitting || uploadingBlocks.size > 0}
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                className="bg-[#02458b] hover:bg-[#02458b]/90"
               >
                 {isSubmitting ? 'Đang cập nhật...' : 'Cập nhật bài tập'}
               </Button>
@@ -975,7 +975,7 @@ const LessonAssignmentsPage = () => {
             <div className="flex justify-end pt-4 border-t">
               <Button 
                 onClick={() => setShowNotSubmittedModal(false)}
-                className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
+                className="bg-gray-500 hover:bg-gray-600"
               >
                 Đóng
               </Button>

@@ -61,11 +61,11 @@ const TeacherToolbar: React.FC<TeacherToolbarProps> = ({ title, subtitle, rightC
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 min-w-0 flex-1">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 bg-[#02458b] rounded-lg flex items-center justify-center flex-shrink-0">
                 <GraduationCap className="h-4 w-4 text-white" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
+                <h1 className="text-lg font-bold text-[#02458b] truncate">
                   {title}
                 </h1>
                 {subtitle && (
@@ -120,11 +120,11 @@ const TeacherToolbar: React.FC<TeacherToolbarProps> = ({ title, subtitle, rightC
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-[#02458b] rounded-xl flex items-center justify-center shadow-lg">
               <GraduationCap className="h-7 w-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-[#02458b]">
                 {title}
               </h1>
               {subtitle && (
@@ -143,7 +143,7 @@ const TeacherToolbar: React.FC<TeacherToolbarProps> = ({ title, subtitle, rightC
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex items-center space-x-2 hover:bg-blue-50 border-blue-200 text-blue-700"
+                  className="flex items-center space-x-2 hover:bg-[#02458b]/5 border-[#02458b]/30 text-[#02458b]"
                 >
                   <Menu className="h-4 w-4" />
                   <span>Menu</span>

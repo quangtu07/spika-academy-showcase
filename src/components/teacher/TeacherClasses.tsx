@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -143,8 +142,8 @@ const TeacherClasses = () => {
     return (
       <div className="text-center py-16">
         <div className="flex flex-col items-center space-y-6">
-          <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center shadow-lg">
-            <GraduationCap className="w-12 h-12 text-blue-500" />
+          <div className="w-24 h-24 bg-[#02458b]/10 rounded-full flex items-center justify-center shadow-lg">
+            <GraduationCap className="w-12 h-12 text-[#02458b]" />
           </div>
           <div className="space-y-2">
             <h3 className="text-2xl font-bold text-gray-900">Chưa có lớp học nào</h3>
@@ -161,37 +160,37 @@ const TeacherClasses = () => {
     <div className="space-y-8">
       {/* Stats Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+        <div className="bg-[#02458b] rounded-xl p-6 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100 text-sm font-medium">Tổng số lớp học</p>
+              <p className="text-white/80 text-sm font-medium">Tổng số lớp học</p>
               <p className="text-3xl font-bold">{classes.length}</p>
             </div>
-            <GraduationCap className="w-10 h-10 text-blue-200" />
+            <GraduationCap className="w-10 h-10 text-white/70" />
           </div>
         </div>
         
-        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
+        <div className="bg-[#02458b]/90 rounded-xl p-6 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-sm font-medium">Lớp đang hoạt động</p>
+              <p className="text-white/80 text-sm font-medium">Lớp đang hoạt động</p>
               <p className="text-3xl font-bold">
                 {classes.filter(c => c.status?.toLowerCase() === 'đang hoạt động').length}
               </p>
             </div>
-            <Users className="w-10 h-10 text-green-200" />
+            <Users className="w-10 h-10 text-white/70" />
           </div>
         </div>
         
-        <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+        <div className="bg-[#02458b]/80 rounded-xl p-6 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-100 text-sm font-medium">Tổng học viên</p>
+              <p className="text-white/80 text-sm font-medium">Tổng học viên</p>
               <p className="text-3xl font-bold">
                 {classes.reduce((sum, c) => sum + c.enrollmentsCount, 0)}
               </p>
             </div>
-            <BookOpen className="w-10 h-10 text-purple-200" />
+            <BookOpen className="w-10 h-10 text-white/70" />
           </div>
         </div>
       </div>
@@ -204,16 +203,16 @@ const TeacherClasses = () => {
             className="group hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:scale-105 border-0 shadow-lg overflow-hidden"
             onClick={() => handleClassClick(classItem.id)}
           >
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white relative overflow-hidden">
+            <CardHeader className="bg-[#02458b] text-white relative overflow-hidden">
               <div className="absolute inset-0 bg-black/10"></div>
               <div className="relative z-10">
                 <div className="flex items-start justify-between mb-2">
-                  <CardTitle className="text-xl font-bold text-white line-clamp-2 group-hover:text-blue-100 transition-colors">
+                  <CardTitle className="text-xl font-bold text-white line-clamp-2 group-hover:text-white/90 transition-colors">
                     {classItem.name}
                   </CardTitle>
                   {getStatusBadge(classItem.status)}
                 </div>
-                <CardDescription className="text-blue-100 flex items-center space-x-2">
+                <CardDescription className="text-white/80 flex items-center space-x-2">
                   <BookOpen className="w-4 h-4" />
                   <span className="font-medium">{classItem.courseName}</span>
                 </CardDescription>
@@ -226,7 +225,7 @@ const TeacherClasses = () => {
               <div className="space-y-4">
                 {/* Class Description */}
                 {/* {classItem.description && (
-                  <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-4 border border-blue-100">
+                  <div className="bg-gradient-to-r from-gray-50 to-[#02458b]/5 rounded-lg p-4 border border-[#02458b]/20">
                     <p className="text-gray-700 text-sm leading-relaxed line-clamp-3">
                       {classItem.description}
                     </p>
@@ -236,13 +235,13 @@ const TeacherClasses = () => {
                 {/* Class Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center space-x-2 text-gray-600">
-                    <Users className="w-4 h-4 text-blue-500" />
+                    <Users className="w-4 h-4 text-[#02458b]" />
                     <span className="text-sm font-medium">{classItem.enrollmentsCount} học viên</span>
                   </div>
                   
                   {classItem.schedule && (
                     <div className="flex items-center space-x-2 text-gray-600">
-                      <Clock className="w-4 h-4 text-purple-500" />
+                      <Clock className="w-4 h-4 text-[#02458b]" />
                       <span className="text-sm font-medium truncate">{classItem.schedule}</span>
                     </div>
                   )}
@@ -252,7 +251,7 @@ const TeacherClasses = () => {
                 <div className="pt-2 border-t border-gray-100">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-500">Nhấn để xem chi tiết</span>
-                    <ArrowRight className="w-4 h-4 text-blue-500 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 text-[#02458b] group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </div>

@@ -348,3 +348,4 @@ const PublicCourseDetailPage = () => {
 };
 
 export default PublicCourseDetailPage; 
+ 

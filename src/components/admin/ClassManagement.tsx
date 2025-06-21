@@ -441,16 +441,16 @@ const ClassManagement = () => {
                           <TableCell>
                             <div className="flex items-center space-x-2">
                                                           <div className="w-8 h-8 bg-[#02458b] rounded-lg flex items-center justify-center">
-                              <BookOpen className="h-4 w-4 text-white" />
-                            </div>
+                                <BookOpen className="h-4 w-4 text-white" />
+                              </div>
                               <span className="font-medium text-gray-900">{classItem.course?.name || 'Không xác định'}</span>
                             </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center space-x-2">
                                                           <div className="w-8 h-8 bg-[#1294fb] rounded-lg flex items-center justify-center">
-                              <GraduationCap className="h-4 w-4 text-white" />
-                            </div>
+                                <GraduationCap className="h-4 w-4 text-white" />
+                              </div>
                               <span className="font-medium text-gray-900">{classItem.instructor?.fullname || 'Không xác định'}</span>
                             </div>
                           </TableCell>

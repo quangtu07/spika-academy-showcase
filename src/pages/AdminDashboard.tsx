@@ -169,11 +169,11 @@ const AdminDashboard = () => {
         )}
         
               <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <AdminToolbar title="Quản trị" subtitle="Bảng điều khiển hệ thống" />
+          <AdminToolbar title="Quản trị" subtitle="Bảng điều khiển hệ thống" />
 
-        {/* Mobile Content */}
-        <div className="p-4">
-          <div className="bg-white rounded-2xl shadow-xl border-0 overflow-hidden">
+          {/* Mobile Content */}
+          <div className="p-4">
+            <div className="bg-white rounded-2xl shadow-xl border-0 overflow-hidden">
             <div className="bg-[#02458b] p-4">
                 <div className="flex items-center space-x-3">
                   {React.createElement(tabItems.find(item => item.value === activeTab)?.icon || BarChart3, { 

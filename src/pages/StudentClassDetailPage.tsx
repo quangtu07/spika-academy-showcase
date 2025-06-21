@@ -299,10 +299,10 @@ const StudentClassDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 animate-pulse shadow-lg">
+          <div className="w-16 h-16 bg-[#02458b] rounded-2xl flex items-center justify-center mb-6 animate-pulse shadow-lg">
             <GraduationCap className="w-8 h-8 text-white" />
           </div>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg font-medium">Đang kiểm tra quyền truy cập...</p>
         </div>
       </div>
@@ -313,19 +313,19 @@ const StudentClassDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-2xl border-0 overflow-hidden">
-          <CardHeader className="text-center bg-gradient-to-r from-red-500 to-pink-500 text-white">
+          <CardHeader className="text-center bg-[#02458b] text-white">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <FileText className="w-8 h-8 text-white" />
             </div>
             <CardTitle className="text-xl">Không có quyền truy cập</CardTitle>
-            <CardDescription className="text-red-100">
+            <CardDescription className="text-white/80">
               Bạn chưa đăng ký lớp học này hoặc không có quyền truy cập.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center pt-6">
             <Button 
               onClick={() => navigate('/student')} 
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg"
+              className="w-full bg-[#02458b] hover:bg-[#02458b]/90 shadow-lg"
             >
               Quay lại trang học viên
             </Button>
@@ -339,19 +339,19 @@ const StudentClassDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-2xl border-0 overflow-hidden">
-          <CardHeader className="text-center bg-gradient-to-r from-red-500 to-pink-500 text-white">
+          <CardHeader className="text-center bg-[#02458b] text-white">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <FileText className="w-8 h-8 text-white" />
             </div>
             <CardTitle className="text-xl">Không tìm thấy lớp học</CardTitle>
-            <CardDescription className="text-red-100">
+            <CardDescription className="text-white/80">
               Lớp học này có thể đã bị xóa hoặc bạn không có quyền truy cập.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center pt-6">
             <Button 
               onClick={() => navigate('/student')} 
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg"
+              className="w-full bg-[#02458b] hover:bg-[#02458b]/90 shadow-lg"
             >
               Quay lại trang học viên
             </Button>
@@ -375,7 +375,7 @@ const StudentClassDetailPage = () => {
         {/* Mobile Class Info Card */}
         <div className="p-4">
           <Card className="shadow-xl border-0 overflow-hidden mb-6">
-            <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white relative">
+            <CardHeader className="bg-[#02458b] text-white relative">
               <div className="absolute inset-0 bg-black/10"></div>
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full"></div>
               <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full"></div>
@@ -386,7 +386,7 @@ const StudentClassDetailPage = () => {
                     <CardTitle className="text-xl font-bold text-white mb-2">
                       {classDetail.name}
                     </CardTitle>
-                    <CardDescription className="text-indigo-100 flex items-center space-x-2">
+                    <CardDescription className="text-white/80 flex items-center space-x-2">
                       <BookOpen className="w-4 h-4 flex-shrink-0" />
                       <span className="font-medium truncate">{classDetail.course.name}</span>
                     </CardDescription>
@@ -400,26 +400,26 @@ const StudentClassDetailPage = () => {
                 <div className="grid grid-cols-3 gap-3 mt-4">
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
                     <div className="text-center">
-                      <BookOpen className="w-5 h-5 text-purple-100 mx-auto mb-1" />
+                      <BookOpen className="w-5 h-5 text-white/80 mx-auto mb-1" />
                       <p className="text-white text-lg font-bold">{lessons.length}</p>
-                      <p className="text-purple-100 text-xs">Buổi học</p>
+                      <p className="text-white/80 text-xs">Buổi học</p>
                     </div>
                   </div>
                   
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
                     <div className="text-center">
-                      <Award className="w-5 h-5 text-pink-100 mx-auto mb-1" />
+                      <Award className="w-5 h-5 text-white/80 mx-auto mb-1" />
                       <p className="text-white text-lg font-bold">{calculateProgressPercentage()}%</p>
-                      <p className="text-pink-100 text-xs">Hoàn thành</p>
-                      <p className="text-pink-100 text-xs">({assignmentProgress.completed}/{assignmentProgress.total})</p>
+                      <p className="text-white/80 text-xs">Hoàn thành</p>
+                      <p className="text-white/80 text-xs">({assignmentProgress.completed}/{assignmentProgress.total})</p>
                     </div>
                   </div>
 
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
                     <div className="text-center">
-                      <Clock className="w-5 h-5 text-yellow-100 mx-auto mb-1" />
+                      <Clock className="w-5 h-5 text-white/80 mx-auto mb-1" />
                       <p className="text-white text-lg font-bold">{assignmentProgress.pending}</p>
-                      <p className="text-yellow-100 text-xs">Chờ chấm</p>
+                      <p className="text-white/80 text-xs">Chờ chấm</p>
                     </div>
                   </div>
                 </div>
@@ -430,9 +430,9 @@ const StudentClassDetailPage = () => {
               {/* Class Details */}
               <div className="space-y-3">
                 {classDetail.description && (
-                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-100">
+                  <div className="bg-[#02458b]/5 rounded-xl p-4 border border-[#02458b]/20">
                     <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                      <FileText className="w-4 h-4 mr-2 text-indigo-500" />
+                      <FileText className="w-4 h-4 mr-2 text-[#02458b]" />
                       Mô tả
                     </h4>
                     <p className="text-gray-700 text-sm leading-relaxed">
@@ -443,13 +443,13 @@ const StudentClassDetailPage = () => {
                 
                 {/* Teacher & Schedule */}
                 <div className="grid grid-cols-1 gap-3">
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                  <div className="bg-[#02458b]/5 rounded-xl p-4 border border-[#02458b]/20">
                     <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                      <User className="w-4 h-4 mr-2 text-blue-500" />
+                      <User className="w-4 h-4 mr-2 text-[#02458b]" />
                       Giảng viên
                     </h4>
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 bg-[#02458b] rounded-full flex items-center justify-center">
                         <span className="text-white font-semibold text-sm">
                           {classDetail.instructor.fullname.charAt(0)}
                         </span>
@@ -465,9 +465,9 @@ const StudentClassDetailPage = () => {
                   </div>
                   
                   {classDetail.schedule && (
-                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
+                    <div className="bg-[#02458b]/5 rounded-xl p-4 border border-[#02458b]/20">
                       <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                        <Clock className="w-4 h-4 mr-2 text-purple-500" />
+                        <Clock className="w-4 h-4 mr-2 text-[#02458b]" />
                         Lịch học
                       </h4>
                       <p className="text-gray-700 font-medium">{classDetail.schedule}</p>
@@ -482,15 +482,15 @@ const StudentClassDetailPage = () => {
           <Card className="shadow-xl border-0">
             <CardHeader>
               <CardTitle className="text-lg flex items-center space-x-2">
-                <BookOpen className="w-5 h-5 text-indigo-500" />
+                <BookOpen className="w-5 h-5 text-[#02458b]" />
                 <span>Buổi học ({lessons.length})</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {lessons.length === 0 ? (
                 <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <BookOpen className="w-8 w-8 text-gray-400" />
+                  <div className="w-16 h-16 bg-[#02458b]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <BookOpen className="w-8 w-8 text-[#02458b]" />
                   </div>
                   <h4 className="text-lg font-medium text-gray-900 mb-2">Chưa có buổi học</h4>
                   <p className="text-gray-500">Chưa có buổi học nào được tạo cho lớp này.</p>
@@ -499,9 +499,9 @@ const StudentClassDetailPage = () => {
                 <div className="space-y-4">
                   {lessons.map((lesson) => (
                     <Card key={lesson.id} className="shadow-md border-0 overflow-hidden">
-                      <CardHeader className="bg-gradient-to-r from-violet-50 to-purple-50 border-b border-violet-100">
+                      <CardHeader className="bg-[#02458b]/5 border-b border-[#02458b]/20">
                         <div className="flex items-start space-x-3">
-                          <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <div className="w-8 h-8 bg-[#02458b] rounded-full flex items-center justify-center flex-shrink-0">
                             <span className="text-white text-sm font-bold">{lesson.lesson_number}</span>
                           </div>
                           <div className="flex-1 min-w-0">
@@ -521,7 +521,7 @@ const StudentClassDetailPage = () => {
                             <Button
                               size="sm"
                               onClick={() => handleViewAssignments(lesson)}
-                              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                              className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white"
                             >
                               <Eye className="w-3 h-3 mr-2" />
                               Xem bài tập
@@ -531,7 +531,7 @@ const StudentClassDetailPage = () => {
                       </CardHeader>
                       {lesson.content && (
                         <CardContent className="p-4">
-                          <div className="bg-gradient-to-r from-gray-50 to-violet-50 rounded-lg p-3 border border-gray-100">
+                          <div className="bg-[#02458b]/5 rounded-lg p-3 border border-[#02458b]/20">
                             <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
                               {lesson.content}
                             </p>
@@ -564,7 +564,7 @@ const StudentClassDetailPage = () => {
         <div className="space-y-8">
           {/* Enhanced Class Information */}
           <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white relative">
+            <CardHeader className="bg-[#02458b] text-white relative">
               <div className="absolute inset-0 bg-black/10"></div>
               <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/10 rounded-full"></div>
               <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/5 rounded-full"></div>
@@ -573,7 +573,7 @@ const StudentClassDetailPage = () => {
                 <div className="flex items-start justify-between mb-6">
                   <div className="space-y-3">
                     <CardTitle className="text-4xl font-bold">{classDetail?.name}</CardTitle>
-                    <CardDescription className="text-indigo-100 flex items-center space-x-3 text-xl">
+                    <CardDescription className="text-white/80 flex items-center space-x-3 text-xl">
                       <BookOpen className="w-7 h-7" />
                       <span className="font-semibold">{classDetail?.course.name}</span>
                     </CardDescription>
@@ -586,10 +586,10 @@ const StudentClassDetailPage = () => {
                   <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <BookOpen className="w-6 h-6 text-purple-100" />
+                        <BookOpen className="w-6 h-6 text-white/80" />
                       </div>
                       <div>
-                        <p className="text-purple-100 text-sm font-medium">Buổi học</p>
+                        <p className="text-white/80 text-sm font-medium">Buổi học</p>
                         <p className="text-white text-2xl font-bold">{lessons.length}</p>
                       </div>
                     </div>
@@ -598,12 +598,12 @@ const StudentClassDetailPage = () => {
                   <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <Award className="w-6 h-6 text-yellow-100" />
+                        <Award className="w-6 h-6 text-white/80" />
                       </div>
                       <div>
-                        <p className="text-yellow-100 text-sm font-medium">Bài tập hoàn thành</p>
+                        <p className="text-white/80 text-sm font-medium">Bài tập hoàn thành</p>
                         <p className="text-white text-2xl font-bold">{calculateProgressPercentage()}%</p>
-                        <p className="text-yellow-100 text-xs">({assignmentProgress.completed}/{assignmentProgress.total} bài tập)</p>
+                        <p className="text-white/80 text-xs">({assignmentProgress.completed}/{assignmentProgress.total} bài tập)</p>
                       </div>
                     </div>
                   </div>
@@ -611,12 +611,12 @@ const StudentClassDetailPage = () => {
                   <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                        <Clock className="w-6 h-6 text-orange-100" />
+                        <Clock className="w-6 h-6 text-white/80" />
                       </div>
                       <div>
-                        <p className="text-orange-100 text-sm font-medium">Bài tập chờ chấm</p>
+                        <p className="text-white/80 text-sm font-medium">Bài tập chờ chấm</p>
                         <p className="text-white text-2xl font-bold">{assignmentProgress.pending}</p>
-                        <p className="text-orange-100 text-xs">bài tập</p>
+                        <p className="text-white/80 text-xs">bài tập</p>
                       </div>
                     </div>
                   </div>
@@ -627,13 +627,13 @@ const StudentClassDetailPage = () => {
             <CardContent className="p-10 space-y-10">
               {/* Enhanced Class Description */}
               {classDetail?.description && (
-                <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-3xl p-10 border border-indigo-100 shadow-inner">
+                <div className="bg-[#02458b]/5 rounded-3xl p-10 border border-[#02458b]/20 shadow-inner">
                   <div className="flex items-start space-x-6">
-                    <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-xl">
+                    <div className="w-16 h-16 bg-[#02458b] rounded-2xl flex items-center justify-center shadow-xl">
                       <FileText className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-3xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                      <h4 className="text-3xl font-bold text-[#02458b] mb-6">
                         Mô tả lớp học
                       </h4>
                       <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
@@ -649,16 +649,16 @@ const StudentClassDetailPage = () => {
               {/* Enhanced Teacher and Schedule Info */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 {/* Teacher Info */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl p-10 border border-blue-200 shadow-xl">
+                <div className="bg-[#02458b]/5 rounded-3xl p-10 border border-[#02458b]/20 shadow-xl">
                   <div className="flex items-start space-x-6">
-                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-3xl flex items-center justify-center shadow-xl">
+                    <div className="w-20 h-20 bg-[#02458b] rounded-3xl flex items-center justify-center shadow-xl">
                       <User className="w-10 h-10 text-white" />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-2xl font-bold text-gray-900 mb-6">Giảng viên</h4>
-                      <div className="bg-white rounded-2xl p-8 shadow-lg border border-blue-100">
+                      <div className="bg-white rounded-2xl p-8 shadow-lg border border-[#02458b]/20">
                         <div className="flex items-center space-x-6">
-                          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
+                          <div className="w-16 h-16 bg-[#02458b] rounded-2xl flex items-center justify-center shadow-lg">
                             <span className="text-white font-bold text-xl">
                               {classDetail?.instructor.fullname.charAt(0)}
                             </span>
@@ -666,7 +666,7 @@ const StudentClassDetailPage = () => {
                           <div>
                             <p className="font-bold text-gray-900 text-2xl">{classDetail?.instructor.fullname}</p>
                             <div className="flex items-center space-x-3 mt-2">
-                              <Mail className="w-5 h-5 text-blue-500" />
+                              <Mail className="w-5 h-5 text-[#02458b]" />
                               <p className="text-gray-600 text-lg">{classDetail?.instructor.email}</p>
                             </div>
                           </div>
@@ -678,16 +678,16 @@ const StudentClassDetailPage = () => {
                 
                 {/* Schedule Info */}
                 {classDetail?.schedule && (
-                  <div className="bg-gradient-to-br from-purple-50 to-pink-100 rounded-3xl p-10 border border-purple-200 shadow-xl">
+                  <div className="bg-[#02458b]/5 rounded-3xl p-10 border border-[#02458b]/20 shadow-xl">
                     <div className="flex items-start space-x-6">
-                      <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl flex items-center justify-center shadow-xl">
+                      <div className="w-20 h-20 bg-[#02458b] rounded-3xl flex items-center justify-center shadow-xl">
                         <Calendar className="w-10 h-10 text-white" />
                       </div>
                       <div className="flex-1">
                         <h4 className="text-2xl font-bold text-gray-900 mb-6">Lịch học</h4>
-                        <div className="bg-white rounded-2xl p-8 shadow-lg border border-purple-100">
+                        <div className="bg-white rounded-2xl p-8 shadow-lg border border-[#02458b]/20">
                           <div className="flex items-center space-x-4">
-                            <Clock className="w-6 h-6 text-purple-500" />
+                            <Clock className="w-6 h-6 text-[#02458b]" />
                             <p className="text-gray-700 font-semibold text-xl">{classDetail.schedule}</p>
                           </div>
                         </div>
@@ -701,18 +701,18 @@ const StudentClassDetailPage = () => {
 
           {/* Lessons Section */}
           <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-            <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-indigo-50">
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center space-x-4">
-                <BookOpen className="w-8 h-8 text-indigo-500" />
+            <CardHeader className="border-b bg-[#02458b]/5">
+              <CardTitle className="text-3xl font-bold text-[#02458b] flex items-center space-x-4">
+                <BookOpen className="w-8 h-8 text-[#02458b]" />
                 <span>Buổi học ({lessons.length})</span>
               </CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-8 p-8">
               {lessons.length === 0 ? (
-                <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl border border-gray-100">
-                  <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-purple-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <BookOpen className="w-12 h-12 text-gray-500" />
+                <div className="text-center py-16 bg-[#02458b]/5 rounded-3xl border border-[#02458b]/20">
+                  <div className="w-24 h-24 bg-[#02458b]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <BookOpen className="w-12 h-12 text-[#02458b]" />
                   </div>
                   <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có buổi học nào</h4>
                   <p className="text-gray-500 text-lg">Chưa có buổi học nào được tạo cho lớp này.</p>
@@ -720,12 +720,12 @@ const StudentClassDetailPage = () => {
               ) : (
                 <div className="space-y-6">
                   {lessons.map((lesson) => (
-                    <Card key={lesson.id} className="shadow-xl hover:shadow-2xl transition-shadow border-0 bg-gradient-to-r from-white to-purple-50 overflow-hidden">
-                      <CardHeader className="pb-4 bg-gradient-to-r from-violet-50 to-purple-50 border-b border-violet-100">
+                    <Card key={lesson.id} className="shadow-xl hover:shadow-2xl transition-shadow border-0 bg-white overflow-hidden">
+                      <CardHeader className="pb-4 bg-[#02458b]/5 border-b border-[#02458b]/20">
                         <div className="flex items-start justify-between">
                           <div className="space-y-3">
                             <CardTitle className="text-2xl flex items-center space-x-4">
-                              <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
+                              <div className="w-12 h-12 bg-[#02458b] rounded-2xl flex items-center justify-center shadow-lg">
                                 <span className="text-white text-lg font-bold">{lesson.lesson_number}</span>
                               </div>
                               <span>{lesson.title}</span>
@@ -740,7 +740,7 @@ const StudentClassDetailPage = () => {
                           {lessonAssignments[lesson.id] && (
                             <Button
                               onClick={() => handleViewAssignments(lesson)}
-                              className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                              className="bg-[#02458b] hover:bg-[#02458b]/90 text-white"
                             >
                               <Eye className="w-4 h-4 mr-2" />
                               Xem bài tập
@@ -750,7 +750,7 @@ const StudentClassDetailPage = () => {
                       </CardHeader>
                       {lesson.content && (
                         <CardContent className="pt-6">
-                          <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-8 border border-violet-100 shadow-inner">
+                          <div className="bg-[#02458b]/5 rounded-2xl p-8 border border-[#02458b]/20 shadow-inner">
                             <h5 className="font-bold text-gray-900 mb-4 text-xl">Nội dung buổi học</h5>
                             <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-lg">{lesson.content}</p>
                           </div>

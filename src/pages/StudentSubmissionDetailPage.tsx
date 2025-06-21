@@ -520,7 +520,7 @@ const StudentSubmissionDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg font-medium">Đang tải bài nộp...</p>
         </div>
       </div>
@@ -557,11 +557,11 @@ const StudentSubmissionDetailPage = () => {
         <div className="p-4">
           {/* Class Info Card */}
           <Card className="shadow-xl border-0 overflow-hidden mb-6">
-            <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+            <CardHeader className="bg-[#02458b] text-white">
               <CardTitle className="text-xl font-bold">
                 Bài tập đã nộp
               </CardTitle>
-              <CardDescription className="text-indigo-100">
+              <CardDescription className="text-white/80">
                 {submission.assignment.lesson.class.name}
               </CardDescription>
             </CardHeader>
@@ -571,7 +571,7 @@ const StudentSubmissionDetailPage = () => {
           <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm mb-6">
             <CardHeader>
               <CardTitle className="text-lg flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-indigo-500" />
+                <Calendar className="w-5 h-5 text-[#02458b]" />
                 <span>Thông tin nộp bài</span>
               </CardTitle>
             </CardHeader>
@@ -590,14 +590,14 @@ const StudentSubmissionDetailPage = () => {
             <CardHeader>
               <CardTitle className="text-lg flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-indigo-500" />
+                <FileText className="w-5 h-5 text-[#02458b]" />
                 <span>Nội dung bài làm</span>
                 </div>
                 {canEdit && !isEditing && (
                   <Button
                     onClick={startEditing}
                     size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                    className="bg-[#02458b] hover:bg-[#02458b]/90 text-white"
                   >
                     <Edit className="w-4 h-4 mr-2" />
                     Chỉnh sửa
@@ -637,7 +637,7 @@ const StudentSubmissionDetailPage = () => {
                         type="button"
                         variant="outline"
                         onClick={addTextBlock}
-                        className="flex items-center justify-center space-x-3 h-12 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                        className="flex items-center justify-center space-x-3 h-12 bg-[#02458b]/5 border-[#02458b]/20 text-[#02458b] hover:bg-[#02458b]/10"
                       >
                         <Type className="w-5 h-5" />
                         <span className="font-medium">Thêm văn bản</span>
@@ -646,7 +646,7 @@ const StudentSubmissionDetailPage = () => {
                         type="button"
                         variant="outline"
                         onClick={addImageBlock}
-                        className="flex items-center justify-center space-x-3 h-12 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700 hover:from-green-100 hover:to-emerald-100"
+                        className="flex items-center justify-center space-x-3 h-12 bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
                       >
                         <Image className="w-5 h-5" />
                         <span className="font-medium">Thêm hình ảnh</span>
@@ -655,7 +655,7 @@ const StudentSubmissionDetailPage = () => {
                         type="button"
                         variant="outline"
                         onClick={addVideoBlock}
-                        className="flex items-center justify-center space-x-3 h-12 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-pink-100"
+                        className="flex items-center justify-center space-x-3 h-12 bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
                       >
                         <Video className="w-5 h-5" />
                         <span className="font-medium">Thêm video</span>
@@ -666,8 +666,8 @@ const StudentSubmissionDetailPage = () => {
                   {/* Edit Blocks */}
                   <div className="space-y-4">
                     {editBlocks.length === 0 ? (
-                      <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-2xl border-2 border-dashed border-gray-300">
-                        <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <div className="text-center py-12 bg-[#02458b]/5 rounded-2xl border-2 border-dashed border-[#02458b]/20">
+                        <Upload className="w-16 h-16 text-[#02458b] mx-auto mb-4" />
                         <h3 className="text-lg font-semibold text-gray-700 mb-2">Chưa có nội dung nào</h3>
                         <p className="text-gray-500 text-sm px-4">
                           Hãy thêm văn bản, hình ảnh hoặc video để hoàn thành bài tập
@@ -724,9 +724,9 @@ const StudentSubmissionDetailPage = () => {
         <div className="space-y-8">
           {/* Submission Info */}
           <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
+            <CardHeader className="bg-[#02458b]/5 border-b">
               <CardTitle className="text-2xl flex items-center space-x-4">
-                <Calendar className="w-7 h-7 text-indigo-500" />
+                <Calendar className="w-7 h-7 text-[#02458b]" />
                 <span>Thông tin nộp bài</span>
               </CardTitle>
             </CardHeader>
@@ -740,16 +740,16 @@ const StudentSubmissionDetailPage = () => {
 
           {/* Submission Content */}
           <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+            <CardHeader className="bg-[#02458b]/5 border-b">
               <CardTitle className="text-2xl flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                <FileText className="w-7 h-7 text-indigo-500" />
+                <FileText className="w-7 h-7 text-[#02458b]" />
                 <span>Nội dung bài làm</span>
                 </div>
                 {canEdit && !isEditing && (
                   <Button
                     onClick={startEditing}
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                    className="bg-[#02458b] hover:bg-[#02458b]/90 text-white"
                   >
                     <Edit className="w-5 h-5 mr-2" />
                     Chỉnh sửa
@@ -778,7 +778,7 @@ const StudentSubmissionDetailPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-8">
-              <div className="bg-gradient-to-br from-gray-50 to-indigo-50 rounded-2xl p-8 border border-indigo-100">
+              <div className="bg-[#02458b]/5 rounded-2xl p-8 border border-[#02458b]/20">
                 {isEditing ? (
                   <div>
                     {/* Add Content Buttons */}
@@ -788,7 +788,7 @@ const StudentSubmissionDetailPage = () => {
                           type="button"
                           variant="outline"
                           onClick={addTextBlock}
-                          className="flex items-center justify-center space-x-3 h-16 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                          className="flex items-center justify-center space-x-3 h-16 bg-[#02458b]/5 border-[#02458b]/20 text-[#02458b] hover:bg-[#02458b]/10"
                         >
                           <Type className="w-6 h-6" />
                           <span className="font-medium text-lg">Thêm văn bản</span>
@@ -797,7 +797,7 @@ const StudentSubmissionDetailPage = () => {
                           type="button"
                           variant="outline"
                           onClick={addImageBlock}
-                          className="flex items-center justify-center space-x-3 h-16 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700 hover:from-green-100 hover:to-emerald-100"
+                          className="flex items-center justify-center space-x-3 h-16 bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
                         >
                           <Image className="w-6 h-6" />
                           <span className="font-medium text-lg">Thêm hình ảnh</span>
@@ -806,7 +806,7 @@ const StudentSubmissionDetailPage = () => {
                           type="button"
                           variant="outline"
                           onClick={addVideoBlock}
-                          className="flex items-center justify-center space-x-3 h-16 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-pink-100"
+                          className="flex items-center justify-center space-x-3 h-16 bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
                         >
                           <Video className="w-6 h-6" />
                           <span className="font-medium text-lg">Thêm video</span>
@@ -817,8 +817,8 @@ const StudentSubmissionDetailPage = () => {
                     {/* Edit Blocks */}
                     <div className="space-y-6">
                       {editBlocks.length === 0 ? (
-                        <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-2xl border-2 border-dashed border-gray-300">
-                          <Upload className="w-20 h-20 text-gray-400 mx-auto mb-4" />
+                        <div className="text-center py-16 bg-[#02458b]/5 rounded-2xl border-2 border-dashed border-[#02458b]/20">
+                          <Upload className="w-20 h-20 text-[#02458b] mx-auto mb-4" />
                           <h3 className="text-2xl font-semibold text-gray-700 mb-2">Chưa có nội dung nào</h3>
                           <p className="text-gray-500 text-lg px-8">
                             Hãy thêm văn bản, hình ảnh hoặc video để hoàn thành bài tập

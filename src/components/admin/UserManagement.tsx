@@ -506,15 +506,15 @@ const UserManagement = () => {
       <div className="space-y-6">
         <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
                 <CardHeader className="bg-[#02458b] text-white rounded-t-lg">
-          <div className="flex items-center space-x-3">
-            <Users className="h-6 w-6 md:h-8 md:w-8" />
-            <div>
-              <CardTitle className="text-xl md:text-2xl">Quản lý người dùng</CardTitle>
+            <div className="flex items-center space-x-3">
+              <Users className="h-6 w-6 md:h-8 md:w-8" />
+              <div>
+                <CardTitle className="text-xl md:text-2xl">Quản lý người dùng</CardTitle>
               <CardDescription className="text-blue-100 text-sm md:text-base">
-                Đang tải dữ liệu...
-              </CardDescription>
+                  Đang tải dữ liệu...
+                </CardDescription>
+              </div>
             </div>
-          </div>
         </CardHeader>
           <CardContent className="p-4 md:p-8">
           <div className="animate-pulse space-y-4">

@@ -1011,12 +1011,12 @@ const ClassDetailPage = () => {
                                     <TooltipProvider>
                                       <Tooltip>
                                         <TooltipTrigger asChild>
-                                                                  <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleOpenEditLessonModal(lesson)}
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleOpenEditLessonModal(lesson)}
                           className="text-[#02458b] hover:text-[#02458b] hover:bg-blue-50 border-blue-200"
-                        >
+                                          >
                                             <Edit className="h-4 w-4" />
                                           </Button>
                                         </TooltipTrigger>

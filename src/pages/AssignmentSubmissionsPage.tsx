@@ -8,6 +8,7 @@ import { ArrowLeft, FileText, Calendar, User, CheckCircle, Clock, AlertCircle, E
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import TeacherToolbar from '@/components/teacher/TeacherToolbar';
 
 interface Assignment {
   id: string;
@@ -175,7 +176,7 @@ const AssignmentSubmissionsPage = () => {
   const getStatusColor = () => {
     switch (statusFilter) {
       case 'Chưa làm': return 'from-amber-500 to-orange-500';
-      case 'Đang chờ chấm': return 'from-blue-500 to-indigo-500';
+      case 'Đang chờ chấm': return 'from-[#02458b] to-[#02458b]/80';
       case 'Đã hoàn thành': return 'from-emerald-500 to-green-500';
       default: return 'from-gray-500 to-gray-600';
     }
@@ -185,7 +186,7 @@ const AssignmentSubmissionsPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg font-medium">Đang tải danh sách bài nộp...</p>
         </div>
       </div>
@@ -207,33 +208,17 @@ const AssignmentSubmissionsPage = () => {
     );
   }
 
+  const toolbarTitle = `${statusFilter}`;
+  const toolbarSubtitle = `Buổi ${assignment.lesson.lesson_number}: ${assignment.lesson.title} - ${assignment.lesson.class.name}`;
+
   // Mobile Layout
   if (isMobile) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        {/* Mobile Header */}
-        <div className="bg-white shadow-lg border-b sticky top-0 z-50">
-          <div className="px-4 py-3">
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="ghost"
-                size="sm"
-                className="p-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent truncate">
-                  {statusFilter}
-                </h1>
-                <p className="text-xs text-gray-500 truncate">
-                  Buổi {assignment.lesson.lesson_number}: {assignment.lesson.title}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <TeacherToolbar 
+          title={toolbarTitle}
+          subtitle={toolbarSubtitle}
+        />
 
         {/* Mobile Content */}
         <div className="p-4">
@@ -267,7 +252,7 @@ const AssignmentSubmissionsPage = () => {
                 <Card key={submission.id} className="shadow-lg border-0">
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 bg-[#02458b] rounded-full flex items-center justify-center flex-shrink-0">
                         <User className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -288,7 +273,7 @@ const AssignmentSubmissionsPage = () => {
                           <div className="mt-3 pt-3 border-t border-gray-100">
                             <Button 
                               size="sm"
-                              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                              className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white"
                               onClick={() => navigate(`/teacher/submission/${submission.id}`)}
                             >
                               <Eye className="w-4 h-4 mr-2" />
@@ -311,32 +296,10 @@ const AssignmentSubmissionsPage = () => {
   // Desktop Layout
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      {/* Header */}
-      <div className="bg-white shadow-lg border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => navigate(-1)}
-                variant="outline"
-                size="sm"
-                className="hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  {statusFilter}
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Buổi {assignment.lesson.lesson_number}: {assignment.lesson.title} - {assignment.lesson.class.name}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <TeacherToolbar 
+        title={toolbarTitle}
+        subtitle={toolbarSubtitle}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -362,7 +325,7 @@ const AssignmentSubmissionsPage = () => {
           {submissions.length === 0 ? (
             <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
               <CardContent className="text-center py-16">
-                <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
                   {getStatusIcon()}
                 </div>
                 <h4 className="text-2xl font-bold text-gray-900 mb-4">Không có dữ liệu</h4>
@@ -373,7 +336,7 @@ const AssignmentSubmissionsPage = () => {
             <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-xl flex items-center space-x-3">
-                  <FileText className="w-6 h-6 text-indigo-500" />
+                  <FileText className="w-6 h-6 text-[#02458b]" />
                   <span>Danh sách học viên ({submissions.length})</span>
                 </CardTitle>
               </CardHeader>
@@ -381,7 +344,7 @@ const AssignmentSubmissionsPage = () => {
               <CardContent className="p-0">
                 <div className="overflow-hidden">
                   <Table>
-                    <TableHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
+                    <TableHeader className="bg-[#02458b]/5">
                       <TableRow>
                         <TableHead className="font-bold text-lg py-6">Học viên</TableHead>
                         <TableHead className="font-bold text-lg">Email</TableHead>
@@ -392,10 +355,10 @@ const AssignmentSubmissionsPage = () => {
                     </TableHeader>
                     <TableBody>
                       {submissions.map((submission) => (
-                        <TableRow key={submission.id} className="hover:bg-indigo-50/50 transition-colors">
+                        <TableRow key={submission.id} className="hover:bg-[#02458b]/5 transition-colors">
                           <TableCell className="font-medium py-6">
                             <div className="flex items-center space-x-4">
-                              <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                              <div className="w-12 h-12 bg-[#02458b] rounded-full flex items-center justify-center shadow-lg">
                                 <User className="w-6 h-6 text-white" />
                               </div>
                               <span className="text-lg">{submission.student.fullname}</span>
@@ -419,7 +382,7 @@ const AssignmentSubmissionsPage = () => {
                             {submission.submitted_at ? (
                               <Button 
                                 size="sm"
-                                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                                className="bg-[#02458b] hover:bg-[#02458b]/90 text-white"
                                 onClick={() => navigate(`/teacher/submission/${submission.id}`)}
                               >
                                 <Eye className="w-4 h-4 mr-2" />

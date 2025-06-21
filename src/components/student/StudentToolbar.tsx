@@ -67,63 +67,63 @@ const StudentToolbar: React.FC<StudentToolbarProps> = ({ title, subtitle, rightC
     return (
       <div className="bg-white shadow-lg border-b sticky top-0 z-50">
         <div className="px-4 py-3">
-                      <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 min-w-0 flex-1">
-                <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <GraduationCap className="h-4 w-4 text-white" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent truncate">
-                    {title}
-                  </h1>
-                  {subtitle && (
-                    <p className="text-xs text-gray-500 truncate">{subtitle}</p>
-                  )}
-                </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 min-w-0 flex-1">
+              <div className="w-8 h-8 bg-[#02458b] rounded-lg flex items-center justify-center flex-shrink-0">
+                <GraduationCap className="h-4 w-4 text-white" />
               </div>
-              
-              <div className="flex items-center space-x-2">
-                {rightContent && (
-                  <div className="mr-2">
-                    {rightContent}
-                  </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg font-bold text-[#02458b] truncate">
+                  {title}
+                </h1>
+                {subtitle && (
+                  <p className="text-xs text-gray-500 truncate">{subtitle}</p>
                 )}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-2 hover:bg-gray-100"
-                    >
-                      <Menu className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem onClick={handleNavigateToDashboard}>
-                      <Home className="mr-2 h-4 w-4" />
-                      <span>Về trang quản lý</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleNavigateToCourses}>
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      <span>Xem các lớp của tôi</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleNavigateToProfile}>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Xem hồ sơ</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleNavigateToHome}>
-                      <Globe className="mr-2 h-4 w-4" />
-                      <span>Quay lại trang chủ</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Đăng xuất</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              {rightContent && (
+                <div className="mr-2">
+                  {rightContent}
+                </div>
+              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-2 hover:bg-gray-100"
+                  >
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={handleNavigateToDashboard}>
+                    <Home className="mr-2 h-4 w-4" />
+                    <span>Về trang quản lý</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleNavigateToCourses}>
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    <span>Xem các lớp của tôi</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleNavigateToProfile}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Xem hồ sơ</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleNavigateToHome}>
+                    <Globe className="mr-2 h-4 w-4" />
+                    <span>Quay lại trang chủ</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Đăng xuất</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
@@ -134,64 +134,64 @@ const StudentToolbar: React.FC<StudentToolbarProps> = ({ title, subtitle, rightC
   return (
     <div className="bg-white shadow-lg border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <GraduationCap className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  {title}
-                </h1>
-                {subtitle && (
-                  <p className="text-gray-600 mt-1">{subtitle}</p>
-                )}
-              </div>
+        <div className="flex justify-between items-center h-20">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-[#02458b] rounded-xl flex items-center justify-center shadow-lg">
+              <GraduationCap className="h-7 w-7 text-white" />
             </div>
-            
-            <div className="flex items-center space-x-4">
-              {rightContent && (
-                <div>
-                  {rightContent}
-                </div>
+            <div>
+              <h1 className="text-3xl font-bold text-[#02458b]">
+                {title}
+              </h1>
+              {subtitle && (
+                <p className="text-gray-600 mt-1">{subtitle}</p>
               )}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="flex items-center space-x-2 hover:bg-indigo-50 border-indigo-200 text-indigo-700"
-                  >
-                    <Menu className="h-4 w-4" />
-                    <span>Menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64">
-                  <DropdownMenuItem onClick={handleNavigateToDashboard}>
-                    <Home className="mr-3 h-5 w-5" />
-                    <span className="text-base">Về trang quản lý</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleNavigateToCourses}>
-                    <BookOpen className="mr-3 h-5 w-5" />
-                    <span className="text-base">Xem các lớp của tôi</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleNavigateToProfile}>
-                    <User className="mr-3 h-5 w-5" />
-                    <span className="text-base">Xem hồ sơ</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleNavigateToHome}>
-                    <Globe className="mr-3 h-5 w-5" />
-                    <span className="text-base">Quay lại trang chủ</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                    <LogOut className="mr-3 h-5 w-5" />
-                    <span className="text-base">Đăng xuất</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
+          
+          <div className="flex items-center space-x-4">
+            {rightContent && (
+              <div>
+                {rightContent}
+              </div>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2 hover:bg-[#02458b]/5 border-[#02458b]/30 text-[#02458b]"
+                >
+                  <Menu className="h-4 w-4" />
+                  <span>Menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuItem onClick={handleNavigateToDashboard}>
+                  <Home className="mr-3 h-5 w-5" />
+                  <span className="text-base">Về trang quản lý</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleNavigateToCourses}>
+                  <BookOpen className="mr-3 h-5 w-5" />
+                  <span className="text-base">Xem các lớp của tôi</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleNavigateToProfile}>
+                  <User className="mr-3 h-5 w-5" />
+                  <span className="text-base">Xem hồ sơ</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleNavigateToHome}>
+                  <Globe className="mr-3 h-5 w-5" />
+                  <span className="text-base">Quay lại trang chủ</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                  <LogOut className="mr-3 h-5 w-5" />
+                  <span className="text-base">Đăng xuất</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
       </div>
     </div>
   );

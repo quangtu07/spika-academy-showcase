@@ -237,10 +237,10 @@ const StudentLessonAssignmentsPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 animate-pulse shadow-lg">
+          <div className="w-16 h-16 bg-[#02458b] rounded-2xl flex items-center justify-center mb-6 animate-pulse shadow-lg">
             <GraduationCap className="w-8 h-8 text-white" />
           </div>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg font-medium">Đang tải bài tập...</p>
         </div>
       </div>
@@ -266,12 +266,12 @@ const StudentLessonAssignmentsPage = () => {
           {/* Lesson Info Card */}
           {lesson && (
             <Card className="shadow-xl border-0 overflow-hidden mb-6">
-              <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+              <CardHeader className="bg-[#02458b] text-white">
                 <CardTitle className="text-xl font-bold flex items-center space-x-3">
                   {/* <BookOpen className="w-6 h-6" /> */}
                   <span>Buổi {lesson.lesson_number}: {lesson.title}</span>
                 </CardTitle>
-                {/* <CardDescription className="text-indigo-100">
+                {/* <CardDescription className="text-white/80">
                   {lesson.class.name}
                 </CardDescription> */}
               </CardHeader>
@@ -282,8 +282,8 @@ const StudentLessonAssignmentsPage = () => {
           {assignments.length === 0 ? (
             <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
               <CardContent className="text-center py-12">
-                <div className="w-16 h-16 bg-gradient-to-r from-gray-200 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-8 h-8 text-gray-500" />
+                <div className="w-16 h-16 bg-[#02458b]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FileText className="w-8 h-8 text-[#02458b]" />
                 </div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Chưa có bài tập</h4>
                 <p className="text-gray-500 text-sm">Buổi học này chưa có bài tập nào được giao.</p>
@@ -293,9 +293,9 @@ const StudentLessonAssignmentsPage = () => {
             <div className="space-y-4">
               {assignments.map((assignment) => (
                 <Card key={assignment.id} className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
-                  <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+                  <CardHeader className="bg-[#02458b]/5 border-b">
                     <CardTitle className="text-lg flex items-center space-x-3">
-                      <FileText className="w-5 h-5 text-indigo-500" />
+                      <FileText className="w-5 h-5 text-[#02458b]" />
                       <span>Bài tập</span>
                     </CardTitle>
                     <CardDescription className="space-y-1">
@@ -337,7 +337,7 @@ const StudentLessonAssignmentsPage = () => {
                           } else {
                             return (
                               <Button
-                                className="w-full h-11 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                                className="w-full h-11 bg-[#02458b] hover:bg-[#02458b]/90 text-white"
                                 onClick={() => openSubmissionPage(assignment.id)}
                               >
                                 <Send className="w-4 h-4 mr-2" />
@@ -375,7 +375,7 @@ const StudentLessonAssignmentsPage = () => {
           {/* Lesson Info Card */}
           {lesson && (
             <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white relative">
+              <CardHeader className="bg-[#02458b] text-white relative">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/10 rounded-full"></div>
                 <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/5 rounded-full"></div>
@@ -385,7 +385,7 @@ const StudentLessonAssignmentsPage = () => {
                     <BookOpen className="w-8 h-8" />
                     <span>Buổi {lesson.lesson_number}: {lesson.title}</span>
                   </CardTitle>
-                  {/* <CardDescription className="text-indigo-100 text-xl mt-2">
+                  {/* <CardDescription className="text-white/80 text-xl mt-2">
                     {lesson.class.name}
                   </CardDescription> */}
                 </div>
@@ -396,9 +396,9 @@ const StudentLessonAssignmentsPage = () => {
           {/* Assignments List */}
           {assignments.length === 0 ? (
             <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-              <CardContent className="text-center py-16 bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl border border-gray-100">
-                <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <FileText className="w-12 h-12 text-gray-500" />
+              <CardContent className="text-center py-16 bg-[#02458b]/5 rounded-3xl border border-[#02458b]/20">
+                <div className="w-24 h-24 bg-[#02458b]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <FileText className="w-12 h-12 text-[#02458b]" />
                 </div>
                 <h4 className="text-2xl font-bold text-gray-900 mb-4">Chưa có bài tập nào</h4>
                 <p className="text-gray-500 text-lg">Buổi học này chưa có bài tập nào được giao.</p>
@@ -408,11 +408,11 @@ const StudentLessonAssignmentsPage = () => {
             <div className="space-y-6">
               {assignments.map((assignment) => (
                 <Card key={assignment.id} className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-                  <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+                  <CardHeader className="bg-[#02458b]/5 border-b">
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-2xl flex items-center space-x-4">
-                          <FileText className="w-7 h-7 text-indigo-500" />
+                          <FileText className="w-7 h-7 text-[#02458b]" />
                           <span>Bài tập</span>
                         </CardTitle>
                         <CardDescription className="flex items-center space-x-6 mt-3 text-lg">
@@ -431,10 +431,10 @@ const StudentLessonAssignmentsPage = () => {
                   
                   <CardContent className="p-8">
                     <div className="space-y-6">
-                      <h4 className="text-2xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                      <h4 className="text-2xl font-bold text-[#02458b] mb-6">
                         Nội dung bài tập
                       </h4>
-                      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 rounded-2xl p-8 border border-indigo-100">
+                      <div className="bg-[#02458b]/5 rounded-2xl p-8 border border-[#02458b]/20">
                         {renderSortedContentBlocks(assignment.content.blocks)}
                       </div>
                       
@@ -462,7 +462,7 @@ const StudentLessonAssignmentsPage = () => {
                             return (
                               <Button
                                 size="lg"
-                                className="px-8 py-3 text-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg"
+                                className="px-8 py-3 text-lg bg-[#02458b] hover:bg-[#02458b]/90 text-white shadow-lg"
                                 onClick={() => openSubmissionPage(assignment.id)}
                               >
                                 <Send className="w-5 h-5 mr-3" />

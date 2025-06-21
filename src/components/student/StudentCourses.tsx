@@ -217,7 +217,7 @@ const StudentCourses = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg font-medium">Đang tải lớp học...</p>
         </div>
       </div>
@@ -230,7 +230,7 @@ const StudentCourses = () => {
       <div className="space-y-4">
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h2 className="text-xl font-bold text-[#02458b]">
             Lớp học của bạn
           </h2>
           <p className="text-gray-600 text-sm mt-1">Danh sách các lớp học bạn đã đăng ký</p>
@@ -239,8 +239,8 @@ const StudentCourses = () => {
         {enrollments.length === 0 ? (
           <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
             <CardContent className="flex flex-col items-center justify-center py-12">
-              <div className="w-16 h-16 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mb-4">
-                <BookOpen className="h-8 w-8 text-indigo-500" />
+              <div className="w-16 h-16 bg-[#02458b]/10 rounded-full flex items-center justify-center mb-4">
+                <BookOpen className="h-8 w-8 text-[#02458b]" />
               </div>
               <p className="text-gray-600 text-center font-medium mb-2">
                 Chưa có lớp học nào
@@ -273,7 +273,7 @@ const StudentCourses = () => {
                       <h3 className="font-bold text-gray-900 text-lg leading-tight line-clamp-2">
                         {enrollment.classes.name}
                       </h3>
-                      <p className="text-sm text-indigo-600 font-medium mt-1">
+                      <p className="text-sm text-[#02458b] font-medium mt-1">
                         {enrollment.classes.courses.name}
                       </p>
                     </div>
@@ -281,19 +281,19 @@ const StudentCourses = () => {
                     {/* Course Info */}
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <User className="h-4 w-4 text-indigo-500" />
+                        <User className="h-4 w-4 text-[#02458b]" />
                         <span className="truncate">GV: {enrollment.classes.courses.instructor_name}</span>
                       </div>
                       
                       {enrollment.classes.courses.duration && (
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <Clock className="h-4 w-4 text-indigo-500" />
+                          <Clock className="h-4 w-4 text-[#02458b]" />
                           <span>{enrollment.classes.courses.duration} buổi</span>
                         </div>
                       )}
 
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Calendar className="h-4 w-4 text-indigo-500" />
+                        <Calendar className="h-4 w-4 text-[#02458b]" />
                         <span>Đăng ký: {new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}</span>
                       </div>
                     </div>
@@ -307,7 +307,7 @@ const StudentCourses = () => {
                     <Button 
                       size="sm" 
                       onClick={() => handleViewClassDetail(enrollment.class_id)}
-                      className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                      className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white"
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       Xem chi tiết
@@ -327,7 +327,7 @@ const StudentCourses = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold text-[#02458b]">
           Lớp học của bạn
         </h2>
         <p className="text-gray-600 mt-2 text-lg">Danh sách các lớp học bạn đã đăng ký</p>
@@ -336,8 +336,8 @@ const StudentCourses = () => {
       {enrollments.length === 0 ? (
         <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="w-24 h-24 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mb-6">
-              <BookOpen className="h-12 w-12 text-indigo-500" />
+            <div className="w-24 h-24 bg-[#02458b]/10 rounded-full flex items-center justify-center mb-6">
+              <BookOpen className="h-12 w-12 text-[#02458b]" />
             </div>
             <p className="text-gray-600 text-center text-xl font-medium mb-4">
               Chưa có lớp học nào
@@ -365,26 +365,26 @@ const StudentCourses = () => {
               </div>
 
               <CardHeader className="pb-3">
-                  <div className="space-y-2">
-                  <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                      {enrollment.classes.name}
-                    </CardTitle>
-                  <p className="text-sm text-indigo-600 font-semibold">
+                <div className="space-y-2">
+                  <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-[#02458b] transition-colors">
+                    {enrollment.classes.name}
+                  </CardTitle>
+                  <p className="text-sm text-[#02458b] font-semibold">
                     {enrollment.classes.courses.name}
-                    </p>
+                  </p>
                   
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <User className="h-4 w-4 text-indigo-500" />
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <User className="h-4 w-4 text-[#02458b]" />
                     <span className="truncate">GV: {enrollment.classes.courses.instructor_name}</span>
-                    </div>
+                  </div>
                   
                   <div className="flex items-center justify-between">
-                      {enrollment.classes.courses.duration && (
-                        <div className="flex items-center space-x-1 text-sm text-gray-500">
-                          <Clock className="h-4 w-4" />
-                          <span>{enrollment.classes.courses.duration} buổi</span>
-                        </div>
-                      )}
+                    {enrollment.classes.courses.duration && (
+                      <div className="flex items-center space-x-1 text-sm text-gray-500">
+                        <Clock className="h-4 w-4" />
+                        <span>{enrollment.classes.courses.duration} buổi</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardHeader>
@@ -403,7 +403,7 @@ const StudentCourses = () => {
                     <Button 
                       size="sm" 
                       onClick={() => handleViewClassDetail(enrollment.class_id)}
-                      className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                      className="bg-[#02458b] hover:bg-[#02458b]/90 text-white"
                     >
                       <Eye className="h-4 w-4 mr-1" />
                       Chi tiết

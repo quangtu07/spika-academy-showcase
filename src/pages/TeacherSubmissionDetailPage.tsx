@@ -191,7 +191,7 @@ const TeacherSubmissionDetailPage = () => {
       },
       'Đang chờ chấm': { 
         text: 'Đang chờ chấm', 
-        class: 'bg-blue-100 text-blue-800 border-blue-400', 
+        class: 'bg-[#02458b]/10 text-[#02458b] border-[#02458b]/30', 
         icon: Clock 
       },
       'Đã hoàn thành': { 
@@ -219,9 +219,9 @@ const TeacherSubmissionDetailPage = () => {
       case 'text':
         return (
           <div key={index} className="mb-4">
-            <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-4 border border-gray-200">
+            <div className="bg-[#02458b]/5 rounded-lg p-4 border border-[#02458b]/20">
               <div className="flex items-start space-x-3">
-                <Type className="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Type className="w-5 h-5 text-[#02458b] mt-1 flex-shrink-0" />
                 <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{block.content}</p>
               </div>
             </div>
@@ -230,7 +230,7 @@ const TeacherSubmissionDetailPage = () => {
       case 'image':
         return (
           <div key={index} className="mb-4">
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
               <div className="flex items-start space-x-3 mb-3">
                 <Image className="w-5 h-5 text-green-500 flex-shrink-0" />
                 <span className="text-sm font-medium text-green-700">Hình ảnh</span>
@@ -251,7 +251,7 @@ const TeacherSubmissionDetailPage = () => {
       case 'video':
         return (
           <div key={index} className="mb-4">
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
+            <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
               <div className="flex items-start space-x-3 mb-3">
                 <Video className="w-5 h-5 text-purple-500 flex-shrink-0" />
                 <span className="text-sm font-medium text-purple-700">Video</span>
@@ -287,7 +287,7 @@ const TeacherSubmissionDetailPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg font-medium">Đang tải bài nộp...</p>
         </div>
       </div>
@@ -323,7 +323,7 @@ const TeacherSubmissionDetailPage = () => {
         <div className="p-4">
           {/* Student Info Card */}
           <Card className="shadow-xl border-0 overflow-hidden mb-6">
-            <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+            <CardHeader className="bg-[#02458b] text-white">
               <CardTitle className="text-xl font-bold flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <GraduationCap className="w-6 h-6" />
@@ -331,7 +331,7 @@ const TeacherSubmissionDetailPage = () => {
                 </div>
                 {getStatusBadge(submission.status)}
               </CardTitle>
-              <CardDescription className="text-indigo-100">
+              <CardDescription className="text-white/80">
                 {submission.student.email}
               </CardDescription>
             </CardHeader>
@@ -341,7 +341,7 @@ const TeacherSubmissionDetailPage = () => {
           <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm mb-6">
             <CardHeader>
               <CardTitle className="text-lg flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-indigo-500" />
+                <FileText className="w-5 h-5 text-[#02458b]" />
                 <span>Thông tin bài tập</span>
               </CardTitle>
             </CardHeader>
@@ -367,7 +367,7 @@ const TeacherSubmissionDetailPage = () => {
           <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm mb-6">
             <CardHeader>
               <CardTitle className="text-lg flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-indigo-500" />
+                <FileText className="w-5 h-5 text-[#02458b]" />
                 <span>Nội dung bài làm</span>
               </CardTitle>
             </CardHeader>
@@ -399,7 +399,7 @@ const TeacherSubmissionDetailPage = () => {
                 <Button
                   onClick={handleSaveFeedback}
                   disabled={isSavingFeedback}
-                  className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                  className="w-full h-12 bg-[#02458b] hover:bg-[#02458b]/90"
                 >
                   {isSavingFeedback ? (
                     <div className="flex items-center space-x-2">
@@ -438,9 +438,9 @@ const TeacherSubmissionDetailPage = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* Student Info */}
             <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
+              <CardHeader className="bg-[#02458b]/5 border-b border-[#02458b]/20">
                 <CardTitle className="text-2xl flex items-center space-x-4">
-                  <GraduationCap className="w-7 h-7 text-indigo-500" />
+                  <GraduationCap className="w-7 h-7 text-[#02458b]" />
                   <div>
                     <span>{submission.student.fullname}</span>
                     <p className="text-base text-gray-600 font-normal mt-1">{submission.student.email}</p>
@@ -469,14 +469,14 @@ const TeacherSubmissionDetailPage = () => {
 
             {/* Submission Content */}
             <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+              <CardHeader className="bg-[#02458b]/5 border-b border-[#02458b]/20">
                 <CardTitle className="text-2xl flex items-center space-x-4">
-                  <FileText className="w-7 h-7 text-indigo-500" />
+                  <FileText className="w-7 h-7 text-[#02458b]" />
                   <span>Nội dung bài làm</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-8">
-                <div className="bg-gradient-to-br from-gray-50 to-indigo-50 rounded-2xl p-8 border border-indigo-100">
+                <div className="bg-[#02458b]/5 rounded-2xl p-8 border border-[#02458b]/20">
                   {submission.content?.blocks && submission.content.blocks.length > 0 ? (
                     renderSortedContentBlocks(submission.content.blocks)
                   ) : (
@@ -490,7 +490,7 @@ const TeacherSubmissionDetailPage = () => {
           {/* Right Column - Feedback */}
           <div className="lg:col-span-1">
             <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm sticky top-8">
-              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b">
+              <CardHeader className="bg-green-50 border-b border-green-200">
                 <CardTitle className="text-xl flex items-center space-x-3">
                   <MessageSquare className="w-6 h-6 text-green-500" />
                   <span>Nhận xét của giảng viên</span>
@@ -507,7 +507,7 @@ const TeacherSubmissionDetailPage = () => {
                   <Button
                     onClick={handleSaveFeedback}
                     disabled={isSavingFeedback}
-                    className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                    className="w-full h-12 bg-[#02458b] hover:bg-[#02458b]/90"
                   >
                     {isSavingFeedback ? (
                       <div className="flex items-center space-x-2">

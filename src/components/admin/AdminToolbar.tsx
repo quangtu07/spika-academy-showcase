@@ -74,12 +74,12 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 min-w-0 flex-1">
                           <div className="w-8 h-8 bg-[#02458b] rounded-lg flex items-center justify-center flex-shrink-0">
-              <Settings className="h-4 w-4 text-white" />
-            </div>
-            <div className="min-w-0 flex-1">
+                <Settings className="h-4 w-4 text-white" />
+              </div>
+              <div className="min-w-0 flex-1">
               <h1 className="text-lg font-bold text-[#02458b] truncate">
-                {title}
-              </h1>
+                  {title}
+                </h1>
                 {subtitle && (
                   <p className="text-xs text-gray-500 truncate">{subtitle}</p>
                 )}

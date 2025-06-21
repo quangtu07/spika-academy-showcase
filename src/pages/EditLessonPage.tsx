@@ -163,10 +163,10 @@ const EditLessonPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 animate-pulse shadow-lg">
+          <div className="w-16 h-16 bg-[#02458b] rounded-2xl flex items-center justify-center mb-6 animate-pulse shadow-lg">
             <Edit className="w-8 h-8 text-white" />
           </div>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg font-medium">Đang tải thông tin buổi học...</p>
         </div>
       </div>
@@ -200,7 +200,7 @@ const EditLessonPage = () => {
       {/* Main Content */}
       <div className={`mx-auto px-4 py-6 ${isMobile ? 'max-w-full' : 'max-w-4xl xl:max-w-5xl sm:px-6 lg:px-8 xl:px-12 py-8 xl:py-12'}`}>
         <Card className={`shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden ${isMobile ? 'rounded-lg' : 'rounded-xl'}`}>
-          <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white relative">
+          <CardHeader className="bg-[#02458b] text-white relative">
             <div className="absolute inset-0 bg-black/10"></div>
             {!isMobile && (
               <>
@@ -218,7 +218,7 @@ const EditLessonPage = () => {
                   <CardTitle className={`font-bold ${isMobile ? 'text-lg' : 'text-3xl xl:text-4xl'}`}>
                     Buổi học số {lesson.lesson_number}
                   </CardTitle>
-                  <CardDescription className={`text-blue-100 ${isMobile ? 'text-sm' : 'text-lg xl:text-xl'}`}>
+                  <CardDescription className={`text-white/80 ${isMobile ? 'text-sm' : 'text-lg xl:text-xl'}`}>
                     Chỉnh sửa thông tin buổi học
                   </CardDescription>
                 </div>
@@ -272,7 +272,7 @@ const EditLessonPage = () => {
                 <Button
                   type="submit"
                   disabled={loading || !formData.title}
-                  className={`bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 ${isMobile ? 'w-full h-11 text-base' : 'flex-1 h-14 xl:h-16 text-lg xl:text-xl'}`}
+                  className={`bg-[#02458b] hover:bg-[#02458b]/90 ${isMobile ? 'w-full h-11 text-base' : 'flex-1 h-14 xl:h-16 text-lg xl:text-xl'}`}
                 >
                   {loading ? "Đang xử lý..." : "Lưu thay đổi"}
                 </Button>
