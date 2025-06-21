@@ -590,8 +590,8 @@ const StudentSubmissionDetailPage = () => {
             <CardHeader>
               <CardTitle className="text-lg flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <FileText className="w-5 h-5 text-indigo-500" />
-                  <span>Nội dung bài làm</span>
+                <FileText className="w-5 h-5 text-indigo-500" />
+                <span>Nội dung bài làm</span>
                 </div>
                 {canEdit && !isEditing && (
                   <Button
@@ -680,9 +680,9 @@ const StudentSubmissionDetailPage = () => {
                 </div>
               ) : (
                 submission.content?.blocks && submission.content.blocks.length > 0 ? (
-                  renderSortedContentBlocks(submission.content.blocks)
-                ) : (
-                  <p className="text-gray-500 text-center py-8">Không có nội dung</p>
+                renderSortedContentBlocks(submission.content.blocks)
+              ) : (
+                <p className="text-gray-500 text-center py-8">Không có nội dung</p>
                 )
               )}
             </CardContent>
@@ -743,8 +743,8 @@ const StudentSubmissionDetailPage = () => {
             <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
               <CardTitle className="text-2xl flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <FileText className="w-7 h-7 text-indigo-500" />
-                  <span>Nội dung bài làm</span>
+                <FileText className="w-7 h-7 text-indigo-500" />
+                <span>Nội dung bài làm</span>
                 </div>
                 {canEdit && !isEditing && (
                   <Button
@@ -831,9 +831,9 @@ const StudentSubmissionDetailPage = () => {
                   </div>
                 ) : (
                   submission.content?.blocks && submission.content.blocks.length > 0 ? (
-                    renderSortedContentBlocks(submission.content.blocks)
-                  ) : (
-                    <p className="text-gray-500 text-center py-16 text-xl">Không có nội dung</p>
+                  renderSortedContentBlocks(submission.content.blocks)
+                ) : (
+                  <p className="text-gray-500 text-center py-16 text-xl">Không có nội dung</p>
                   )
                 )}
               </div>
