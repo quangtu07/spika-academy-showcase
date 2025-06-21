@@ -12,33 +12,29 @@ interface BlogPost {
   excerpt: string;
   image: string;
   publishedAt: string;
-  readTime: string;
 }
 
 const blogPosts: BlogPost[] = [
   {
     id: '1',
-    title: 'Kỹ năng lập trình cần thiết cho sinh viên năm 2024',
-    excerpt: 'Khám phá những kỹ năng lập trình quan trọng nhất mà sinh viên cần nắm vững để thành công trong thời đại công nghệ 4.0.',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop',
-    publishedAt: '15 Tháng 12, 2024',
-    readTime: '5 phút đọc'
+    title: 'Phát triển kỹ năng mềm cho trẻ: Tầm quan trọng và cách thức phát triển',
+    excerpt: 'Cha mẹ nên rèn kỹ năng mềm cho trẻ từ sớm để giúp trẻ phát triển toàn diện và thành công trong cuộc sống.',
+    image: '/images/blog/1.png',
+    publishedAt: '15 Tháng 12, 2024'
   },
   {
     id: '2',
-    title: 'Hướng dẫn học React từ cơ bản đến nâng cao',
-    excerpt: 'Lộ trình học React chi tiết từ những khái niệm cơ bản đến các kỹ thuật nâng cao, giúp bạn trở thành một React developer chuyên nghiệp.',
-    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600&h=400&fit=crop',
-    publishedAt: '12 Tháng 12, 2024',
-    readTime: '8 phút đọc'
+    title: 'Muốn chữa ngọng cho trẻ, phải làm sao?',
+    excerpt: 'Trẻ nói ngọng cần được phát hiện và can thiệp sớm để tránh ảnh hưởng giao tiếp, học tập. Bài viết hướng dẫn cha mẹ cách chữa ngọng hiệu quả cho trẻ.',
+    image: '/images/blog/2.png',
+    publishedAt: '12 Tháng 12, 2024'
   },
   {
     id: '3',
-    title: 'Xu hướng công nghệ 2024: AI và Machine Learning',
-    excerpt: 'Tìm hiểu về những xu hướng công nghệ mới nhất trong lĩnh vực AI và Machine Learning, cũng như cơ hội nghề nghiệp trong tương lai.',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&h=400&fit=crop',
-    publishedAt: '10 Tháng 12, 2024',
-    readTime: '6 phút đọc'
+    title: '5 yếu tố quan trọng trong việc luyện giọng nói cho trẻ',
+    excerpt: 'Giọng nói giúp tạo ấn tượng và nên được rèn luyện từ nhỏ, dù ở bất kỳ nghề nào hay độ tuổi nào.',
+    image: '/images/blog/3.jpg',
+    publishedAt: '10 Tháng 12, 2024'
   }
 ];
 
@@ -73,7 +69,7 @@ const BlogSection = () => {
             Blog chia sẻ
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Khám phá những bài viết hữu ích về công nghệ, lập trình và xu hướng học tập mới nhất
+            Khám phá những bài viết hữu ích về kiến thức là MC
           </p>
         </div>
 
