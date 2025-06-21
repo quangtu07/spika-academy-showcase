@@ -22,7 +22,7 @@ const AboutSection = () => {
       icon: GraduationCap,
       number: "1000+",
       label: "Học viên đã tốt nghiệp",
-      gradient: "from-green-500 to-emerald-600"
+      gradient: "from-[#1294fb] to-[#1294fb]"
     },
     {
       icon: Users,
@@ -39,22 +39,22 @@ const AboutSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto relative overflow-hidden" id="about">
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto relative overflow-hidden" id="about">
       {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 right-1/4 w-60 h-60 bg-gradient-to-br from-blue-400/15 to-purple-400/15 rounded-full blur-2xl"></div>
-      </div>
+      </div> */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Title Section */}
         <div ref={textRef} className="text-center mb-16 reveal reveal-fade-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#02458b] rounded-2xl mb-6 shadow-xl">
             <Sparkles className="h-8 w-8 text-white" />
           </div>
           
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent leading-tight mb-6">
+          <h2 className="text-5xl font-bold text-[#02458b] leading-tight mb-6">
             Về trung tâm Future Wings
           </h2>
         </div>
@@ -79,7 +79,7 @@ const AboutSection = () => {
             <div className="pt-4">
               <Button 
                 onClick={() => setIsModalOpen(true)}
-                className="group bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="group bg-[#02458b] hover:bg-[#02458b]/90 text-white px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
                 <span className="flex items-center space-x-2">
                   <Sparkles className="h-5 w-5" />
@@ -107,7 +107,7 @@ const AboutSection = () => {
               <Card className="absolute -bottom-6 -left-6 bg-white/90 backdrop-blur-sm shadow-2xl border-0 max-w-xs group-hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4 mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 bg-[#1294fb] rounded-2xl flex items-center justify-center shadow-lg">
                       <Award className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -118,13 +118,13 @@ const AboutSection = () => {
                   <p className="text-sm text-gray-600 leading-relaxed">
                     Trang thiết bị hiện đại, âm thanh ánh sáng chuẩn studio quốc tế
                   </p>
-                  <div className="w-full h-1 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mt-4"></div>
+                  <div className="w-full h-1 bg-[#1294fb] rounded-full mt-4"></div>
                 </CardContent>
               </Card>
 
               {/* Decorative Elements */}
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-xl"></div>
-              <div className="absolute top-1/2 -left-6 w-16 h-16 bg-gradient-to-br from-indigo-400/30 to-blue-400/30 rounded-full blur-lg"></div>
+              {/* <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-xl"></div>
+              <div className="absolute top-1/2 -left-6 w-16 h-16 bg-gradient-to-br from-indigo-400/30 to-blue-400/30 rounded-full blur-lg"></div> */}
             </div>
           </div>
         </div>

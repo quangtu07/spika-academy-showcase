@@ -73,54 +73,54 @@ const AdminOverview = () => {
       value: stats.totalUsers,
       icon: Users,
       description: 'Tất cả tài khoản trong hệ thống',
-      gradient: 'from-blue-500 to-purple-600',
-      bgGradient: 'from-blue-50 to-purple-50',
-      iconBg: 'bg-gradient-to-r from-blue-500 to-purple-500'
+      gradient: 'from-[#02458b] to-[#1294fb]',
+      bgGradient: 'from-blue-50 to-indigo-50',
+      iconBg: 'bg-[#02458b]'
     },
     {
       title: 'Quản trị viên',
       value: stats.totalAdmins,
       icon: Shield,
       description: 'Số lượng quản trị viên',
-      gradient: 'from-red-500 to-pink-600',
-      bgGradient: 'from-red-50 to-pink-50',
-      iconBg: 'bg-gradient-to-r from-red-500 to-pink-500'
+      gradient: 'from-[#02458b] to-[#1294fb]',
+      bgGradient: 'from-blue-50 to-indigo-50',
+      iconBg: 'bg-[#02458b]'
     },
     {
       title: 'Học viên',
       value: stats.totalStudents,
       icon: UserCheck,
       description: 'Số lượng học viên',
-      gradient: 'from-green-500 to-emerald-600',
-      bgGradient: 'from-green-50 to-emerald-50',
-      iconBg: 'bg-gradient-to-r from-green-500 to-emerald-500'
+      gradient: 'from-[#02458b] to-[#1294fb]',
+      bgGradient: 'from-blue-50 to-indigo-50',
+      iconBg: 'bg-[#02458b]'
     },
     {
       title: 'Giáo viên',
       value: stats.totalTeachers,
       icon: GraduationCap,
       description: 'Số lượng giáo viên',
-      gradient: 'from-orange-500 to-amber-600',
-      bgGradient: 'from-orange-50 to-amber-50',
-      iconBg: 'bg-gradient-to-r from-orange-500 to-amber-500'
+      gradient: 'from-[#02458b] to-[#1294fb]',
+      bgGradient: 'from-blue-50 to-indigo-50',
+      iconBg: 'bg-[#02458b]'
     },
     {
       title: 'Khóa học',
       value: stats.totalCourses,
       icon: BookOpen,
       description: 'Tổng số khóa học',
-      gradient: 'from-indigo-500 to-purple-600',
-      bgGradient: 'from-indigo-50 to-purple-50',
-      iconBg: 'bg-gradient-to-r from-indigo-500 to-purple-500'
+      gradient: 'from-[#02458b] to-[#1294fb]',
+      bgGradient: 'from-blue-50 to-indigo-50',
+      iconBg: 'bg-[#02458b]'
     },
     {
       title: 'Lớp học',
       value: stats.totalClasses,
       icon: TrendingUp,
       description: 'Tổng số lớp học',
-      gradient: 'from-teal-500 to-cyan-600',
-      bgGradient: 'from-teal-50 to-cyan-50',
-      iconBg: 'bg-gradient-to-r from-teal-500 to-cyan-500'
+      gradient: 'from-[#02458b] to-[#1294fb]',
+      bgGradient: 'from-blue-50 to-indigo-50',
+      iconBg: 'bg-[#02458b]'
     }
   ];
 
@@ -146,7 +146,7 @@ const AdminOverview = () => {
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold text-[#02458b]">
           Tổng quan hệ thống
         </h2>
         <p className="text-gray-600 text-lg">
@@ -185,9 +185,9 @@ const AdminOverview = () => {
         ))}
       </div>
 
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-100">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
         <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+          <div className="w-16 h-16 bg-[#02458b] rounded-2xl flex items-center justify-center mx-auto shadow-lg">
             <TrendingUp className="h-8 w-8 text-white" />
           </div>
           <h3 className="text-2xl font-bold text-gray-800">

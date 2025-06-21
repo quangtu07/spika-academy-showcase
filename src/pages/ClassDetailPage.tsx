@@ -737,9 +737,9 @@ const ClassDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600">Đang tải thông tin lớp học...</p>
         </div>
       </div>
@@ -748,7 +748,7 @@ const ClassDetailPage = () => {
 
   if (!classData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-red-600">Không tìm thấy lớp học</CardTitle>
@@ -757,7 +757,7 @@ const ClassDetailPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Button onClick={() => navigate('/admin')} className="w-full">
+            <Button onClick={() => navigate('/admin')} className="w-full bg-[#02458b] hover:bg-[#02458b]/90">
               Quay lại trang quản lý
             </Button>
           </CardContent>
@@ -768,7 +768,7 @@ const ClassDetailPage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50/50 via-blue-50/50 to-indigo-50/50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <AdminToolbar 
           title={classData.name} 
           subtitle="Chi tiết lớp học" 
@@ -778,7 +778,7 @@ const ClassDetailPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Class Info Card */}
           <Card className="mb-6 border-0 shadow-xl bg-white/80 backdrop-blur-xl overflow-hidden">
-            <CardHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+            <CardHeader className="border-b bg-[#02458b] text-white">
               <CardTitle className="text-xl flex items-center space-x-2">
                 <BookOpen className="h-5 w-5" />
                 <span>Thông tin lớp học</span>
@@ -786,30 +786,30 @@ const ClassDetailPage = () => {
             </CardHeader>
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-xl border border-purple-100">
+                <div className="space-y-4 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-purple-700 min-w-[140px]">Khóa học:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Khóa học:</span>
                       <span className="text-gray-700">{classData.course?.name || 'Không xác định'}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-purple-700 min-w-[140px]">Giảng viên:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Giảng viên:</span>
                       <span className="text-gray-700">{classData.instructor?.fullname || 'Không xác định'}</span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-1 sm:space-y-0">
-                      <span className="font-semibold text-purple-700 sm:min-w-[140px]">Email giảng viên:</span>
+                      <span className="font-semibold text-[#02458b] sm:min-w-[140px]">Email giảng viên:</span>
                       <span className="text-gray-700 break-all text-sm sm:text-sm">{classData.instructor?.email || 'Không xác định'}</span>
                     </div>
                     <div className="flex items-start space-x-2">
-                      <span className="font-semibold text-purple-700 min-w-[140px]">Mô tả khóa học:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Mô tả khóa học:</span>
                       <span className="text-gray-700">{classData.course?.description || 'Không có'}</span>
                     </div>
                     <div className="flex items-start space-x-2">
-                      <span className="font-semibold text-purple-700 min-w-[140px]">Mô tả lớp học:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Mô tả lớp học:</span>
                       <span className="text-gray-700">{classData.description || 'Không có'}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-purple-700 min-w-[140px]">Lịch học:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Lịch học:</span>
                       <span className="text-gray-700">{classData.schedule || 'Chưa xác định'}</span>
                     </div>
                   </div>
@@ -817,23 +817,23 @@ const ClassDetailPage = () => {
                 <div className="space-y-4 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-blue-700 min-w-[140px]">Trạng thái:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Trạng thái:</span>
                       <span>{getStatusBadge(classData.status)}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-blue-700 min-w-[140px]">Số học viên:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Số học viên:</span>
                       <span className="text-gray-700">{classData.enrollments?.length || 0}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-blue-700 min-w-[140px]">Số buổi học:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Số buổi học:</span>
                       <span className="text-gray-700">{classData.lessons?.length || 0}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-blue-700 min-w-[140px]">Ngày tạo:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Ngày tạo:</span>
                       <span className="text-gray-700">{new Date(classData.created_at).toLocaleString('vi-VN')}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-blue-700 min-w-[140px]">Lần cập nhật cuối:</span>
+                      <span className="font-semibold text-[#02458b] min-w-[140px]">Lần cập nhật cuối:</span>
                       <span className="text-gray-700">
                         {classData.updated_at ? new Date(classData.updated_at).toLocaleString('vi-VN') : 'Chưa cập nhật'}
                       </span>
@@ -859,14 +859,14 @@ const ClassDetailPage = () => {
 
             <TabsContent value="students">
               <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
-                <CardHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+                <CardHeader className="border-b bg-[#02458b] text-white">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                       <CardTitle className="flex items-center space-x-2">
                         <Users className="h-5 w-5" />
                         <span>Danh sách học viên ({classData.enrollments?.length || 0})</span>
                       </CardTitle>
-                      <CardDescription className="text-purple-100">
+                      <CardDescription className="text-blue-100">
                         Tất cả học viên đã đăng ký lớp học này
                       </CardDescription>
                     </div>
@@ -948,14 +948,14 @@ const ClassDetailPage = () => {
 
             <TabsContent value="lessons">
               <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
-                <CardHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+                <CardHeader className="border-b bg-[#02458b] text-white">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                       <CardTitle className="flex items-center space-x-2">
                         <BookOpen className="h-5 w-5" />
                         <span>Danh sách buổi học ({classData.lessons?.length || 0})</span>
                       </CardTitle>
-                      <CardDescription className="text-purple-100">
+                      <CardDescription className="text-blue-100">
                         Tất cả buổi học trong lớp
                       </CardDescription>
                     </div>
@@ -1011,12 +1011,12 @@ const ClassDetailPage = () => {
                                     <TooltipProvider>
                                       <Tooltip>
                                         <TooltipTrigger asChild>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleOpenEditLessonModal(lesson)}
-                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
-                                          >
+                                                                  <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenEditLessonModal(lesson)}
+                          className="text-[#02458b] hover:text-[#02458b] hover:bg-blue-50 border-blue-200"
+                        >
                                             <Edit className="h-4 w-4" />
                                           </Button>
                                         </TooltipTrigger>
@@ -1102,7 +1102,7 @@ const ClassDetailPage = () => {
             <Button 
               onClick={handleAddStudent} 
               disabled={isAddingStudent || availableStudents.length === 0 || !selectedStudentId}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
+              className="bg-[#02458b] hover:bg-[#02458b]/90 text-white"
             >
               {isAddingStudent ? 'Đang thêm...' : 'Thêm học viên'}
             </Button>
@@ -1174,7 +1174,7 @@ const ClassDetailPage = () => {
             <Button 
               onClick={handleAddLesson} 
               disabled={isAddingLesson || !lessonTitle.trim()}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
+              className="bg-[#02458b] hover:bg-[#02458b]/90 text-white"
             >
               {isAddingLesson ? 'Đang thêm...' : 'Thêm buổi học'}
             </Button>
@@ -1233,7 +1233,7 @@ const ClassDetailPage = () => {
             <Button 
               onClick={handleEditLesson} 
               disabled={isEditingLesson || !editLessonTitle.trim()}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto bg-[#02458b] hover:bg-[#02458b]/90"
             >
               {isEditingLesson ? 'Đang cập nhật...' : 'Cập nhật'}
             </Button>

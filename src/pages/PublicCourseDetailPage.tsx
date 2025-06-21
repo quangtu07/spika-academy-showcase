@@ -76,10 +76,10 @@ const PublicCourseDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto flex items-center justify-center">
         <div className="relative">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-purple-600 absolute top-0 left-0"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-[#02458b] absolute top-0 left-0"></div>
         </div>
       </div>
     );
@@ -87,7 +87,7 @@ const PublicCourseDetailPage = () => {
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto">
         <Navbar />
         <div className="pt-32 pb-16 flex items-center justify-center">
           <div className="text-center">
@@ -103,14 +103,14 @@ const PublicCourseDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto">
       <Navbar />
       
       <main className="pt-32 pb-16 relative overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#02458b]/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#1294fb]/10 rounded-full blur-3xl"></div>
         </div>
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -151,13 +151,13 @@ const PublicCourseDetailPage = () => {
               <Card className="shadow-xl bg-white/80 backdrop-blur-sm border-2 border-white/60">
                 <CardHeader>
                   <CardTitle className="text-2xl text-gray-900 flex items-center">
-                    <BookOpen className="h-6 w-6 mr-3 text-purple-600" />
+                    <BookOpen className="h-6 w-6 mr-3 text-[#02458b]" />
                     Mục tiêu khóa học
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Main Description */}
-                  <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
                     <p className="text-gray-700 leading-relaxed">
                       {course.description || "Khóa học MC chuyên nghiệp với phương pháp giảng dạy hiện đại, giúp học viên phát triển kỹ năng dẫn chương trình một cách tự tin và chuyên nghiệp."}
                     </p>
@@ -176,7 +176,7 @@ const PublicCourseDetailPage = () => {
                 <Card className="shadow-xl bg-white/80 backdrop-blur-sm border-2 border-white/60">
                   <CardHeader>
                     <CardTitle className="text-2xl text-gray-900 flex items-center">
-                      <BookOpen className="h-6 w-6 mr-3 text-purple-600" />
+                      <BookOpen className="h-6 w-6 mr-3 text-[#02458b]" />
                       Chi tiết chương trình học
                     </CardTitle>
                   </CardHeader>
@@ -195,9 +195,9 @@ const PublicCourseDetailPage = () => {
                         if (!title) return null;
                         
                         return (
-                          <div key={index} className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100">
+                          <div key={index} className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
                             <div className="flex items-start space-x-4">
-                              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                              <div className="flex-shrink-0 w-12 h-12 bg-[#02458b] rounded-full flex items-center justify-center shadow-lg">
                                 <span className="text-white font-bold text-sm">{lessonNumber}</span>
                               </div>
                               <div className="flex-1">
@@ -213,7 +213,7 @@ const PublicCourseDetailPage = () => {
                                     if (trimmedLine.startsWith('-') || trimmedLine.startsWith('•')) {
                                       return (
                                         <div key={lineIndex} className="flex items-start mt-2">
-                                          <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                          <div className="w-2 h-2 bg-[#02458b] rounded-full mt-2 mr-3 flex-shrink-0"></div>
                                           <span>{trimmedLine.replace(/^[-•]\s*/, '')}</span>
                                         </div>
                                       );
@@ -241,13 +241,13 @@ const PublicCourseDetailPage = () => {
             <div className="space-y-6">
               {/* Course Info */}
               <Card className="shadow-xl bg-white/90 backdrop-blur-sm border-2 border-white/60 sticky top-8">
-                <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-t-lg">
+                <CardHeader className="bg-[#02458b] text-white rounded-t-lg">
                   <CardTitle className="text-xl">Thông tin khóa học</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 space-y-4">
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-[#1294fb] rounded-lg flex items-center justify-center">
                         <Clock className="h-5 w-5 text-white" />
                       </div>
                       <div>
@@ -258,14 +258,14 @@ const PublicCourseDetailPage = () => {
                   </div>
 
                   {course.price && (
-                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                          <DollarSign className="h-5 w-5 text-white" />
+                        <div className="w-10 h-10 bg-[#ffc418] rounded-lg flex items-center justify-center">
+                          <DollarSign className="h-5 w-5 text-gray-900" />
                         </div>
                         <div>
                           <div className="text-sm text-gray-600">Học phí</div>
-                          <div className="font-bold text-green-600 text-lg">
+                          <div className="font-bold text-[#ffc418] text-lg">
                             {course.price.toLocaleString('vi-VN')} VNĐ
                           </div>
                         </div>
@@ -273,9 +273,9 @@ const PublicCourseDetailPage = () => {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-[#02458b] rounded-lg flex items-center justify-center">
                         <Calendar className="h-5 w-5 text-white" />
                       </div>
                       <div>
@@ -288,7 +288,7 @@ const PublicCourseDetailPage = () => {
                   </div>
 
                   <Button 
-                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group text-lg py-6"
+                    className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 group text-lg py-6"
                     onClick={() => setIsRegistrationModalOpen(true)}
                   >
                     <div className="flex items-center justify-center space-x-2">
@@ -303,7 +303,7 @@ const PublicCourseDetailPage = () => {
               <Card className="shadow-xl bg-white/90 backdrop-blur-sm border-2 border-white/60">
                 <CardHeader>
                   <CardTitle className="text-lg text-gray-900 flex items-center">
-                    <Phone className="h-5 w-5 mr-2 text-purple-600" />
+                    <Phone className="h-5 w-5 mr-2 text-[#02458b]" />
                     Liên hệ trực tiếp
                   </CardTitle>
                 </CardHeader>

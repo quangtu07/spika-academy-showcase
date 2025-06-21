@@ -77,7 +77,7 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
                 {/* Enhanced Gradient Button */}
                 <Button 
                   onClick={slide.action}
-                  className="group relative overflow-hidden bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white px-10 py-4 text-lg font-semibold shadow-2xl transition-all duration-300 hover:-translate-y-1 animate-fade-in animation-delay-400 border-0 rounded-2xl"
+                  className="group relative overflow-hidden bg-[#02458b] hover:bg-[#02458b]/90 text-white px-10 py-4 text-lg font-semibold shadow-2xl transition-all duration-300 hover:-translate-y-1 animate-fade-in animation-delay-400 border-0 rounded-2xl"
                 >
                   {/* Animated background overlay */}
                   <div className="absolute inset-0 bg-white/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
@@ -103,12 +103,12 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
             onClick={() => setCurrentSlide(index)}
             className={`relative transition-all duration-300 ${
               index === currentSlide 
-                ? 'w-8 h-3 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-lg' 
+                ? 'w-8 h-3 bg-[#02458b] rounded-full shadow-lg' 
                 : 'w-3 h-3 bg-white/50 hover:bg-white/70 rounded-full hover:scale-110'
             }`}
           >
             {index === currentSlide && (
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-sm opacity-60"></div>
+              <div className="absolute inset-0 bg-[#02458b]/60 rounded-full blur-sm opacity-60"></div>
             )}
           </button>
         ))}

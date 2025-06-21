@@ -44,24 +44,24 @@ const TeachersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto">
       <Navbar />
       
       <main className="pt-32 pb-16 relative overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-gradient-to-br from-blue-500/3 to-indigo-500/3 rounded-full blur-2xl"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           {/* Enhanced Header Section */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#02458b] rounded-2xl mb-6 shadow-xl">
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6 leading-tight">
+            <h1 className="text-5xl font-bold text-[#02458b] mb-6 leading-tight">
               Đội Ngũ Giảng Viên
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
@@ -71,7 +71,7 @@ const TeachersPage = () => {
             {/* Consultation Button */}
             <Button 
               onClick={() => setIsRegistrationModalOpen(true)}
-              className="group bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="group bg-[#02458b] hover:bg-[#02458b]/90 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             >
               <span className="flex items-center space-x-2">
                 <MessageCircle className="h-5 w-5" />
@@ -85,16 +85,16 @@ const TeachersPage = () => {
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <div className="relative">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-purple-600 absolute top-0 left-0"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-[#02458b] absolute top-0 left-0"></div>
               </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {teachers.map((teacher, index) => (
-                <Card key={teacher.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border-2 border-white/60 hover:border-purple-300/50 shadow-xl relative h-full flex flex-col">
+                <Card key={teacher.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border-2 border-white/60 hover:border-[#02458b]/20 shadow-xl relative h-full flex flex-col">
                   {/* Top accent bar */}
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"></div>
+                  <div className="absolute top-0 left-0 w-full h-1 bg-[#02458b]"></div>
                   
                   <div className="relative overflow-hidden">
                     {teacher.avatar_url ? (
@@ -104,13 +104,13 @@ const TeachersPage = () => {
                         className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
                       />
                     ) : (
-                      <div className="w-full h-80 bg-gradient-to-br from-purple-100 via-indigo-100 to-blue-100 flex items-center justify-center relative overflow-hidden">
+                      <div className="w-full h-80 bg-gradient-to-br from-blue-100 via-indigo-100 to-slate-100 flex items-center justify-center relative overflow-hidden">
                         {/* Background pattern */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#02458b]/10 to-blue-500/10"></div>
                         <div className="absolute top-4 right-4 w-16 h-16 bg-white/20 rounded-full blur-xl"></div>
                         <div className="absolute bottom-4 left-4 w-12 h-12 bg-white/30 rounded-full blur-lg"></div>
                         
-                        <div className="relative z-10 w-24 h-24 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                        <div className="relative z-10 w-24 h-24 bg-[#02458b] rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
                           <span className="text-white text-2xl font-bold">
                             {teacher.fullname.charAt(0).toUpperCase()}
                           </span>
@@ -123,12 +123,12 @@ const TeachersPage = () => {
                     
                     {/* Floating badge */}
                     <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <Award className="h-6 w-6 text-purple-600" />
+                      <Award className="h-6 w-6 text-[#02458b]" />
                     </div>
                   </div>
                   
                   <CardContent className="p-8 relative flex-grow flex flex-col">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors duration-300">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-[#02458b] transition-colors duration-300">
                       {teacher.fullname}
                     </h3>
                     <p className="text-gray-600 leading-relaxed text-lg flex-grow">
@@ -136,7 +136,7 @@ const TeachersPage = () => {
                     </p>
                     
                     {/* Bottom gradient line */}
-                    <div className="w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 rounded-full mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="w-full h-1 bg-[#02458b] rounded-full mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </CardContent>
                 </Card>
               ))}

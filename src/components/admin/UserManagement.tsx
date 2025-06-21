@@ -258,18 +258,18 @@ const UserManagement = () => {
     const configs = {
       'student': {
         icon: UserCheck,
-        gradient: 'from-blue-500 to-indigo-600',
+        gradient: 'from-[#1294fb] to-[#02458b]',
         bgGradient: 'from-blue-50 to-indigo-50'
       },
       'teacher': {
         icon: GraduationCap,
-        gradient: 'from-green-500 to-emerald-600',
-        bgGradient: 'from-green-50 to-emerald-50'
+        gradient: 'from-[#02458b] to-[#1294fb]',
+        bgGradient: 'from-blue-50 to-indigo-50'
       },
       'admin': {
         icon: Shield,
-        gradient: 'from-purple-500 to-pink-600',
-        bgGradient: 'from-purple-50 to-pink-50'
+        gradient: 'from-[#02458b] to-[#1294fb]',
+        bgGradient: 'from-blue-50 to-indigo-50'
       }
     };
     return configs[role] || configs.student;
@@ -505,16 +505,16 @@ const UserManagement = () => {
     return (
       <div className="space-y-6">
         <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
-        <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
-            <div className="flex items-center space-x-3">
-              <Users className="h-6 w-6 md:h-8 md:w-8" />
-              <div>
-                <CardTitle className="text-xl md:text-2xl">Quản lý người dùng</CardTitle>
-                <CardDescription className="text-purple-100 text-sm md:text-base">
-                  Đang tải dữ liệu...
-                </CardDescription>
-              </div>
+                <CardHeader className="bg-[#02458b] text-white rounded-t-lg">
+          <div className="flex items-center space-x-3">
+            <Users className="h-6 w-6 md:h-8 md:w-8" />
+            <div>
+              <CardTitle className="text-xl md:text-2xl">Quản lý người dùng</CardTitle>
+              <CardDescription className="text-blue-100 text-sm md:text-base">
+                Đang tải dữ liệu...
+              </CardDescription>
             </div>
+          </div>
         </CardHeader>
           <CardContent className="p-4 md:p-8">
           <div className="animate-pulse space-y-4">
@@ -531,20 +531,20 @@ const UserManagement = () => {
   return (
     <div className="space-y-6">
       <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
-        <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
+        <CardHeader className="bg-[#02458b] text-white rounded-t-lg">
           <div className={`${isMobile ? 'space-y-4' : 'flex justify-between items-center'}`}>
             <div className="flex items-center space-x-3">
               <Users className="h-6 w-6 md:h-8 md:w-8" />
               <div>
                 <CardTitle className="text-lg md:text-2xl">Quản lý người dùng</CardTitle>
-                <CardDescription className="text-purple-100 mt-1 text-sm md:text-base">
+                <CardDescription className="text-blue-100 mt-1 text-sm md:text-base">
                   Quản lý tất cả tài khoản người dùng theo vai trò
                 </CardDescription>
               </div>
             </div>
             <Button 
               onClick={handleAddUser} 
-              className={`bg-white text-purple-600 hover:bg-gray-100 border-0 shadow-lg ${isMobile ? 'w-full' : ''}`}
+              className={`bg-white text-[#02458b] hover:bg-gray-100 border-0 shadow-lg ${isMobile ? 'w-full' : ''}`}
               size={isMobile ? "default" : "default"}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -554,7 +554,7 @@ const UserManagement = () => {
         </CardHeader>
         <CardContent className="p-4 md:p-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 md:space-y-8">
-            <TabsList className={`grid w-full grid-cols-3 bg-gradient-to-r from-purple-100 to-blue-100 p-1 rounded-xl shadow-inner ${isMobile ? 'h-12' : 'h-14'}`}>
+            <TabsList className={`grid w-full grid-cols-3 bg-gradient-to-r from-blue-100 to-indigo-100 p-1 rounded-xl shadow-inner ${isMobile ? 'h-12' : 'h-14'}`}>
               <TabsTrigger 
                 value="student"
                 className="flex items-center justify-center space-x-1 md:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-700 rounded-lg transition-all duration-200 text-xs md:text-sm"

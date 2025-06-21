@@ -144,9 +144,9 @@ const AdminDashboard = () => {
 
   if (isLoading || !userRole || userRole !== 'admin') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#02458b] mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg">Đang kiểm tra quyền truy cập...</p>
         </div>
       </div>
@@ -168,13 +168,13 @@ const AdminDashboard = () => {
           </div>
         )}
         
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
-          <AdminToolbar title="Quản trị" subtitle="Bảng điều khiển hệ thống" />
+              <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <AdminToolbar title="Quản trị" subtitle="Bảng điều khiển hệ thống" />
 
-          {/* Mobile Content */}
-          <div className="p-4">
-            <div className="bg-white rounded-2xl shadow-xl border-0 overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-4">
+        {/* Mobile Content */}
+        <div className="p-4">
+          <div className="bg-white rounded-2xl shadow-xl border-0 overflow-hidden">
+            <div className="bg-[#02458b] p-4">
                 <div className="flex items-center space-x-3">
                   {React.createElement(tabItems.find(item => item.value === activeTab)?.icon || BarChart3, { 
                     className: "h-6 w-6 text-white" 
@@ -183,7 +183,7 @@ const AdminDashboard = () => {
                     <h2 className="text-lg font-semibold text-white">
                       {tabItems.find(item => item.value === activeTab)?.label}
                     </h2>
-                    <p className="text-sm text-purple-100">
+                    <p className="text-sm text-blue-100">
                       Quản lý và điều khiển
                     </p>
                   </div>
@@ -214,18 +214,18 @@ const AdminDashboard = () => {
         </div>
       )}
       
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <AdminToolbar title="Bảng điều khiển quản trị" subtitle="Quản lý toàn bộ hệ thống" />
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="border-b bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg p-4 sm:p-6">
+            <CardHeader className="border-b bg-[#02458b] text-white rounded-t-lg p-4 sm:p-6">
               <div className="flex items-center space-x-3">
                 <Settings className="h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0" />
                 <div className="min-w-0">
                   <CardTitle className="text-lg sm:text-xl lg:text-2xl">Quản lý hệ thống</CardTitle>
-                  <CardDescription className="text-purple-100 mt-1 text-sm">
+                  <CardDescription className="text-blue-100 mt-1 text-sm">
                     Điều khiển và giám sát toàn bộ hoạt động của hệ thống
                   </CardDescription>
                 </div>
@@ -238,12 +238,12 @@ const AdminDashboard = () => {
                 navigate(`/admin?tab=${value}`, { replace: true });
               }} className="space-y-6">
                 <div className="overflow-x-auto">
-                  <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-purple-100 to-blue-100 p-1 rounded-xl shadow-inner min-w-[400px] sm:min-w-0">
+                  <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-blue-100 to-indigo-100 p-1 rounded-xl shadow-inner min-w-[400px] sm:min-w-0">
                     {tabItems.map((item) => (
                       <TabsTrigger 
                         key={item.value}
                         value={item.value}
-                        className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-700 rounded-lg transition-all duration-200 px-2 py-2 text-xs sm:text-sm"
+                        className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-[#02458b] rounded-lg transition-all duration-200 px-2 py-2 text-xs sm:text-sm"
                       >
                         <item.icon className="h-4 w-4 flex-shrink-0" />
                         <span className="font-medium hidden sm:inline">{item.label}</span>

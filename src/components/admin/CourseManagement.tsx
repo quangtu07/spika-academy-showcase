@@ -135,8 +135,6 @@ const CourseManagement = () => {
     navigate('/admin/course/create');
   };
 
-
-
   const getStatusBadge = (status: Course['status']) => {
     const statusColors = {
       'Đang mở': 'bg-green-100 text-green-800 border-green-200',
@@ -171,9 +169,9 @@ const CourseManagement = () => {
   if (loading) {
     return (
       <Card className="border-0 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
+        <CardHeader className="bg-[#02458b] text-white rounded-t-lg">
           <CardTitle className="text-lg sm:text-xl">Quản lý khóa học</CardTitle>
-          <CardDescription className="text-indigo-100">Đang tải dữ liệu...</CardDescription>
+          <CardDescription className="text-blue-100">Đang tải dữ liệu...</CardDescription>
         </CardHeader>
         <CardContent className="p-4 sm:p-8">
           <div className="animate-pulse space-y-4">
@@ -189,20 +187,20 @@ const CourseManagement = () => {
   return (
     <>
       <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-        <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
+        <CardHeader className="bg-[#02458b] text-white rounded-t-lg">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center space-x-3">
               <BookOpen className="h-6 w-6 sm:h-8 sm:w-8" />
               <div>
                 <CardTitle className="text-lg sm:text-2xl">Quản lý khóa học</CardTitle>
-                <CardDescription className="text-indigo-100 mt-1 text-sm">
+                <CardDescription className="text-blue-100 mt-1 text-sm">
                   Quản lý tất cả khóa học trong hệ thống
                 </CardDescription>
               </div>
             </div>
             <Button 
               onClick={handleAddCourse} 
-              className="bg-white text-indigo-600 hover:bg-gray-100 border-0 shadow-lg w-full sm:w-auto"
+              className="bg-white text-[#02458b] hover:bg-gray-100 border-0 shadow-lg w-full sm:w-auto"
             >
               <Plus className="h-4 w-4 mr-2" />
               <span>Thêm khóa học</span>
@@ -211,32 +209,32 @@ const CourseManagement = () => {
         </CardHeader>
         <CardContent className="p-4 sm:p-8">
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 sm:p-6 border border-indigo-100">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 sm:p-6 border border-blue-100">
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div className="text-center">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#02458b] rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
                     <BookOpen className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
                   </div>
                   <div className="text-xl sm:text-2xl font-bold text-gray-800">{courses.length}</div>
                   <div className="text-xs sm:text-sm text-gray-600">Tổng khóa học</div>
                 </div>
                 <div className="text-center">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#1294fb] rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
                     <Star className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
                   </div>
                   <div className="text-xl sm:text-2xl font-bold text-gray-800">{courses.filter(c => c.status === 'Đang mở').length}</div>
                   <div className="text-xs sm:text-sm text-gray-600">Đang mở</div>
                 </div>
                 <div className="text-center">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#02458b] rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
                     <Users className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
                   </div>
                   <div className="text-xl sm:text-2xl font-bold text-gray-800">{courses.reduce((total, course) => total + course.enrolled_count, 0)}</div>
                   <div className="text-xs sm:text-sm text-gray-600">Tổng học viên</div>
                 </div>
                 <div className="text-center">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
-                    <DollarSign className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#ffc418] rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
+                    <DollarSign className="h-4 w-4 sm:h-6 sm:w-6 text-gray-900" />
                   </div>
                   <div className="text-xl sm:text-2xl font-bold text-gray-800">{courses.reduce((total, course) => total + course.duration, 0)}</div>
                   <div className="text-xs sm:text-sm text-gray-600">Tổng buổi học</div>
@@ -446,8 +444,6 @@ const CourseManagement = () => {
           </div>
         </CardContent>
       </Card>
-
-
 
       <AlertDialog open={!!deletingCourse} onOpenChange={(open) => !open && setDeletingCourse(null)}>
         <AlertDialogContent className="border-0 shadow-xl mx-4 max-w-lg">

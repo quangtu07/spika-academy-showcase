@@ -75,9 +75,9 @@ const UserDetailPage = () => {
 
   const getRoleBadge = (role: string) => {
     const roleMap = {
-      'student': { label: 'Học viên', color: 'bg-blue-500 text-white border-blue-500' },
-      'teacher': { label: 'Giáo viên', color: 'bg-emerald-500 text-white border-emerald-500' },
-      'admin': { label: 'Quản trị', color: 'bg-purple-500 text-white border-purple-500' }
+      'student': { label: 'Học viên', color: 'bg-[#02458b] text-white border-[#02458b]' },
+      'teacher': { label: 'Giáo viên', color: 'bg-[#1294fb] text-white border-[#1294fb]' },
+      'admin': { label: 'Quản trị', color: 'bg-[#ffc418] text-gray-900 border-[#ffc418]' }
     };
     const roleInfo = roleMap[role] || { label: 'Không xác định', color: 'bg-gray-500 text-white border-gray-500' };
     return <Badge className={`${roleInfo.color} px-3 py-1 text-sm font-medium`}>{roleInfo.label}</Badge>;
@@ -95,9 +95,9 @@ const UserDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-6"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#02458b] border-t-transparent mx-auto mb-6"></div>
           <p className="text-gray-600 text-lg">Đang tải thông tin người dùng...</p>
         </div>
       </div>
@@ -106,7 +106,7 @@ const UserDetailPage = () => {
 
   if (!userData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center pb-6">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -118,7 +118,7 @@ const UserDetailPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Button onClick={() => navigate('/admin')} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3">
+            <Button onClick={() => navigate('/admin')} className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white py-3">
               Quay lại trang quản lý
             </Button>
           </CardContent>
@@ -128,7 +128,7 @@ const UserDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <AdminToolbar 
         title={userData.fullname} 
         subtitle="Chi tiết thông tin người dùng" 
@@ -143,7 +143,7 @@ const UserDetailPage = () => {
               <div className="relative">
                 <Avatar className="h-32 w-32 border-4 border-white shadow-xl">
                   <AvatarImage src={userData.avatar_url} alt={userData.fullname} />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-4xl font-bold">
+                  <AvatarFallback className="bg-gradient-to-br from-[#02458b] to-[#1294fb] text-white text-4xl font-bold">
                     {getInitials(userData.fullname)}
                   </AvatarFallback>
                 </Avatar>
@@ -166,7 +166,7 @@ const UserDetailPage = () => {
               <div className="space-y-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
                   <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                    <User className="w-4 h-4 text-blue-600" />
+                    <User className="w-4 h-4 text-[#02458b]" />
                   </div>
                   Thông tin liên hệ
                 </h3>
@@ -174,7 +174,7 @@ const UserDetailPage = () => {
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl">
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Mail className="w-5 h-5 text-blue-600" />
+                      <Mail className="w-5 h-5 text-[#02458b]" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Email</p>
@@ -183,8 +183,8 @@ const UserDetailPage = () => {
                   </div>
 
                   <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <Phone className="w-5 h-5 text-green-600" />
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Phone className="w-5 h-5 text-[#1294fb]" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Số điện thoại</p>
@@ -193,8 +193,8 @@ const UserDetailPage = () => {
                   </div>
 
                   <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <User className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <User className="w-5 h-5 text-[#ffc418]" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Tuổi</p>
@@ -207,8 +207,8 @@ const UserDetailPage = () => {
               {/* Thông tin hệ thống */}
               <div className="space-y-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
-                    <Clock className="w-4 h-4 text-indigo-600" />
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <Clock className="w-4 h-4 text-[#02458b]" />
                   </div>
                   Thông tin hệ thống
                 </h3>
@@ -217,7 +217,7 @@ const UserDetailPage = () => {
                   <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-blue-600" />
+                        <Calendar className="w-5 h-5 text-[#02458b]" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Ngày tạo tài khoản</p>
@@ -226,10 +226,10 @@ const UserDetailPage = () => {
                     </div>
                   </div>
 
-                  <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100">
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Clock className="w-5 h-5 text-green-600" />
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-[#1294fb]" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Lần cập nhật cuối</p>
@@ -240,10 +240,10 @@ const UserDetailPage = () => {
                     </div>
                   </div>
 
-                  <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <User className="w-5 h-5 text-purple-600" />
+                      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <User className="w-5 h-5 text-[#ffc418]" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">ID người dùng</p>

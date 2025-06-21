@@ -152,25 +152,8 @@ const BlogDetailPage = () => {
             Quay lại trang chủ
           </Button>
           
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
-            <img
-              src={blog.image}
-              alt={blog.title}
-              className="w-full h-64 md:h-80 object-cover"
-            />
-            
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">           
             <div className="p-8">
-              <div className="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                <div>Tác giả: {blog.author}</div>
-                <Button
-                  onClick={handleShare}
-                  variant="ghost"
-                  size="sm"
-                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                >
-                  <Share2 className="h-4 w-4" />
-                </Button>
-              </div>
               
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 {blog.title}

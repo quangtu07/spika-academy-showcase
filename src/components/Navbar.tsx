@@ -155,9 +155,9 @@ const Navbar = () => {
               onClick={handleNavigateHome}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-indigo-500/20 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-500 scale-75"></div>
-              <div className="relative w-32 h-32 -my-8">
+              <div className="relative w-24 h-24 -my-6">
                 <img 
-                  src="/images/logo3.png" 
+                  src="/images/logo.png" 
                   alt="Future Wings Academy Logo" 
                   className="w-full h-full object-contain group-hover:scale-105 transition-all duration-300 drop-shadow-2xl"
                 />
@@ -175,10 +175,10 @@ const Navbar = () => {
                 <button
                   key={item.name}
                   onClick={item.action}
-                  className="relative px-4 py-2 text-gray-700 hover:text-purple-600 font-medium transition-all duration-300 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 group"
+                  className="relative px-4 py-2 text-gray-700 hover:text-[#02458b] font-medium transition-all duration-300 rounded-xl hover:bg-[#02458b]/5 group"
                 >
                   <span className="relative z-10">{item.name}</span>
-                  <div className="absolute inset-0 scale-0 group-hover:scale-100 bg-gradient-to-r from-purple-100/50 to-indigo-100/50 rounded-xl transition-transform duration-300"></div>
+                  <div className="absolute inset-0 scale-0 group-hover:scale-100 bg-[#02458b]/10 rounded-xl transition-transform duration-300"></div>
                 </button>
               ))}
               
@@ -187,7 +187,7 @@ const Navbar = () => {
                   {userRole && ['admin', 'teacher', 'student'].includes(userRole) && (
                     <Button 
                       onClick={handleDashboardAccess}
-                      className="relative overflow-hidden bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 group"
+                      className="relative overflow-hidden bg-[#02458b] hover:bg-[#02458b]/90 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 group"
                     >
                       <div className="absolute inset-0 bg-white/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
                       <span className="relative z-10">{getDashboardButtonText()}</span>
@@ -212,12 +212,12 @@ const Navbar = () => {
             <div className="md:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 flex items-center justify-center transition-all duration-300 group shadow-lg"
+                className="relative w-10 h-10 rounded-xl bg-[#02458b]/5 hover:bg-[#02458b]/10 flex items-center justify-center transition-all duration-300 group shadow-lg"
               >
                 <div className="space-y-1.5">
-                  <div className={`w-5 h-0.5 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></div>
-                  <div className={`w-5 h-0.5 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></div>
-                  <div className={`w-5 h-0.5 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-[#02458b] transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-[#02458b] transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-[#02458b] transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></div>
                 </div>
               </button>
             </div>
@@ -226,23 +226,23 @@ const Navbar = () => {
           {/* Enhanced Mobile Menu */}
           {isMenuOpen && (
             <div className="md:hidden border-t border-white/20">
-              <div className="px-2 pt-4 pb-6 space-y-2 bg-gradient-to-br from-white/95 via-purple-50/50 to-indigo-50/50 backdrop-blur-xl rounded-b-2xl">
+              <div className="px-2 pt-4 pb-6 space-y-2 bg-gradient-to-br from-white/95 via-blue-50/50 to-indigo-50/50 backdrop-blur-xl rounded-b-2xl">
                 {menuItems.map((item, index) => (
-                  <button
-                    key={item.name}
-                    onClick={() => {
-                      item.action();
-                      setIsMenuOpen(false);
-                    }}
-                    className="flex w-full text-left px-4 py-3 text-gray-700 hover:text-purple-600 font-medium rounded-xl hover:bg-gradient-to-r hover:from-white/80 hover:to-purple-50/80 transition-all duration-300"
-                  >
+                                      <button
+                      key={item.name}
+                      onClick={() => {
+                        item.action();
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex w-full text-left px-4 py-3 text-gray-700 hover:text-[#02458b] font-medium rounded-xl hover:bg-[#02458b]/5 transition-all duration-300"
+                    >
                     {item.name}
                   </button>
                 ))}
                 <div className="pt-4 px-4 border-t border-white/30">
                   {currentUser ? (
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-white/80 to-purple-50/80 rounded-xl backdrop-blur-sm">
+                      <div className="flex items-center space-x-3 p-3 bg-[#02458b]/5 rounded-xl backdrop-blur-sm">
                         <UserAvatar user={currentUser} onLogout={handleLogout} />
                         <span className="text-sm font-medium text-gray-700">{currentUser.fullname}</span>
                       </div>
@@ -252,7 +252,7 @@ const Navbar = () => {
                             handleDashboardAccess();
                             setIsMenuOpen(false);
                           }}
-                          className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white border-0 shadow-lg"
+                          className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white border-0 shadow-lg"
                         >
                           {getDashboardButtonText()}
                         </Button>

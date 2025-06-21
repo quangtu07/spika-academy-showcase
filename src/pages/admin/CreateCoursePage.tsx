@@ -127,7 +127,7 @@ const CreateCoursePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -141,7 +141,7 @@ const CreateCoursePage = () => {
           </Button>
           
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-[#02458b] rounded-xl flex items-center justify-center shadow-lg">
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -153,7 +153,7 @@ const CreateCoursePage = () => {
 
         {/* Form */}
         <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-          <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
+          <CardHeader className="bg-[#02458b] text-white rounded-t-lg">
             <CardTitle>Thông tin khóa học</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -165,7 +165,7 @@ const CreateCoursePage = () => {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="border-gray-300 focus:border-indigo-500"
+                  className="border-gray-300 focus:border-[#02458b]"
                 />
               </div>
 
@@ -176,7 +176,7 @@ const CreateCoursePage = () => {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={4}
-                  className="border-gray-300 focus:border-indigo-500"
+                  className="border-gray-300 focus:border-[#02458b]"
                 />
               </div>
 
@@ -191,7 +191,7 @@ const CreateCoursePage = () => {
 Buổi 1: Giới thiệu cơ bản - Học về tư thế, cách cầm micro
 Buổi 2: Kỹ thuật phát âm - Luyện tập phát âm rõ ràng
 ..."
-                  className="border-gray-300 focus:border-indigo-500"
+                  className="border-gray-300 focus:border-[#02458b]"
                 />
               </div>
 
@@ -203,7 +203,7 @@ Buổi 2: Kỹ thuật phát âm - Luyện tập phát âm rõ ràng
                     type="number"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    className="border-gray-300 focus:border-indigo-500"
+                    className="border-gray-300 focus:border-[#02458b]"
                   />
                 </div>
                 <div className="space-y-2">
@@ -213,7 +213,7 @@ Buổi 2: Kỹ thuật phát âm - Luyện tập phát âm rõ ràng
                     type="number"
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                    className="border-gray-300 focus:border-indigo-500"
+                    className="border-gray-300 focus:border-[#02458b]"
                   />
                 </div>
               </div>
@@ -224,7 +224,7 @@ Buổi 2: Kỹ thuật phát âm - Luyện tập phát âm rõ ràng
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value as Course['status'] })}
                 >
-                  <SelectTrigger className="border-gray-300 focus:border-indigo-500">
+                  <SelectTrigger className="border-gray-300 focus:border-[#02458b]">
                     <SelectValue placeholder="Chọn trạng thái" />
                   </SelectTrigger>
                   <SelectContent>
@@ -247,7 +247,7 @@ Buổi 2: Kỹ thuật phát âm - Luyện tập phát âm rõ ràng
                 <Button 
                   type="submit" 
                   disabled={isLoading}
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 px-6"
+                  className="bg-[#02458b] hover:bg-[#02458b]/90 px-6"
                 >
                   {isLoading ? 'Đang lưu...' : 'Thêm khóa học'}
                 </Button>

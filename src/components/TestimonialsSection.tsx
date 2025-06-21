@@ -11,7 +11,7 @@ const TestimonialsSection = () => {
       avatar: "/images/ava01.png",
       rating: 5,
       comment: "FutureWings đã giúp tôi từ một người nhút nhát trở thành MC tự tin. Giảng viên rất tận tâm và phương pháp học rất hiệu quả.",
-      gradient: "from-purple-500 to-pink-500"
+      gradient: "from-[#02458b] to-[#02458b]"
     },
     {
       name: "Trần Văn Hùng",
@@ -19,7 +19,7 @@ const TestimonialsSection = () => {
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
       rating: 5,
       comment: "Khóa học MC chuyên nghiệp tại đây thực sự chất lượng. Sau khi tốt nghiệp, tôi đã có thu nhập ổn định từ nghề MC.",
-      gradient: "from-blue-500 to-indigo-500"
+      gradient: "from-[#02458b] to-[#02458b]"
     },
     {
       name: "Phạm Thị Lan",
@@ -27,7 +27,7 @@ const TestimonialsSection = () => {
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
       rating: 5,
       comment: "Môi trường học tập chuyên nghiệp, cơ sở vật chất hiện đại. Cảm ơn FutureWings đã giúp tôi theo đuổi đam mê MC.",
-      gradient: "from-green-500 to-emerald-500"
+      gradient: "from-[#02458b] to-[#02458b]"
     }
   ];
 
@@ -35,20 +35,20 @@ const TestimonialsSection = () => {
   const cardRefs = testimonials.map(() => useScrollReveal({ threshold: 0.2 }));
 
   return (
-    <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
-      </div>
+      </div> */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div ref={titleRef} className="text-center mb-16 reveal reveal-fade-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#02458b] rounded-2xl mb-6 shadow-xl">
             <MessageCircle className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6 leading-tight">
+          <h2 className="text-5xl font-bold text-[#02458b] mb-6 leading-tight">
             Học viên nói gì về FutureWings
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -101,7 +101,7 @@ const TestimonialsSection = () => {
                       <div className={`absolute -inset-1 ${testimonial.gradient} rounded-full opacity-30 blur-sm`}></div>
                     </div>
                     <div className="ml-4 text-center">
-                      <h4 className="font-bold text-gray-900 text-lg group-hover:text-purple-600 transition-colors duration-300">
+                      <h4 className="font-bold text-gray-900 text-lg group-hover:text-[#02458b] transition-colors duration-300">
                         {testimonial.name}
                       </h4>
                       <p className="text-sm text-gray-600 font-medium">{testimonial.role}</p>

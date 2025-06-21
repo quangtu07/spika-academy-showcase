@@ -177,10 +177,10 @@ const EditCoursePage = () => {
 
   if (loadingCourse) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto flex items-center justify-center">
         <div className="relative">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-purple-600 absolute top-0 left-0"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-[#02458b] absolute top-0 left-0"></div>
         </div>
       </div>
     );
@@ -188,7 +188,7 @@ const EditCoursePage = () => {
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Không tìm thấy khóa học</h2>
           <Button onClick={() => navigate('/admin?tab=courses')}>
@@ -200,7 +200,7 @@ const EditCoursePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -214,7 +214,7 @@ const EditCoursePage = () => {
           </Button>
           
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-[#02458b] rounded-xl flex items-center justify-center shadow-lg">
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -226,7 +226,7 @@ const EditCoursePage = () => {
 
         {/* Form */}
         <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-          <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
+          <CardHeader className="bg-[#02458b] text-white rounded-t-lg">
             <CardTitle>Thông tin khóa học</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -366,7 +366,7 @@ Buổi 2: Kỹ thuật phát âm - Luyện tập phát âm rõ ràng
                 <Button 
                   type="submit" 
                   disabled={isLoading}
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 px-6"
+                  className="bg-[#02458b] hover:bg-[#02458b]/90 px-6"
                 >
                   {isLoading ? 'Đang lưu...' : 'Cập nhật khóa học'}
                 </Button>

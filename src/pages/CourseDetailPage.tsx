@@ -148,10 +148,10 @@ const CourseDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardContent className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-6"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#02458b] border-t-transparent mx-auto mb-6"></div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Đang tải thông tin</h3>
             <p className="text-gray-600">Vui lòng chờ trong giây lát...</p>
           </CardContent>
@@ -162,7 +162,7 @@ const CourseDetailPage = () => {
 
   if (!courseData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center pb-4">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -174,7 +174,7 @@ const CourseDetailPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center pt-0">
-            <Button onClick={() => navigate('/admin')} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg">
+            <Button onClick={() => navigate('/admin')} className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white shadow-lg">
               Quay lại trang quản lý
             </Button>
           </CardContent>
@@ -184,7 +184,7 @@ const CourseDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <AdminToolbar 
         title={courseData.name} 
         subtitle="Chi tiết khóa học" 
@@ -194,10 +194,10 @@ const CourseDetailPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Course Info Card */}
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 h-2"></div>
+          <div className="bg-[#02458b] h-2"></div>
           <CardHeader className="pb-6">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-[#02458b] rounded-xl flex items-center justify-center">
                 <GraduationCap className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -234,9 +234,9 @@ const CourseDetailPage = () => {
               {/* Info Section */}
               <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-4">
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-100">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100">
                     <div className="flex items-center space-x-3 mb-2">
-                      <BookOpen className="w-5 h-5 text-blue-600" />
+                      <BookOpen className="w-5 h-5 text-[#02458b]" />
                       <span className="font-semibold text-gray-900">Mô tả</span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">{courseData.description || 'Chưa có mô tả'}</p>
@@ -245,7 +245,7 @@ const CourseDetailPage = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                       <div className="flex items-center space-x-2 mb-1">
-                        <Clock className="w-4 h-4 text-orange-500" />
+                        <Clock className="w-4 h-4 text-[#1294fb]" />
                         <span className="text-sm font-medium text-gray-600">Thời lượng</span>
                       </div>
                       <p className="text-lg font-semibold text-gray-900">
@@ -255,7 +255,7 @@ const CourseDetailPage = () => {
 
                     <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                       <div className="flex items-center space-x-2 mb-1">
-                        <DollarSign className="w-4 h-4 text-green-500" />
+                        <DollarSign className="w-4 h-4 text-[#ffc418]" />
                         <span className="text-sm font-medium text-gray-600">Học phí</span>
                       </div>
                       <p className="text-lg font-semibold text-gray-900">
@@ -274,7 +274,7 @@ const CourseDetailPage = () => {
 
                     <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                       <div className="flex items-center space-x-2 mb-1">
-                        <Users className="w-4 h-4 text-blue-500" />
+                        <Users className="w-4 h-4 text-[#02458b]" />
                         <span className="text-sm font-medium text-gray-600">Học viên</span>
                       </div>
                       <p className="text-lg font-semibold text-gray-900">{courseData.enrolled_count}</p>
@@ -300,10 +300,10 @@ const CourseDetailPage = () => {
         {/* Detail Lessons Section */}
         {courseData.detail_lessons && (
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-2"></div>
+            <div className="bg-[#1294fb] h-2"></div>
             <CardHeader>
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#1294fb] rounded-xl flex items-center justify-center">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -313,7 +313,7 @@ const CourseDetailPage = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
                 <div className="prose prose-lg max-w-none text-gray-700">
                   <div className="whitespace-pre-line leading-relaxed">
                     {courseData.detail_lessons}
@@ -326,11 +326,11 @@ const CourseDetailPage = () => {
 
         {/* Classes List */}
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-green-500 to-blue-500 h-2"></div>
+          <div className="bg-[#02458b] h-2"></div>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#02458b] rounded-xl flex items-center justify-center">
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -365,12 +365,12 @@ const CourseDetailPage = () => {
                     {courseData.classes.map((classItem, index) => (
                       <TableRow 
                         key={classItem.id}
-                        className="cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 border-b border-gray-100"
+                        className="cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 border-b border-gray-100"
                         onClick={() => navigate(`/admin/class/${classItem.id}?tab=courses`)}
                       >
                         <TableCell className="font-medium text-gray-900 py-4">
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                            <div className="w-8 h-8 bg-[#02458b] rounded-lg flex items-center justify-center text-white text-sm font-bold">
                               {index + 1}
                             </div>
                             <span>{classItem.name}</span>
@@ -383,7 +383,7 @@ const CourseDetailPage = () => {
                         <TableCell className="py-4">
                           <div className="flex items-center space-x-2">
                             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              <Users className="w-4 h-4 text-blue-600" />
+                              <Users className="w-4 h-4 text-[#02458b]" />
                             </div>
                             <div>
                               <span className="font-semibold text-gray-900">{classItem.enrolled_count}</span>

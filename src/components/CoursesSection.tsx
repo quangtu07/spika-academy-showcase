@@ -63,10 +63,10 @@ const CoursesSection = () => {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto" id="courses">
+      <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto" id="courses">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#02458b] mx-auto mb-4"></div>
             <p className="text-lg text-gray-600">Đang tải khóa học...</p>
           </div>
         </div>
@@ -75,19 +75,19 @@ const CoursesSection = () => {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto relative overflow-hidden" id="courses">
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto relative overflow-hidden" id="courses">
       {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
-      </div>
+      </div> */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div ref={titleRef} className="text-center mb-16 reveal reveal-fade-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#02458b] rounded-2xl mb-6 shadow-xl">
             <BookOpen className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6">
+          <h2 className="text-5xl font-bold text-[#02458b] mb-6">
             Khóa học nổi bật
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -119,8 +119,8 @@ const CoursesSection = () => {
                 </div>
                 
                 <CardHeader className="flex-grow bg-gradient-to-br from-white to-gray-50/50 relative">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"></div>
-                  <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-300">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-[#02458b]"></div>
+                  <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-[#02458b] transition-colors duration-300">
                     {course.name}
                   </CardTitle>
                   <CardDescription className="text-gray-600 leading-relaxed">
@@ -131,7 +131,7 @@ const CoursesSection = () => {
                 <CardContent className="mt-auto bg-white/80 backdrop-blur-sm">
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="flex items-center space-x-2 text-gray-600">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-[#1294fb] rounded-lg flex items-center justify-center">
                         <Clock className="h-4 w-4 text-white" />
                       </div>
                       <div>
@@ -142,12 +142,12 @@ const CoursesSection = () => {
                     
                     {course.price && (
                       <div className="flex items-center space-x-2 text-gray-600">
-                        <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-[#ffc418] rounded-lg flex items-center justify-center">
                           <DollarSign className="h-4 w-4 text-white" />
                         </div>
                         <div>
                           <div className="text-xs text-gray-500">Học phí</div>
-                          <div className="font-bold text-green-600">
+                          <div className="font-semibold">
                             {course.price.toLocaleString('vi-VN')}đ
                           </div>
                         </div>
@@ -156,7 +156,7 @@ const CoursesSection = () => {
                   </div>
                   
                   <Button 
-                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
+                    className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
                     onClick={() => navigate(`/course/${course.id}`)}
                   >
                     <span className="flex items-center justify-center space-x-2">
@@ -174,7 +174,7 @@ const CoursesSection = () => {
         <div ref={buttonRef} className="text-center reveal reveal-fade-up">
           <Button 
             onClick={handleViewAllCourses}
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 group"
+            className="bg-[#02458b] hover:bg-[#02458b]/90 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 group"
           >
             <span className="flex items-center space-x-2">
               <BookOpen className="h-5 w-5" />

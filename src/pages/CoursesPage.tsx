@@ -55,34 +55,34 @@ const CoursesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto flex items-center justify-center">
         <div className="relative">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-purple-600 absolute top-0 left-0"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-[#02458b] absolute top-0 left-0"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 font-roboto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-roboto">
       <Navbar />
       
       <main className="pt-32 pb-16 relative overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-gradient-to-br from-blue-500/3 to-indigo-500/3 rounded-full blur-2xl"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           {/* Enhanced Header Section */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#02458b] rounded-2xl mb-6 shadow-xl">
               <BookOpen className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6 leading-tight">
+            <h1 className="text-5xl font-bold text-[#02458b] mb-6 leading-tight">
               Tất cả khóa học
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -93,9 +93,9 @@ const CoursesPage = () => {
           {/* Enhanced Courses Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {courses.map((course, index) => (
-              <Card key={course.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border-2 border-white/60 hover:border-purple-300/50 shadow-xl relative h-full flex flex-col">
+              <Card key={course.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border-0 shadow-xl relative h-full flex flex-col">
                 {/* Top accent bar */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-[#02458b]"></div>
                 
                 <div className="relative overflow-hidden">
                   <img
@@ -112,7 +112,7 @@ const CoursesPage = () => {
                 </div>
                 
                 <CardHeader className="flex-grow bg-gradient-to-br from-white to-gray-50/50 relative p-6">
-                  <CardTitle className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-300 mb-3">
+                  <CardTitle className="text-2xl font-bold text-gray-900 group-hover:text-[#02458b] transition-colors duration-300 mb-3">
                     {course.name}
                   </CardTitle>
                   <CardDescription className="text-gray-600 leading-relaxed text-lg">
@@ -123,7 +123,7 @@ const CoursesPage = () => {
                 <CardContent className="mt-auto bg-white/80 backdrop-blur-sm p-6">
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="flex items-center space-x-2 text-gray-600">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-[#1294fb] rounded-lg flex items-center justify-center">
                         <Clock className="h-4 w-4 text-white" />
                       </div>
                       <div>
@@ -134,12 +134,12 @@ const CoursesPage = () => {
                     
                     {course.price && (
                       <div className="flex items-center space-x-2 text-gray-600">
-                        <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-[#ffc418] rounded-lg flex items-center justify-center">
                           <DollarSign className="h-4 w-4 text-white" />
                         </div>
                         <div>
                           <div className="text-xs text-gray-500">Học phí</div>
-                          <div className="font-bold text-green-600">
+                          <div className="font-semibold">
                             {course.price.toLocaleString('vi-VN')}đ
                           </div>
                         </div>
@@ -148,7 +148,7 @@ const CoursesPage = () => {
                   </div>
                   
                   <Button 
-                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
+                    className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 group/btn"
                     onClick={() => navigate(`/course/${course.id}`)}
                   >
                     <span className="flex items-center justify-center space-x-2">
@@ -159,7 +159,7 @@ const CoursesPage = () => {
                   </Button>
 
                   {/* Bottom gradient line */}
-                  <div className="w-full h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="w-full h-1 bg-[#02458b] rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </CardContent>
               </Card>
             ))}

@@ -66,7 +66,7 @@ const BlogSection = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div ref={titleRef} className="text-center mb-20 reveal reveal-fade-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#02458b] rounded-2xl mb-6 shadow-xl">
             <BookOpen className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -95,14 +95,14 @@ const BlogSection = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/40 transition-all duration-500"></div>
                 
                 {/* Icon overlay */}
-                <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
+                <div className="absolute top-4 right-4 w-12 h-12 bg-[#02458b] rounded-2xl flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
                   <BookOpen className="h-6 w-6 text-white" />
                 </div>
               </div>
 
               {/* Content */}
               <div className="p-6">
-                <h3 className="font-bold text-xl text-gray-900 mb-4 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2">
+                <h3 className="font-bold text-xl text-gray-900 mb-4 group-hover:text-[#02458b] transition-colors duration-300 line-clamp-2">
                   {post.title}
                 </h3>
                 
@@ -112,7 +112,7 @@ const BlogSection = () => {
                 
                 <Button 
                   onClick={() => handleReadMore(post.id)}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  className="w-full bg-[#02458b] hover:bg-[#02458b]/90 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   Đọc thêm
                 </Button>
@@ -124,7 +124,7 @@ const BlogSection = () => {
         <div className="text-center mt-12">
           <Button 
             onClick={() => navigate('/blog')}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 px-8 py-3 text-lg font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            className="bg-[#02458b] hover:bg-[#02458b]/90 text-white border-0 px-8 py-3 text-lg font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
             Xem tất cả bài viết
           </Button>
