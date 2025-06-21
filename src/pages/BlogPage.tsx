@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -102,35 +102,13 @@ const BlogPage = () => {
                 <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
                   {post.title}
                 </CardTitle>
-                <div className="flex items-center text-sm text-gray-500 space-x-4">
-                  <div className="flex items-center">
-                    <Calendar className="mr-1 h-3 w-3" />
-                    {post.publishedAt}
-                  </div>
-                  <span>•</span>
-                  <div className="flex items-center">
-                    <Clock className="mr-1 h-3 w-3" />
-                    {post.readTime}
-                  </div>
-                </div>
                 <p className="text-sm text-gray-600">Tác giả: {post.author}</p>
               </CardHeader>
               
               <CardContent className="pt-0">
-                <p className="text-gray-600 line-clamp-3 mb-4">
+                <p className="text-gray-600 line-clamp-3 mb-6">
                   {post.excerpt}
                 </p>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {post.tags.slice(0, 2).map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 rounded-full text-xs font-medium"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
                 
                 <Button 
                   onClick={() => handleReadMore(post.id)}

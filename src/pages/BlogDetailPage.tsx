@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, Clock, Share2 } from 'lucide-react';
+import { ArrowLeft, Share2 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -162,14 +161,6 @@ const BlogDetailPage = () => {
             
             <div className="p-8">
               <div className="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
-                <div className="flex items-center">
-                  <Calendar className="mr-1 h-4 w-4" />
-                  {blog.publishedAt}
-                </div>
-                <div className="flex items-center">
-                  <Clock className="mr-1 h-4 w-4" />
-                  {blog.readTime}
-                </div>
                 <div>Tác giả: {blog.author}</div>
                 <Button
                   onClick={handleShare}
@@ -184,17 +175,6 @@ const BlogDetailPage = () => {
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 {blog.title}
               </h1>
-              
-              <div className="flex flex-wrap gap-2 mb-6">
-                {blog.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 rounded-full text-sm font-medium"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
               
               <div 
                 className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
