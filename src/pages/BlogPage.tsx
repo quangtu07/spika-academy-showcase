@@ -36,6 +36,20 @@ const allBlogPosts: BlogPost[] = [
     excerpt: 'Giọng nói giúp tạo ấn tượng và nên được rèn luyện từ nhỏ, dù ở bất kỳ nghề nào hay độ tuổi nào.',
     image: '/images/blog/3.jpg',
     publishedAt: '10 Tháng 12, 2024'
+  },
+  {
+    id: '4',
+    title: '7 Kỹ Năng Cần Thiết Cho Trẻ Ở Thế Kỷ 21 – Cha Mẹ Không Thể Bỏ Qua!',
+    excerpt: 'Trong thời đại công nghệ biến đổi nhanh, trẻ cần được trang bị kỹ năng sống thiết yếu để thích nghi và tự tin phát triển trong tương lai.',
+    image: '/images/blog/4.jpg',
+    publishedAt: '10 Tháng 12, 2024'
+  },
+  {
+    id: '5',
+    title: 'Lợi ích khi trẻ tham gia khóa học MC nhí từ sớm',
+    excerpt: 'Việc tham gia khóa học MC nhí từ sớm mang lại rất nhiều lợi ích cho trẻ. ',
+    image: '/images/blog/5.png',
+    publishedAt: '10 Tháng 12, 2024'
   }
 ];
 

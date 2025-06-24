@@ -5,12 +5,18 @@ import { ArrowLeft, Share2 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
+// Helper function to get base URL for course links
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  return 'http://localhost:8080'; // fallback for SSR
+};
+
 interface BlogContent {
   id: string;
   title: string;
   content: string;
-  image: string;
-  publishedAt: string;
 }
 
 const blogContents: Record<string, BlogContent> = {
@@ -71,7 +77,7 @@ const blogContents: Record<string, BlogContent> = {
       <br>
       <h2 style="font-size: 20px; font-weight: bold; color: #1f2937;">Kỹ năng làm việc đội nhóm</h2>
       <p>Trong xã hội hội nhập và phát triển như hiện nay, kỹ năng làm việc nhóm  càng trở nên cần thiết hơn bao giờ hết. 
-      Đây không chỉ đơn giản là việc trẻ “tồn tại” trong một tập thể, mà còn là khả năng phối hợp chặt chẽ với người khác để đạt được mục tiêu chung. 
+      Đây không chỉ đơn giản là việc trẻ "tồn tại" trong một tập thể, mà còn là khả năng phối hợp chặt chẽ với người khác để đạt được mục tiêu chung. 
       Cha mẹ và nhà trường cần tạo cơ hội cho trẻ tham gia các hoạt động tập thể, như: hoạt động ngoại khóa, câu lạc bộ, đội nhóm,… 
       để trẻ có cơ hội rèn luyện kỹ năng làm việc nhóm.</p>
       
@@ -132,13 +138,25 @@ const blogContents: Record<string, BlogContent> = {
 
        <br>
 
+       <p>Hiện nay Future Wings đang có 2 khóa học được tổ chức hàng tháng giúp các bạn nhỏ rèn luyện kỹ
+        năng nói , tự tin trước đám đông cũng như mong muốn trở thành MC nhí chuyên nghiệp:</p>
+       <p>
+         <a 
+           href="#"
+           style="color: #02458b; text-decoration: underline; font-weight: bold; cursor: pointer;"
+           onclick="event.preventDefault(); window.open(window.location.origin + '/course/b2e3f51a-9bdb-41b3-be2b-6329d9f2b8ae', '_blank');"
+         >
+           Khóa học 1: Học MC nhí cơ bản
+         </a>
+       </p>
+
+       <br>
+
        <p>Hy vọng rằng thông qua bài viết này, bố mẹ đã có cái nhìn rõ ràng hơn về cách phát triển kỹ năng mềm cho trẻ. 
        Nếu cần hỗ trợ thêm, bố mẹ hãy liên hệ tới 
        hotline của Future Wings: <b>0853326829</b> để nhận tư vấn nhanh chóng nhé!</p>
 
-    `,
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop',
-    publishedAt: '15 Tháng 12, 2024'
+    `
   },
   '2': {
     id: '2',
@@ -221,37 +239,283 @@ const blogContents: Record<string, BlogContent> = {
          </li>
        </ol>
  
-      `,
-    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop',
-    publishedAt: '12 Tháng 12, 2024'
+      `
   },
   '3': {
     id: '3',
-    title: 'Xu hướng công nghệ 2024: AI và Machine Learning',
+    title: '5 yếu tố quan trọng trong việc luyện giọng nói cho trẻ',
     content: `
-      <p>Năm 2024 đánh dấu bước ngoặt quan trọng trong việc ứng dụng AI và Machine Learning vào thực tế. Hãy cùng khám phá những xu hướng nổi bật nhất.</p>
+      <p>Giọng nói là 'công cụ' mà chúng ta sử dụng mỗi ngày, đó cũng chính là 'vũ khi lợi hại' giúp chinh phục người đối diện.</p>
       
-      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop" alt="AI Circuit board" style="width: 100%; height: 300px; object-fit: cover; border-radius: 8px; margin: 20px 0;" />
+      <br>
+      <p>Không chỉ những MC – người dẫn chương trình, nhà diễn thuyết, giáo viên …mới cần có 1 giọng nói hay, mỗi người chúng ta, 
+      dù làm công việc gì, độc tuổi nào cũng cần rèn luyện giọng nói, 
+      trau dồi tư duy ngôn ngữ bởi đó là những yếu tố quan trọng giúp bạn gây ấn tượng và tạo được dấu ấn riêng của bản thân, 
+      mỗi khi xuất hiện trước đám đông. Những điều này cần được rèn luyện ngay từ khi còn nhỏ</p>
+
+      <img src="/images/blog/3.jpg" alt="React development" style="width: 100%; height: 300px; object-fit: cover; border-radius: 8px; margin: 20px 0;" />
       
-      <h3>1. Generative AI và ChatGPT</h3>
-      <p>Công nghệ AI tạo sinh đã thay đổi cách chúng ta làm việc, từ viết code đến tạo nội dung sáng tạo.</p>
+      <p style="font-size: 20px; font-weight: bold; color: #1f2937;">Vậy làm thế nào để trẻ có được giọng nói hay ngay từ khi còn nhỏ? Hãy cùng tìm hiểu ngay sau đây:</p>
+
+      <br>
+
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">1. Phát âm chuẩn</h1>
+
+      <p>Hầu hết trẻ nhỏ đều gặp những lỗi cơ bản trong phát âm, 
+      nhiều phụ huynh chủ quan cho rằng "Kệ đi, lớn lên tự khắc phát âm chuẩn" 
+      hoặc còn nói ngọng theo con để dỗ dành trẻ, nhưng họ đã nhầm, 
+      chính những điều tưởng chừng như đơn giản đó lại khiến trẻ hình thành thói quen phát âm "thiếu chuẩn".</p>
+
+      <br>
       
-      <h3>2. Machine Learning tự động (AutoML)</h3>
-      <p>AutoML giúp các developer không chuyên về ML cũng có thể xây dựng và triển khai các mô hình AI hiệu quả.</p>
+      <p style="font-weight: bold; color: #1f2937; margin-bottom: 10px;">Những trường hợp phát âm "thiếu chuẩn" thường gặp ở trẻ:</p>
       
-      <img src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=400&fit=crop" alt="AI screens" style="width: 100%; height: 300px; object-fit: cover; border-radius: 8px; margin: 20px 0;" />
+      <ul style="list-style-type: none; margin-left: 15px; line-height: 1.8;">
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 8px; flex-shrink: 0;"></span>
+          <span>Nhầm lẫn giữa: l/n, s/x, ch/tr, d/r, ... Đặc biệt là khi đọc tên các địa danh, tên riêng...</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 8px; flex-shrink: 0;"></span>
+          <span>Dấu: hỏi, ngã, nặng</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 8px; flex-shrink: 0;"></span>
+          <span>Phát âm nuốt từ, không trọn vẹn, rõ chữ.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 8px; flex-shrink: 0;"></span>
+          <span>Phát âm sai: "anh" thành "ăn", "inh" thành "un", "iều" thành "iu", ...</span>
+        </li>
+      </ul>
+
+      <p style="font-weight: bold; color: #1f2937;">Cách khắc phục:</p>
+
+      <p>Phụ huynh cần dành thời gian nói chuyện và lắng nghe con mỗi ngày, 
+      nếu phát hiện con phát âm chưa đúng phải lập tức sửa ngay, 
+      bằng những lời nhắc nhở nhẹ nhàng, 
+      và phân tích cụ thể cho trẻ hiểu (với những bạn đã nhận thức được mặt chữ). 
+      Ngoài ra, nên ghi âm lại những cuộc hội thoại của trẻ, hoặc ghi âm trẻ đọc bài thơ, 
+      đoạn văn nào đó… sau đó chỉ ra lỗi phát âm và nhắc nhở con sửa lại cho đúng.</p>
       
-      <h3>3. Edge AI và IoT</h3>
-      <p>Việc đưa AI xuống các thiết bị edge mở ra nhiều ứng dụng thực tế trong smart home, autonomous vehicles.</p>
-      
-      <h3>4. Cơ hội nghề nghiệp</h3>
-      <p>Nhu cầu về AI Engineer, ML Engineer, và Data Scientist đang tăng mạnh. Đây là thời điểm tốt để đầu tư học các kỹ năng này.</p>
-      
-      <p>Tương lai thuộc về những người biết cách kết hợp AI với domain knowledge cụ thể. Hãy bắt đầu học AI ngay hôm nay để không bị bỏ lại phía sau.</p>
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">2. Lấy hơi từ bụng</h1>
+      <p>Để trẻ có giọng nói to, cột hơi khỏe cần phải luyện tập hằng ngày. 
+      Cho trẻ hít vào bằng cả mũi và miệng, sao cho lượng hơi đó dồn xuống bụng, 
+      khiến bụng phình ra, giữ nguyên 5 giây, sau đó thở ra nhẹ nhàng. 
+      Lặp lại động tác này 5-10 lần mỗi ngày.</p>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">3. Âm lượng và tốc độ</h1>
+      <p>Nói to hay nói nhỏ sẽ hay hơn? Nói nhanh hay nói chậm sẽ thu hút hơn? </p>
+      <p> Sẽ khó có đáp án nào chính xác dành cho câu hỏi này, bởi âm lượng và
+       tốc độ nói còn phải phụ thuộc vào từng không gian, vị trí, hoàn cảnh khác nhau…
+       Phụ huynh nên duy trì cho trẻ 1 tốc độ và âm lượng nói vừa phải.
+      Ví dụ: Khi đọc thơ cần chậm rãi, nhẹ nhàng. Khi đọc bài phát biểu cần mạnh mẽ, hùng hồn…
+      </p>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">4. Nói truyền cảm</h1>
+      <p>Hãy tập cho trẻ cách truyền cảm xúc vào giọng nói như sau: với 1 câu chuyện buồn, 
+      nên nói với giọng trầm và chậm rãi, cò những câu chuyện vui hoặc những lời kêu gọi, 
+      hãy hướng dân trẻ nói lớn và cao giọng hơn. </p>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">5. Tạo ngữ điệu khi nói</h1>
+      <p>Nói có ngữ điệu là điều không hề dễ dàng với cả người lớn và trẻ nhỏ. 
+      Có rất nhiều phương pháp giúp giọng nói thu hút hơn nhờ ngữ điệu, 
+      thế nhưng các đơn giản nhất hãy bắt đầu từng câu một. 
+      Những từ đầu tiên trong câu cần nói với âm lượng to và nhỏ dần ở những từ cuối câu. 
+      Nếu trong câu có những con số, tên riêng… cần nhấn mạnh vào những thông tin đó để tạo sự thu hút. </p>
+      <p>Hiện nay Future Wings đang có 2 khóa học được tổ chức hàng tháng giúp các bạn nhỏ rèn luyện kỹ
+       năng nói , tự tin trước đám đông cũng như mong muốn trở thành MC nhí chuyên nghiệp:</p>
+              <p>
+          <a 
+            href="#"
+            style="color: #02458b; text-decoration: underline; font-weight: bold; cursor: pointer;"
+            onclick="event.preventDefault(); window.open(window.location.origin + '/course/b2e3f51a-9bdb-41b3-be2b-6329d9f2b8ae', '_blank');"
+          >
+            Khóa học MC nhí
+          </a>
+        </p>
+                <p>
+          <a 
+            href="#"
+            style="color: #02458b; text-decoration: underline; font-weight: bold; cursor: pointer;"
+            onclick="event.preventDefault(); window.open(window.location.origin + '/course/87157e32-935e-4fff-818d-ea6767944dcd', '_blank');"
+          >
+            Khóa học kỹ năng thuyết trình
+          </a>
+        </p>
     `,
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop',
-    publishedAt: '10 Tháng 12, 2024'
-  }
+  },
+  '4': {
+    id: '4',
+    title: '7 Kỹ Năng Cần Thiết Cho Trẻ Ở Thế Kỷ 21 – Cha Mẹ Không Thể Bỏ Qua!',
+    content: `
+      <p><b>Trong kỷ nguyên công nghệ phát triển như vũ bão </b>, thế giới đang thay đổi từng ngày, 
+      từng giờ. Những kiến thức hôm nay có thể không còn phù hợp vào ngày mai. 
+      Vì vậy, việc <b>trang bị cho trẻ em những kỹ năng sống thiết yếu</b> là vô cùng quan trọng – giúp 
+      con không chỉ theo kịp mà còn tự tin vươn lên trong tương lai.</p>
+
+      <br>
+      <p>Dưới đây là <b>7 kỹ năng “vàng” trong thế kỷ 21</b> mà cha mẹ nên sớm rèn luyện cho con:</p>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">1. Tư Duy Sáng Tạo – “Chìa khóa” mở ra thế giới</h1>
+
+      <p>Sáng tạo không đơn thuần là vẽ tranh hay chơi nhạc. Đó là khả năng <b>nhìn mọi thứ theo một cách mới</b>, 
+      tìm ra giải pháp độc đáo và không ngại thử - sai - học lại. </p>
+
+      
+      <ul style="list-style-type: none; margin-left: 15px; line-height: 1.8;">
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Cha mẹ có thể cho con tham gia các hoạt động thủ công, sáng tạo.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Đặt câu hỏi mở như: “Con nghĩ có cách nào khác không?”</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Tạo không gian tự do để con khám phá, không ép khuôn suy nghĩ.</span>
+        </li>
+      </ul>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">2. Giao Tiếp Hiệu Quả – Cầu nối giữa người với người</h1>
+      <p>Giao tiếp không chỉ là “biết nói”, mà là <b>biết lắng nghe, biết chia sẻ đúng cách</b>, 
+      biết diễn đạt cảm xúc và suy nghĩ của mình một cách rõ ràng, tích cực.</p>
+
+      <ul style="list-style-type: none; margin-left: 15px; line-height: 1.8;">
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Cha mẹ có thể cho con tham gia các hoạt động thủ công, sáng tạo.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Đặt câu hỏi mở như: “Con nghĩ có cách nào khác không?”</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Tạo không gian tự do để con khám phá, không ép khuôn suy nghĩ.</span>
+        </li>
+      </ul>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">3. Quản Lý Cảm Xúc – Hiểu mình, hiểu người</h1>
+      <p>Trẻ em cũng có những cảm xúc phức tạp: tức giận, lo lắng, buồn bã... Nhưng <b>biết gọi tên và kiểm soát cảm xúc mới là điều quan trọng.</b></p>
+
+      <ul style="list-style-type: none; margin-left: 15px; line-height: 1.8;">
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Cha mẹ có thể dạy con nhận diện cảm xúc bằng hình ảnh, màu sắc.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Gợi ý cách giải tỏa như hít thở sâu, viết nhật ký, vẽ tranh.”</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Đồng hành cùng con trong những lúc cảm xúc dâng trào thay vì chỉ trích.</span>
+        </li>
+      </ul>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">4. Giải Quyết Vấn Đề – Nền tảng của sự trưởng thành</h1>
+      <p>Từ việc mất đồ chơi, bất đồng với bạn, đến những bài toán hóc búa – <b>giải quyết vấn đề là kỹ năng sống còn</b> giúp trẻ chủ động hơn trong mọi tình huống.</p>
+
+      <ul style="list-style-type: none; margin-left: 15px; line-height: 1.8;">
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Gợi ý cho cha mẹ là cho con tự tìm cách giải quyết trước khi “ra tay”.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Đặt câu hỏi gợi mở như: “Nếu con thử làm theo cách khác thì sao?”</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Động viên dù giải pháp chưa hoàn hảo.</span>
+        </li>
+      </ul>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">5. Làm Việc Nhóm – Không ai thành công một mình</h1>
+      <p>Tương lai là thời đại của <b>kết nối và hợp tác</b>. Trẻ cần học cách phối hợp với người khác, lắng nghe ý kiến đa chiều và cùng nhau hoàn thành mục tiêu.</p>
+
+      <ul style="list-style-type: none; margin-left: 15px; line-height: 1.8;">
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Khuyến khích con tham gia các hoạt động nhóm, CLB.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Tạo cơ hội cho con làm việc cùng anh/chị/em.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Dạy con chia sẻ trách nhiệm thay vì “độc chiếm” công việc.</span>
+        </li>
+      </ul>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">6. Quản Lý Thời Gian – Tự chủ trong học tập và cuộc sống</h1>
+      <p>Biết cách sắp xếp thời gian là bước đầu để trẻ <b>chủ động hơn trong học tập, vui chơi và sinh hoạt hàng ngày.</b></p>
+
+      <ul style="list-style-type: none; margin-left: 15px; line-height: 1.8;">
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Cha mẹ có thể hướng dẫn con tạo lịch biểu bằng màu sắc vui nhộn.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Giúp con phân biệt giữa việc “quan trọng” và “khẩn cấp”.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Cùng con tổng kết ngày hôm đó để rút kinh nghiệm.</span>
+        </li>
+      </ul>
+
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">7. Tư Duy Phản Biện – Biết phân tích, chọn lọc và đưa ra chính kiến</h1>
+      <p>Trong thế giới đầy thông tin như hiện nay, trẻ cần <b>khả năng đánh giá, phản biện, không dễ bị dẫn dắt.</b></p>
+
+      <ul style="list-style-type: none; margin-left: 15px; line-height: 1.8;">
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Hãy rèn luyện cho con bằng cách khuyến khích con đặt câu hỏi ngược: “Tại sao lại như vậy?”.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Cho con đọc và so sánh nhiều nguồn thông tin.</span>
+        </li>
+        <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+          <span style="background: #000; width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; margin-top: 10px; flex-shrink: 0;"></span>
+          <span>Tập tranh luận lành mạnh trong gia đình với các chủ đề đơn giản.</span>
+        </li>
+      </ul>
+
+      <br>
+      <h1 style="font-size: 30px; font-weight: bold; color: #1f2937;">Future Wings – Nơi Ươm Mầm Kỹ Năng Thế Kỷ 21 Cho Trẻ</h1>
+      <p>Tại Future Wings, chúng tôi hiểu rằng: <b>kiến thức có thể thay đổi, nhưng kỹ năng sống sẽ theo con suốt đời.</b> 
+      Thông qua các chương trình đào tạo kỹ năng mềm chuyên biệt, các bé sẽ được <b>trau dồi những kỹ năng thiết yếu</b> 
+      cho sự phát triển toàn diện – từ tư duy phản biện, giao tiếp, sáng tạo cho đến quản lý cảm xúc và thời gian. </p>
+      <p>🎯 Hãy để con được học – chơi – lớn lên một cách toàn diện tại Future Wings! </p>
+      <p>📞 Liên hệ với chúng tôi để tìm hiểu thêm về các khóa học kỹ năng phù hợp cho độ tuổi của con.</p>
+    `,
+  },
+  '5': {
+    id: '5',
+    title: 'Lợi ích khi trẻ tham gia khóa học MC nhí từ sớm',
+    content: `
+      <p>Việc tham gia khóa học MC nhí từ sớm mang lại rất nhiều lợi ích cho trẻ. Điền hình là 6 điều sau.</p>
+      <br>
+      <h1 style="font-size: 20px; font-weight: bold; color: #1f2937;">Phát triển kỹ năng MC chuyên nghiệp</h1>
+    `,
+  },
 };
 
 const BlogDetailPage = () => {
