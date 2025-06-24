@@ -19,6 +19,7 @@ interface Course {
   image_url?: string;
   status?: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
   detail_lessons?: string;
+  student_target?: string;
   created_at: string;
   updated_at?: string;
   enrolled_count: number;
@@ -86,8 +87,23 @@ const CourseDetailPage = () => {
 
       if (error) throw error;
 
+      // Try to fetch student_target separately to handle potential missing column
+      let studentTarget = '';
+      try {
+        const { data: studentTargetData } = await supabase
+          .from('courses')
+          .select('student_target')
+          .eq('id', courseId)
+          .single();
+        studentTarget = (studentTargetData as any)?.student_target || '';
+      } catch (error) {
+        // Column might not exist yet, use empty string as default
+        console.log('student_target column not found, using empty string');
+      }
+
       const courseWithDetails = {
         ...data,
+        student_target: studentTarget,
         classes: data.classes?.map((classItem: any) => ({
           ...classItem,
           enrolled_count: classItem.enrollments[0]?.count || 0
@@ -241,6 +257,16 @@ const CourseDetailPage = () => {
                     </div>
                     <p className="text-gray-700 leading-relaxed">{courseData.description || 'Chưa có mô tả'}</p>
                   </div>
+
+                  {courseData.student_target && (
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-100">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <Users className="w-5 h-5 text-[#059669]" />
+                        <span className="font-semibold text-gray-900">Đối tượng học viên</span>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">{courseData.student_target}</p>
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">

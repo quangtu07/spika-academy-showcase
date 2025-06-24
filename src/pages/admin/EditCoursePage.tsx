@@ -20,6 +20,7 @@ interface Course {
   image_url?: string;
   status?: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
   detail_lessons?: string;
+  student_target?: string;
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -35,7 +36,8 @@ const EditCoursePage = () => {
     duration: '',
     image_url: '',
     status: '' as Course['status'] | '',
-    detail_lessons: ''
+    detail_lessons: '',
+    student_target: ''
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -68,7 +70,8 @@ const EditCoursePage = () => {
         duration: data.duration ? data.duration.toString() : '',
         image_url: data.image_url || '',
         status: data.status || '',
-        detail_lessons: data.detail_lessons || ''
+        detail_lessons: data.detail_lessons || '',
+        student_target: (data as any).student_target || ''
       });
       setImagePreview(data.image_url || '');
     } catch (error) {
@@ -136,6 +139,7 @@ const EditCoursePage = () => {
         duration: formData.duration ? parseInt(formData.duration) : null,
         status: formData.status || 'Đang mở',
         detail_lessons: formData.detail_lessons.trim() || null,
+        student_target: formData.student_target.trim() || null,
         updated_at: new Date().toISOString()
       };
 
@@ -250,6 +254,16 @@ const EditCoursePage = () => {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={4}
                   className="border-gray-300 focus:border-indigo-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="student_target">Đối tượng học viên</Label>
+                <Input
+                  id="student_target"
+                  value={formData.student_target}
+                  onChange={(e) => setFormData({ ...formData, student_target: e.target.value })}
+                  className="border-gray-300 focus:border-[#02458b]"
                 />
               </div>
 

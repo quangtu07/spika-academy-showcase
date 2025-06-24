@@ -19,6 +19,7 @@ interface Course {
   price: number;
   status: 'Đang mở' | 'Đang bắt đầu' | 'Kết thúc';
   detail_lessons: string;
+  student_target?: string;
   created_at: string;
   updated_at: string;
 }
@@ -47,7 +48,24 @@ const PublicCourseDetailPage = () => {
 
       if (error) throw error;
 
-      setCourse(data);
+      // Try to fetch student_target separately to handle potential missing column
+      let studentTarget = '';
+      try {
+        const { data: studentTargetData } = await supabase
+          .from('courses')
+          .select('student_target')
+          .eq('id', courseId)
+          .single();
+        studentTarget = (studentTargetData as any)?.student_target || '';
+      } catch (error) {
+        // Column might not exist yet, use empty string as default
+        console.log('student_target column not found, using empty string');
+      }
+
+      setCourse({
+        ...data,
+        student_target: studentTarget
+      });
     } catch (error) {
       console.error('Error fetching course:', error);
       toast({
@@ -162,6 +180,21 @@ const PublicCourseDetailPage = () => {
                       {course.description || "Khóa học MC chuyên nghiệp với phương pháp giảng dạy hiện đại, giúp học viên phát triển kỹ năng dẫn chương trình một cách tự tin và chuyên nghiệp."}
                     </p>
                   </div>
+
+                  {/* Student Target */}
+                  {course.student_target && (
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-8 h-8 bg-[#059669] rounded-lg flex items-center justify-center">
+                          <Target className="h-5 w-5 text-white" />
+                        </div>
+                        <h3 className="font-semibold text-gray-900 text-lg">Đối tượng học viên</h3>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">
+                        {course.student_target}
+                      </p>
+                    </div>
+                  )}
 
 
 
