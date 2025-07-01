@@ -15,6 +15,8 @@ const corsHeaders = {
 
 interface ConsultationEmailRequest {
   fullName: string;
+  childName: string;
+  email: string;
   phone: string;
   courseName: string;
 }
@@ -28,7 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { fullName, childName, email, phone, courseName }: ConsultationEmailRequest = await req.json();
 
-    console.log("Sending consultation email with data:", { fullName, phone, courseName });
+    console.log("Sending consultation email with data:", { fullName, childName, email, phone, courseName });
 
     const emailResponse = await resend.emails.send({
       from: "MC Training Center <onboarding@resend.dev>",
