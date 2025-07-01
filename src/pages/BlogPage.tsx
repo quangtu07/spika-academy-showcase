@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -89,7 +88,7 @@ const BlogPage = () => {
           {allBlogPosts.map((post) => (
             <Card 
               key={post.id} 
-              className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-white/90 backdrop-blur-sm border-0 shadow-lg overflow-hidden"
+              className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-white/90 backdrop-blur-sm border-0 shadow-lg overflow-hidden h-full flex flex-col"
             >
               <div className="relative overflow-hidden">
                 <img
@@ -100,24 +99,25 @@ const BlogPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-3 flex-grow">
                 <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
                   {post.title}
                 </CardTitle>
               </CardHeader>
               
-              <CardContent className="pt-0">
-                <p className="text-gray-600 line-clamp-3 mb-6">
+              <CardContent className="pt-0 flex flex-col flex-grow">
+                <p className="text-gray-600 line-clamp-3 mb-6 text-justify flex-grow">
                   {post.excerpt}
                 </p>
-                
+              </CardContent>
+              <div className="p-6 pt-0 mt-auto">
                 <Button 
                   onClick={() => handleReadMore(post.id)}
                   className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105"
                 >
                   Đọc thêm
                 </Button>
-              </CardContent>
+              </div>
             </Card>
           ))}
         </div>

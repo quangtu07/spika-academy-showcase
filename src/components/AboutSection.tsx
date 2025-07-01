@@ -66,13 +66,13 @@ const AboutSection = () => {
           {/* Text Content */}
           <div className="space-y-8">
             <div className="space-y-6 text-gray-600 leading-relaxed">
-              <p className="text-lg">
+              <p className="text-lg text-justify">
               Tại Future Wings Academy, chúng tôi hiểu rõ từng giai đoạn phát triển độc đáo của 
               trẻ em và thanh thiếu niên từ 5 đến 16 tuổi. 
               Với chương trình được thiết kế linh hoạt, phương pháp giảng dạy tương tác sinh động, 
               cùng đội ngũ giáo viên tâm huyết và giàu kinh nghiệm am hiểu tâm lý lứa tuổi, chúng tôi tập trung phát triển các kỹ năng mềm cốt lõi như tư duy phản biện, khả năng thuyết trình tự tin và kỹ năng MC chuyên nghiệp. 
               </p>
-              <p className="text-lg">
+              <p className="text-lg text-justify">
               Mục tiêu của chúng tôi là giúp mỗi học viên không chỉ tự tin thể hiện bản 
               thân trong học tập mà còn vững vàng thích nghi, 
               giao tiếp hiệu quả và thành công trong mọi môi trường sống và xã hội.

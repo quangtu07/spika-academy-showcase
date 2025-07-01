@@ -131,7 +131,7 @@ const TeachersPage = () => {
                     <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-[#02458b] transition-colors duration-300">
                       {teacher.fullname}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed text-lg flex-grow">
+                    <p className="text-gray-600 leading-relaxed text-lg flex-grow text-justify">
                       {teacher.info || 'Giảng viên giàu kinh nghiệm trong lĩnh vực giáo dục với phương pháp giảng dạy hiện đại và hiệu quả.'}
                     </p>
                     

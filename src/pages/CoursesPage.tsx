@@ -115,7 +115,7 @@ const CoursesPage = () => {
                   <CardTitle className="text-2xl font-bold text-gray-900 group-hover:text-[#02458b] transition-colors duration-300 mb-3">
                     {course.name}
                   </CardTitle>
-                  <CardDescription className="text-gray-600 leading-relaxed text-lg">
+                  <CardDescription className="text-gray-600 leading-relaxed text-lg text-justify">
                     {course.description}
                   </CardDescription>
                 </CardHeader>
