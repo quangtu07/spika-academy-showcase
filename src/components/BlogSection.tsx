@@ -69,7 +69,7 @@ const BlogSection = () => {
             Blog chia sẻ
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Khám phá những bài viết hữu ích về kiến thức là MC
+          Khám phá cùng những kiến thức và phương pháp giúp con bạn bứt phá tiềm năng, vững bước tương lai
           </p>
         </div>
 

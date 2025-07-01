@@ -13,22 +13,22 @@ const CommitmentsSection = () => {
   const commitments = [
     {
       icon: Sparkles,
-      title: "Chất lượng đào tạo",
-      description: "Cam kết đào tạo chất lượng với giáo trình chuẩn quốc tế và đội ngũ giảng viên giàu kinh nghiệm",
+      title: "Chất Lượng Giáo Dục Vượt Trội",
+      description: "Giáo trình tiên tiến, phương pháp độc quyền, cam kết con bạn phát triển nền tảng kỹ năng vững chắc",
       gradient: "from-[#02458b] to-[#02458b]",
       bgGradient: "from-[#02458b]/10 to-[#02458b]/10"
     },
     {
       icon: Shield,
-      title: "Bảo đảm việc làm",
-      description: "Hỗ trợ tư vấn và giới thiệu việc làm cho học viên sau khi hoàn thành khóa học",
+      title: "Môi Trường Học Tập Truyền Cảm Hứng",
+      description: "Không gian an toàn, thân thiện, nơi con tự tin khám phá, thể hiện bản thân và phát triển tự nhiên",
       gradient: "from-[#02458b] to-[#02458b]",
       bgGradient: "from-[#02458b]/10 to-[#02458b]/10"
     },
     {
       icon: Clock,
-      title: "Thời gian linh hoạt",
-      description: "Lịch học linh hoạt, phù hợp với nhiều đối tượng học viên khác nhau",
+      title: "Đội Ngũ Giáo Viên Tận Tâm & Chuyên Môn",
+      description: "Đội ngũ thầy cô giàu kinh nghiệm, am hiểu tâm lý trẻ, luôn đồng hành khơi gợi tối đa tiềm năng",
       gradient: "from-[#02458b] to-[#02458b]",
       bgGradient: "from-[#02458b]/10 to-[#02458b]/10"
     }
@@ -51,7 +51,7 @@ const CommitmentsSection = () => {
             Cam kết của FutureWings
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Ba điểm mạnh làm nên sự khác biệt của chúng tôi trong lĩnh vực đào tạo
+            Ba Cam Kết Vàng Nâng Tầm Tương Lai Vững Chắc
           </p>
         </div>
 

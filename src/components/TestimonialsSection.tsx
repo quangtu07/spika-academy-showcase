@@ -6,27 +6,27 @@ import { Quote, MessageCircle, Star } from 'lucide-react';
 const TestimonialsSection = () => {
   const testimonials = [
     {
-      name: "Nguyễn Minh Anh",
-      role: "MC Freelancer",
+      name: "Chị Nguyễn Thị Thu",
+      role: "Mẹ bé Bảo Nam, 9 tuổi",
       avatar: "/images/ava01.png",
       rating: 5,
-      comment: "FutureWings đã giúp tôi từ một người nhút nhát trở thành MC tự tin. Giảng viên rất tận tâm và phương pháp học rất hiệu quả.",
+      comment: "Trung tâm đã vượt xa kỳ vọng của tôi! Bé Nam nhà tôi trước đây rất ít nói  hay ngại ngùng, nhưng chỉ sau vài tháng học, con đã tự tin phát biểu ý kiến ở lớp, còn mạnh dạn xung phong làm nhóm trưởng. ",
       gradient: "from-[#02458b] to-[#02458b]"
     },
     {
-      name: "Trần Văn Hùng",
-      role: "MC Sự kiện",
+      name: "Mẹ bé Hải Đăng",
+      role: "Mẹ bé Hải Đăng, 7 tuổi",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
       rating: 5,
-      comment: "Khóa học MC chuyên nghiệp tại đây thực sự chất lượng. Sau khi tốt nghiệp, tôi đã có thu nhập ổn định từ nghề MC.",
+      comment: "Từ khi học ở Future Wings Academy, tôi không còn phải lo lắng về việc con quên bài. Thầy cô giao bài tập và tài liệu luyện tập ngay trên web! Bé nhà tôi có thể làm bài bất cứ lúc nào, ở đâu. Điều này giúp con chủ động hơn và tôi cũng dễ dàng theo dõi tiến độ của con.",
       gradient: "from-[#02458b] to-[#02458b]"
     },
     {
-      name: "Phạm Thị Lan",
-      role: "MC Truyền hình",
+      name: "Anh Hoàng Long",
+      role: "Bố bé Linh Chi, 13 tuổi",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
       rating: 5,
-      comment: "Môi trường học tập chuyên nghiệp, cơ sở vật chất hiện đại. Cảm ơn FutureWings đã giúp tôi theo đuổi đam mê MC.",
+      comment: "Lộ trình học tại Future Wings Academy rất khoa học, dễ tiếp thu. Thầy cô giảng dạy cực kỳ lôi cuốn, biến việc học thành niềm vui. Nhờ đó, kỹ năng thuyết trình của Linh Chi tiến bộ vượt bậc, con luôn hào hứng đến lớp",
       gradient: "from-[#02458b] to-[#02458b]"
     }
   ];
@@ -49,10 +49,10 @@ const TestimonialsSection = () => {
             <MessageCircle className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-5xl font-bold text-[#02458b] mb-6 leading-tight">
-            Học viên nói gì về FutureWings
+            Học Viên & Phụ Huynh Nói Gì Về Future Wings?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Những chia sẻ chân thực từ các học viên đã thành công trong hành trình học tập
+          Khám phá hành trình phát triển đầy hứng khởi của con bạn cùng FutureWings qua những chia sẻ chân thực nhất!
           </p>
         </div>
 

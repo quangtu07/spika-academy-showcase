@@ -26,7 +26,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { fullName, phone, courseName }: ConsultationEmailRequest = await req.json();
+    const { fullName, childName, email, phone, courseName }: ConsultationEmailRequest = await req.json();
 
     console.log("Sending consultation email with data:", { fullName, phone, courseName });
 
@@ -44,14 +44,25 @@ const handler = async (req: Request): Promise<Response> => {
             <h3 style="color: #007bff; margin-top: 0;">Thông tin khách hàng:</h3>
             
             <div style="margin-bottom: 15px;">
-              <strong style="color: #333;">Họ và tên:</strong>
+              <strong style="color: #333;">Họ và tên phụ huynh:</strong>
               <span style="margin-left: 10px; color: #666;">${fullName}</span>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+              <strong style="color: #333;">Họ và tên bé:</strong>
+              <span style="margin-left: 10px; color: #666;">${childName}</span>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+              <strong style="color: #333;">Email:</strong>
+              <span style="margin-left: 10px; color: #666;">${email}</span>
             </div>
             
             <div style="margin-bottom: 15px;">
               <strong style="color: #333;">Số điện thoại:</strong>
               <span style="margin-left: 10px; color: #666;">${phone}</span>
             </div>
+            
             
             <div style="margin-bottom: 15px;">
               <strong style="color: #333;">Khóa học quan tâm:</strong>

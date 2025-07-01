@@ -76,11 +76,11 @@ const BlogPage = () => {
           </Button>
           
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Tất cả bài viết
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Khám phá những bài viết hữu ích về công nghệ, lập trình và xu hướng học tập mới nhất
+          <h1 className="text-4xl md:text-5xl font-bold text-blue-700 mb-4">
+              Blogs Chia Sẻ
+          </h1>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Khám phá những kiến thức hữu ích 
             </p>
           </div>
         </div>

@@ -90,8 +90,8 @@ const CoursesSection = () => {
           <h2 className="text-5xl font-bold text-[#02458b] mb-6">
             Khóa học nổi bật
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Chọn khóa học phù hợp với mục tiêu của bạn và bắt đầu hành trình học tập đầy thú vị
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Cùng con khám phá khóa học ưng ý, kiến tạo hành trang vững chắc cho tương lai rạng rỡ!
           </p>
         </div>
 

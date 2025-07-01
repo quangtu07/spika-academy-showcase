@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,8 @@ interface RegistrationModalProps {
 const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
   const [formData, setFormData] = useState({
     fullName: '',
+    childName: '',
+    email: '',
     phone: '',
     course: ''
   });
@@ -62,7 +63,7 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
       description: "Chúng mình sẽ liên hệ với bạn sớm nhất.",
     });
     
-    setFormData({ fullName: '', phone: '', course: '' });
+    setFormData({ fullName: '', childName: '', email: '', phone: '', course: '' });
     onClose();
 
     try {
@@ -72,6 +73,8 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
 
       console.log('Sending consultation request:', {
         fullName: formData.fullName,
+        childName: formData.childName,
+        email: formData.email,
         phone: formData.phone,
         courseName
       });
@@ -80,6 +83,8 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
       supabase.functions.invoke('send-consultation-email', {
         body: {
           fullName: formData.fullName,
+          childName: formData.childName,
+          email: formData.email,
           phone: formData.phone,
           courseName: courseName
         }
@@ -116,14 +121,42 @@ const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div>
             <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
-              Họ và tên *
+              Họ và tên phụ huynh *
             </Label>
             <Input
               id="fullName"
               type="text"
               value={formData.fullName}
               onChange={(e) => handleInputChange('fullName', e.target.value)}
-              placeholder="Nhập họ và tên của bạn"
+              placeholder="Nhập họ và tên phụ huynh"
+              required
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label htmlFor="childName" className="text-sm font-medium text-gray-700">
+              Họ và tên bé *
+            </Label>
+            <Input
+              id="childName"
+              type="text"
+              value={formData.childName}
+              onChange={(e) => handleInputChange('childName', e.target.value)}
+              placeholder="Nhập họ và tên bé"
+              required
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              Email *
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              placeholder="Nhập email liên hệ"
               required
               className="mt-1"
             />
