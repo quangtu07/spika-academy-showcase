@@ -19,25 +19,28 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
   const slides = [
     {
       image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      title: "Ươm mầm bản lĩnh, Bứt phá tương lai",
-      subtitle: "Future Wings: Trang bị kỹ năng mềm vượt trội, giúp con bạn tự tin học tập, giao tiếp và tỏa sáng",
+      title: "Ươm mầm bản lĩnh",
+      title2: "Bứt phá tương lai",
+      subtitle: "Future Wings Academy - Trang bị kỹ năng mềm vượt trội, giúp con bạn tự tin học tập, giao tiếp và tỏa sáng",
       cta: "Đăng ký ngay",
       action: handleRegistration
     },
-    // {
-    //   image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-    //   title: "Ươm mầm bản lĩnh, Bứt phá tương lai",
-    //   subtitle: "Đội ngũ giảng viên giàu kinh nghiệm và tâm huyết",
-    //   cta: "Đăng ký ngay",
-    //   action: handleRegistration
-    // },
-    // {
-    //   image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-    //   title: "Ươm mầm bản lĩnh, Bứt phá tương lai",
-    //   subtitle: "Phương pháp học tập hiện đại, phù hợp với mọi đối tượng",
-    //   cta: "Đăng ký ngay",
-    //   action: handleRegistration
-    // }
+    {
+      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+      title: "Ươm mầm bản lĩnh",
+      title2: "Bứt phá tương lai",
+      subtitle: "Future Wings Academy - Trang bị kỹ năng mềm vượt trội, giúp con bạn tự tin học tập, giao tiếp và tỏa sáng",
+      cta: "Đăng ký ngay",
+      action: handleRegistration
+    },
+    {
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+      title: "Ươm mầm bản lĩnh",
+      title2: "Bứt phá tương lai",
+      subtitle: "Future Wings Academy - Trang bị kỹ năng mềm vượt trội, giúp con bạn tự tin học tập, giao tiếp và tỏa sáng",
+      cta: "Đăng ký ngay",
+      action: handleRegistration
+    }
   ];
 
   useEffect(() => {
@@ -70,6 +73,9 @@ const HeroCarousel = ({ onOpenRegistrationModal }: HeroCarouselProps) => {
                 <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in bg-gradient-to-r from-white via-white to-purple-200 bg-clip-text text-transparent leading-tight">
                   {slide.title}
                 </h1>
+                <h2 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in bg-gradient-to-r from-white via-white to-purple-200 bg-clip-text text-transparent leading-tight">
+                  {slide.title2}
+                </h2>
                 <p className="text-base md:text-lg mb-8 animate-fade-in animation-delay-200 text-gray-100 leading-relaxed">
                   {slide.subtitle}
                 </p>

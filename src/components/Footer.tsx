@@ -11,7 +11,7 @@ const Footer = () => {
                 <img 
                   src="/images/logo2.png" 
                   alt="Future Wings Academy Logo" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain rounded-full"
                 />
               </div>
             </div>
