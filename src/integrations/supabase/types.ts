@@ -311,6 +311,36 @@ export type Database = {
         }
         Relationships: []
       }
+      website_analytics: {
+        Row: {
+          id: string
+          date: string
+          visit_count: number
+          unique_visitors: number
+          page_views: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          date: string
+          visit_count?: number
+          unique_visitors?: number
+          page_views?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          date?: string
+          visit_count?: number
+          unique_visitors?: number
+          page_views?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

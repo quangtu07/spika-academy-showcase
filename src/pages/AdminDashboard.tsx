@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, BookOpen, BarChart3, AlertCircle, Settings } from 'lucide-react';
+import { Users, BookOpen, BarChart3, AlertCircle, Settings, TrendingUp } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +10,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import UserManagement from '@/components/admin/UserManagement';
 import CourseManagement from '@/components/admin/CourseManagement';
 import ClassManagement from '@/components/admin/ClassManagement';
+import AnalyticsTab from '@/components/admin/AnalyticsTab';
 import AdminOverview from '@/components/admin/AdminOverview';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 
@@ -81,6 +82,12 @@ const AdminDashboard = () => {
       icon: BarChart3,
       label: 'Tổng quan',
       component: AdminOverview
+    },
+    {
+      value: 'analytics',
+      icon: TrendingUp,
+      label: 'Thống kê',
+      component: AnalyticsTab
     },
     {
       value: 'users',

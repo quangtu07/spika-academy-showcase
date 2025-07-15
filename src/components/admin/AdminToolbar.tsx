@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Menu, Globe, LogOut, Settings, BarChart3, Users, BookOpen, GraduationCap } from 'lucide-react';
+import { Menu, Globe, LogOut, Settings, BarChart3, Users, BookOpen, GraduationCap, TrendingUp } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -26,6 +26,10 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
 
   const handleNavigateToOverview = () => {
     navigate('/admin?tab=overview');
+  };
+
+  const handleNavigateToAnalytics = () => {
+    navigate('/admin?tab=analytics');
   };
 
   const handleNavigateToUsers = () => {
@@ -106,6 +110,10 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
                   <DropdownMenuItem onClick={handleNavigateToOverview}>
                     <BarChart3 className="mr-2 h-4 w-4" />
                     <span>Tổng quan</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleNavigateToAnalytics}>
+                    <TrendingUp className="mr-2 h-4 w-4" />
+                    <span>Thống kê</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleNavigateToUsers}>
                     <Users className="mr-2 h-4 w-4" />
