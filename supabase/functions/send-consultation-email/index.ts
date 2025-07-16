@@ -17,6 +17,8 @@ interface ConsultationEmailRequest {
   fullName: string;
   phone: string;
   courseName: string;
+  childName: string;
+  email: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -32,7 +34,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailResponse = await resend.emails.send({
       from: "MC Training Center <onboarding@resend.dev>",
-      to: ["linhquangtu07@gmail.com"], // Đổi thành email đã đăng ký với Resend
+      to: ["linhquangtu02@gmail.com", "futurewingsacademy2025@gmail.com"], // Đổi thành email đã đăng ký với Resend
       subject: "Tiếp nhận thông tin đăng ký tư vấn khóa học",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
