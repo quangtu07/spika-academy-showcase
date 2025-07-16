@@ -33,7 +33,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Sending consultation email with data:", { fullName, phone, courseName });
 
     const emailResponse = await resend.emails.send({
-      from: "MC Training Center <onboarding@resend.dev>",
+      from: "Future Wings Academy <no-reply@futurewings.id.vn>",
       to: ["linhquangtu02@gmail.com", "futurewingsacademy2025@gmail.com"], // Đổi thành email đã đăng ký với Resend
       subject: "Tiếp nhận thông tin đăng ký tư vấn khóa học",
       html: `
