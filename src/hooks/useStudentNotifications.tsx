@@ -102,27 +102,40 @@ export const useStudentNotifications = () => {
         return;
       }
 
-      // Step 2: Get all assignments from those classes
-      const { data: assignmentsData, error: assignmentsError } = await (supabase as any)
-        .from('assignments')
+      // Step 2: Get all lessons from those classes first
+      const { data: lessonsData, error: lessonsError } = await (supabase as any)
+        .from('lessons')
         .select(`
           id,
-          lesson:lessons (
-            id,
-            title,
-            lesson_number,
-            class_id,
-            classes (
-              name
-            )
+          title,
+          lesson_number,
+          class_id,
+          classes (
+            name
           )
         `)
-        .in('lesson.class_id', classIds)
+        .in('class_id', classIds);
+
+      if (lessonsError) throw lessonsError;
+
+      const lessonIds = lessonsData.map((lesson: any) => lesson.id);
+      
+      if (lessonIds.length === 0) {
+        setNotifications([]);
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 3: Get all assignments from those lessons
+      const { data: assignmentsData, error: assignmentsError } = await (supabase as any)
+        .from('assignments')
+        .select('id, lesson_id')
+        .in('lesson_id', lessonIds)
         .order('created_at', { ascending: false });
 
       if (assignmentsError) throw assignmentsError;
 
-      // Step 3: Get existing submissions for this student
+      // Step 4: Get existing submissions for this student
       const assignmentIds = assignmentsData.map((assignment: any) => assignment.id);
       
       const { data: submissionsData, error: submissionsError } = await (supabase as any)
@@ -133,7 +146,13 @@ export const useStudentNotifications = () => {
 
       if (submissionsError) throw submissionsError;
 
-      // Step 4: Create notifications
+      // Step 5: Create lessons map for quick lookup
+      const lessonsMap = new Map();
+      lessonsData.forEach((lesson: any) => {
+        lessonsMap.set(lesson.id, lesson);
+      });
+
+      // Step 6: Create notifications
       const submissionsMap = new Map();
       submissionsData.forEach((submission: any) => {
         submissionsMap.set(submission.assignment_id, submission);
@@ -142,7 +161,14 @@ export const useStudentNotifications = () => {
       const formattedNotifications: StudentNotification[] = [];
 
       assignmentsData.forEach((assignment: any) => {
+        const lesson = lessonsMap.get(assignment.lesson_id);
         const submission = submissionsMap.get(assignment.id);
+        
+        // Skip if lesson not found (safety check)
+        if (!lesson) {
+          console.warn(`Lesson not found for assignment ${assignment.id}`);
+          return;
+        }
         
         // Create notification for unfinished assignments (no submission or status "Chưa làm")
         if (!submission) {
@@ -155,10 +181,10 @@ export const useStudentNotifications = () => {
             submitted_at: null,
             assignment: {
               lesson: {
-                id: assignment.lesson.id,
-                title: assignment.lesson.title,
-                lesson_number: assignment.lesson.lesson_number,
-                class: assignment.lesson.classes || { name: 'Không xác định' }
+                id: lesson.id,
+                title: lesson.title,
+                lesson_number: lesson.lesson_number,
+                class: lesson.classes || { name: 'Không xác định' }
               }
             }
           });
@@ -174,10 +200,10 @@ export const useStudentNotifications = () => {
             submitted_at: submission.submitted_at,
             assignment: {
               lesson: {
-                id: assignment.lesson.id,
-                title: assignment.lesson.title,
-                lesson_number: assignment.lesson.lesson_number,
-                class: assignment.lesson.classes || { name: 'Không xác định' }
+                id: lesson.id,
+                title: lesson.title,
+                lesson_number: lesson.lesson_number,
+                class: lesson.classes || { name: 'Không xác định' }
               }
             }
           });
